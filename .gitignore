@@ -1,0 +1,10 @@
+# OS / editor files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+.vscode/
+
+# Local deploy artifact (the upload ZIP is generated outside the repo)
+misho-website.zip

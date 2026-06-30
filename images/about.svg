@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dceaf8"/>
+      <stop offset="1" stop-color="#aac6e2"/>
+    </linearGradient>
+    <pattern id="mullion" width="84" height="104" patternUnits="userSpaceOnUse">
+      <path d="M0 0 H84 M0 0 V104" stroke="#8fabc9" stroke-width="3"/>
+    </pattern>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#glass)"/>
+  <rect width="800" height="600" fill="url(#mullion)"/>
+  <!-- soft reflections -->
+  <g fill="#ffffff" opacity="0.18">
+    <polygon points="0,0 230,0 60,600 0,600"/>
+    <polygon points="360,0 470,0 300,600 190,600"/>
+  </g>
+
+  <!-- rope -->
+  <line x1="540" y1="0" x2="540" y2="300" stroke="#1a2740" stroke-width="5"/>
+
+  <!-- climber with squeegee -->
+  <g transform="translate(540,300)">
+    <rect x="-22" y="2" width="44" height="10" rx="5" fill="#1a2740"/>
+    <rect x="-13" y="-40" width="26" height="50" rx="12" fill="#ff6a00"/>
+    <rect x="-11" y="10" width="9" height="34" rx="4" fill="#1f2f4d"/>
+    <rect x="2" y="10" width="9" height="34" rx="4" fill="#1f2f4d"/>
+    <circle cx="0" cy="-52" r="14" fill="#f1d8b6"/>
+    <path d="M-15 -53 a15 15 0 0 1 30 0 z" fill="#ffd400"/>
+    <!-- arm + squeegee -->
+    <line x1="10" y1="-30" x2="48" y2="-46" stroke="#ff6a00" stroke-width="9" stroke-linecap="round"/>
+    <line x1="40" y1="-66" x2="58" y2="-26" stroke="#1a2740" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- clean streak -->
+  <line x1="600" y1="60" x2="600" y2="560" stroke="#ffffff" stroke-width="10" opacity="0.35"/>
+</svg>

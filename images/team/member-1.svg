@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22324f"/>
+      <stop offset="1" stop-color="#0f1a2e"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg1)"/>
+  <!-- shoulders -->
+  <path d="M70 400 C70 300 130 262 200 262 C270 262 330 300 330 400 Z" fill="#3a4a66"/>
+  <!-- head -->
+  <circle cx="200" cy="180" r="74" fill="#cdd7e4"/>
+  <!-- hard hat -->
+  <path d="M126 168 a74 74 0 0 1 148 0 z" fill="#ff6a00"/>
+  <rect x="120" y="164" width="160" height="12" rx="6" fill="#ff6a00"/>
+  <rect x="192" y="120" width="16" height="18" rx="4" fill="#ffd400"/>
+</svg>

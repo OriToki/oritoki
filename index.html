@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<!--
+  =====================================================================
+   ORITOKI (LTD Oritoki / შპს ორითოკი) — Height Works  (one-page website)
+  ---------------------------------------------------------------------
+   HOW TO EDIT TEXT:
+   - English text is written normally inside the tags.
+   - The Georgian version is in the  data-ka="..."  attribute next to it.
+   - To change a wording, edit BOTH (the English text and data-ka).
+
+   HOW TO ADD GALLERY PHOTOS:
+   - Open  js/images.js  and follow the instructions there.
+
+   Full step-by-step guide is in  README.md
+  =====================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-ka="ორითოკი — მაღალ სიმაღლეზე სამუშაოები">Oritoki — Height Works &amp; Industrial Climbing</title>
+  <meta name="description" content="Professional works at height: facade cleaning, painting, waterproofing, installation and rope-access services. Certified and insured." />
+
+  <!-- Google Fonts (free) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome icons (free CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Swiper carousel (free CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+  <!-- Our styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml" />
+</head>
+
+<body>
+
+  <!-- ============================ HEADER / NAV ============================ -->
+  <header class="site-header" id="header">
+    <div class="container nav-wrap">
+      <a href="#home" class="brand">
+        <img src="images/logo.svg" alt="Oritoki logo — two ropes" class="brand-logo" />
+        <span class="brand-name"><span data-ka="ორითოკი">ORITOKI</span><small data-ka="მაღალი სამუშაოები">Height Works</small></span>
+      </a>
+
+      <nav class="nav" id="nav">
+        <a href="#home"     class="nav-link" data-ka="მთავარი">Home</a>
+        <a href="#about"    class="nav-link" data-ka="ჩვენ შესახებ">About</a>
+        <a href="#services" class="nav-link" data-ka="სერვისები">Services</a>
+        <a href="#gallery"  class="nav-link" data-ka="გალერეა">Gallery</a>
+        <a href="#team"     class="nav-link" data-ka="გუნდი">Team</a>
+        <a href="#contact"  class="nav-link" data-ka="კონტაქტი">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="lang-toggle" id="langToggle" type="button" aria-label="Switch language">
+          <i class="fa-solid fa-globe"></i> <span id="langLabel">ქართული</span>
+        </button>
+        <a href="#contact" class="btn btn-primary btn-sm hide-mobile" data-ka="დაგვიკავშირდით">Get a Quote</a>
+        <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================ HERO / HOME ============================ -->
+  <section id="home" class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="container hero-inner">
+      <p class="hero-eyebrow" data-ka="სამრეწველო ალპინიზმი • სერტიფიცირებული • დაზღვეული">
+        Industrial Climbing • Certified • Insured
+      </p>
+      <h1 class="hero-title">
+        <span data-ka="მაღალ სიმაღლეზე">Works at Height,</span>
+        <span class="accent" data-ka="უსაფრთხოდ შესრულებული">Done Safely.</span>
+      </h1>
+      <p class="hero-text" data-ka="ფასადების წმენდა, შეღებვა, ჰიდროიზოლაცია, მონტაჟი და სარემონტო სამუშაოები ნებისმიერ სიმაღლეზე — თოკური წვდომის პროფესიონალი გუნდის მიერ.">
+        Facade cleaning, painting, waterproofing, installation and repair works at any
+        height — delivered by a professional rope-access team.
+      </p>
+      <div class="hero-buttons">
+        <a href="#contact" class="btn btn-primary" data-ka="უფასო შეფასება">Get a Free Quote</a>
+        <a href="#gallery" class="btn btn-ghost" data-ka="ჩვენი ნამუშევრები">See Our Work</a>
+      </div>
+    </div>
+    <a href="#about" class="scroll-cue" aria-label="Scroll down"><i class="fa-solid fa-chevron-down"></i></a>
+  </section>
+
+  <!-- ============================ STATS BAR ============================ -->
+  <section class="stats">
+    <div class="container stats-grid">
+      <div class="stat"><span class="stat-num">10+</span><span class="stat-label" data-ka="წლის გამოცდილება">Years of Experience</span></div>
+      <div class="stat"><span class="stat-num">500+</span><span class="stat-label" data-ka="დასრულებული პროექტი">Projects Completed</span></div>
+      <div class="stat"><span class="stat-num">15</span><span class="stat-label" data-ka="სერტიფიცირებული სპეციალისტი">Certified Specialists</span></div>
+      <div class="stat"><span class="stat-num">100%</span><span class="stat-label" data-ka="უსაფრთხოების დაცვა">Safety Compliance</span></div>
+    </div>
+  </section>
+
+  <!-- ============================ ABOUT ============================ -->
+  <section id="about" class="section">
+    <div class="container about-grid">
+      <div class="about-media reveal">
+        <img src="images/about.svg" alt="Our team at work" />
+        <div class="about-badge"><i class="fa-solid fa-shield-halved"></i>
+          <span data-ka="დაზღვეული & სერტიფიცირებული">Insured &amp; Certified</span>
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <p class="eyebrow" data-ka="ჩვენ შესახებ">About Us</p>
+        <h2 data-ka="სანდო გუნდი მაღალი სირთულის სამუშაოებისთვის">A Trusted Team for High-Difficulty Work</h2>
+        <p data-ka="ორითოკი არის სამრეწველო ალპინიზმის კომპანია, რომელიც ასრულებს მაღალ სიმაღლეზე სამუშაოებს იქ, სადაც ხარაჩოები და ამწეები ვერ აღწევს. ჩვენ ვმუშაობთ უსაფრთხოდ, სწრაფად და ზუსტად.">
+          Oritoki is an industrial-climbing company that performs works at height where
+          scaffolding and cranes cannot reach. We work safely, quickly and precisely —
+          with full safety equipment and certified specialists.
+        </p>
+        <ul class="checklist">
+          <li><i class="fa-solid fa-circle-check"></i> <span data-ka="სრული უსაფრთხოების აღჭურვილობა">Full safety equipment &amp; rope access</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span data-ka="სერტიფიცირებული და გამოცდილი სპეციალისტები">Certified, experienced specialists</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span data-ka="უფასო შეფასება და სწრაფი მომსახურება">Free assessment &amp; fast service</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span data-ka="პასუხისმგებლობის დაზღვევა">Liability insurance included</span></li>
+        </ul>
+        <a href="#contact" class="btn btn-primary" data-ka="დაგვიკავშირდით">Contact Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ SERVICES ============================ -->
+  <section id="services" class="section section-soft">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow" data-ka="რას ვაკეთებთ">What We Do</p>
+        <h2 data-ka="ჩვენი სერვისები">Our Services</h2>
+        <p class="section-sub" data-ka="სრული სპექტრი მაღალ სიმაღლეზე სამუშაოებისა — ერთი სანდო გუნდისგან.">
+          A full range of works at height — from one reliable team.
+        </p>
+      </div>
+
+      <div class="services-grid">
+        <article class="service-card reveal">
+          <div class="service-icon"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+          <h3 data-ka="ფასადის წმენდა">Facade &amp; Window Cleaning</h3>
+          <p data-ka="შენობების ფასადებისა და მინების პროფესიონალური წმენდა ნებისმიერ სიმაღლეზე.">
+            Professional cleaning of building facades and glass at any height.
+          </p>
+        </article>
+
+        <article class="service-card reveal">
+          <div class="service-icon"><i class="fa-solid fa-paint-roller"></i></div>
+          <h3 data-ka="შეღებვა და დეკორი">Painting &amp; Coating</h3>
+          <p data-ka="ფასადების შეღებვა, დაცვითი საფარის დატანა და განახლება.">
+            Facade painting, protective coatings and surface restoration.
+          </p>
+        </article>
+
+        <article class="service-card reveal">
+          <div class="service-icon"><i class="fa-solid fa-droplet"></i></div>
+          <h3 data-ka="ჰიდროიზოლაცია">Waterproofing &amp; Sealing</h3>
+          <p data-ka="ნაკერების, სახურავებისა და ფასადების ჰიდროიზოლაცია გაჟონვის წინააღმდეგ.">
+            Sealing of seams, roofs and facades to stop leaks and moisture.
+          </p>
+        </article>
+
+        <article class="service-card reveal">
+          <div class="service-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <h3 data-ka="მონტაჟი და შეკეთება">Installation &amp; Repair</h3>
+          <p data-ka="რეკლამის, კონსტრუქციების და ელემენტების მონტაჟი და სარემონტო სამუშაოები.">
+            Mounting signs, structures and elements, plus repair works at height.
+          </p>
+        </article>
+
+        <article class="service-card reveal">
+          <div class="service-icon"><i class="fa-solid fa-icicles"></i></div>
+          <h3 data-ka="თოვლისა და ყინულის მოცილება">Snow &amp; Ice Removal</h3>
+          <p data-ka="სახურავებიდან თოვლისა და ყინულის უსაფრთხო მოცილება.">
+            Safe removal of snow and ice build-up from roofs and ledges.
+          </p>
+        </article>
+
+        <article class="service-card reveal">
+          <div class="service-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <h3 data-ka="ინსპექცია და მომსახურება">Inspection &amp; Maintenance</h3>
+          <p data-ka="ფასადებისა და კონსტრუქციების ვიზუალური შემოწმება და მოვლა.">
+            Visual inspection and maintenance of facades and structures.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ GALLERY / CAROUSEL ============================ -->
+  <section id="gallery" class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow" data-ka="ჩვენი ნამუშევრები">Our Work</p>
+        <h2 data-ka="გალერეა">Project Gallery</h2>
+        <p class="section-sub" data-ka="რამდენიმე მაგალითი ჩვენი შესრულებული სამუშაოებიდან.">
+          A few examples from our completed projects.
+        </p>
+      </div>
+    </div>
+
+    <!-- The slides are filled automatically from js/images.js -->
+    <div class="swiper gallery-swiper">
+      <div class="swiper-wrapper" id="gallery-wrapper">
+        <!-- slides injected by JavaScript -->
+      </div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </section>
+
+  <!-- ============================ TEAM ============================ -->
+  <section id="team" class="section section-soft">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow" data-ka="გაიცანით">Meet Us</p>
+        <h2 data-ka="ჩვენი გუნდი">Our Team</h2>
+        <p class="section-sub" data-ka="გამოცდილი და სერტიფიცირებული სპეციალისტები.">
+          Experienced and certified specialists you can rely on.
+        </p>
+      </div>
+
+      <div class="team-grid">
+        <article class="team-card reveal">
+          <img src="images/team/member-1.svg" alt="Team member" />
+          <h3>Giorgi M.</h3>
+          <p class="team-role" data-ka="დამფუძნებელი / ხელმძღვანელი">Founder / Lead Climber</p>
+        </article>
+        <article class="team-card reveal">
+          <img src="images/team/member-2.svg" alt="Team member" />
+          <h3>Davit K.</h3>
+          <p class="team-role" data-ka="უსაფრთხოების ინჟინერი">Safety Engineer</p>
+        </article>
+        <article class="team-card reveal">
+          <img src="images/team/member-3.svg" alt="Team member" />
+          <h3>Nika T.</h3>
+          <p class="team-role" data-ka="სამრეწველო ალპინისტი">Industrial Climber</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CONTACT ============================ -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow" data-ka="დაგვიკავშირდით">Get in Touch</p>
+        <h2 data-ka="კონტაქტი">Contact Us</h2>
+        <p class="section-sub" data-ka="მოგვწერეთ ან დაგვირეკეთ უფასო შეფასებისთვის.">
+          Message or call us for a free, no-obligation quote.
+        </p>
+      </div>
+
+      <div class="contact-grid">
+        <!-- Contact info -->
+        <div class="contact-info reveal">
+          <a class="contact-item" href="tel:+995500000000">
+            <span class="ci-icon"><i class="fa-solid fa-phone"></i></span>
+            <span><strong data-ka="ტელეფონი">Phone</strong><br />+995 500 00 00 00</span>
+          </a>
+          <a class="contact-item" href="https://wa.me/995500000000" target="_blank" rel="noopener">
+            <span class="ci-icon"><i class="fa-brands fa-whatsapp"></i></span>
+            <span><strong>WhatsApp</strong><br />+995 500 00 00 00</span>
+          </a>
+          <a class="contact-item" href="mailto:info@oritoki.ge">
+            <span class="ci-icon"><i class="fa-solid fa-envelope"></i></span>
+            <span><strong data-ka="ელ. ფოსტა">Email</strong><br />info@oritoki.ge</span>
+          </a>
+          <div class="contact-item">
+            <span class="ci-icon"><i class="fa-solid fa-location-dot"></i></span>
+            <span><strong data-ka="მისამართი">Address</strong><br /><span data-ka="თბილისი, საქართველო">Tbilisi, Georgia</span></span>
+          </div>
+          <div class="contact-socials">
+            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+
+        <!-- Contact form -->
+        <!--
+          The form below uses Formspree (free) so messages are emailed to you.
+          To turn it on: create a free form at https://formspree.io and replace
+          YOUR_ID in the action URL with the ID they give you.
+          Until then, the direct phone/email links above work immediately.
+        -->
+        <form class="contact-form reveal" action="https://formspree.io/f/YOUR_ID" method="POST">
+          <div class="field">
+            <label data-ka="თქვენი სახელი">Your Name</label>
+            <input type="text" name="name" required placeholder="Name" data-ka-placeholder="სახელი" />
+          </div>
+          <div class="field">
+            <label data-ka="ელ. ფოსტა ან ტელეფონი">Email or Phone</label>
+            <input type="text" name="contact" required placeholder="you@example.com" data-ka-placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label data-ka="თქვენი შეტყობინება">Your Message</label>
+            <textarea name="message" rows="5" required placeholder="How can we help?" data-ka-placeholder="როგორ შეგვიძლია დაგეხმაროთ?"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" data-ka="გაგზავნა">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="brand-name"><span data-ka="ორითოკი">ORITOKI</span><small data-ka="მაღალი სამუშაოები">Height Works</small></span>
+        <p data-ka="სამრეწველო ალპინიზმი და მაღალ სიმაღლეზე სამუშაოები.">
+          Industrial climbing and professional works at height.
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="#about" data-ka="ჩვენ შესახებ">About</a>
+        <a href="#services" data-ka="სერვისები">Services</a>
+        <a href="#gallery" data-ka="გალერეა">Gallery</a>
+        <a href="#team" data-ka="გუნდი">Team</a>
+        <a href="#contact" data-ka="კონტაქტი">Contact</a>
+      </div>
+      <div class="footer-socials">
+        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+      </div>
+    </div>
+    <div class="footer-bottom container">
+      <span>© <span id="year"></span> <span data-ka="შპს ორითოკი">Oritoki LTD</span>. <span data-ka="ყველა უფლება დაცულია.">All rights reserved.</span></span>
+    </div>
+  </footer>
+
+  <!-- Swiper carousel library (free CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- Our photo list (edit this to add photos) -->
+  <script src="js/images.js"></script>
+  <!-- Our scripts -->
+  <script src="js/main.js"></script>
+</body>
+</html>
