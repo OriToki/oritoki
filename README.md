@@ -52,23 +52,34 @@ Edit **both** to change a wording.
 
 ---
 
-## 4. How to change phone, email, address & social links
+## 4. How to change phone, email, address & social links  ⭐
 
-In **`index.html`**, find the **CONTACT** section and the **FOOTER**:
+Open **`js/site-config.js`** — everything lives in that one file:
 
-- Phone: `tel:+995500000000` → put your real number (twice: the link and the text)
-- WhatsApp: `https://wa.me/995500000000`
-- Email: `mailto:info@oritoki.ge`
-- Address text: `Tbilisi, Georgia`
-- Facebook / Instagram / TikTok: replace the `href="#"` with your page links
+```js
+var siteInfo = {
+  phone: "+995 571 25 35 30",
+  email: "info@oritoki.ge",
+  address: {
+    en: "Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia",
+    ka: "მისამართი: ე. ნინოშვილის ქ. 13, ბ. 23B, თბილისი, საქართველო"
+  },
+  social: {
+    facebook:  "https://www.facebook.com/…",
+    instagram: "https://www.instagram.com/…",
+    tiktok:    ""
+  }
+};
+```
 
-### Make the contact form send you emails (free, optional)
-1. Sign up free at **https://formspree.io**
-2. It gives you a form address like `https://formspree.io/f/abcwxyz`
-3. In `index.html` find `action="https://formspree.io/f/YOUR_ID"` and replace
-   `YOUR_ID` with yours.
+Change a value **once** and it updates everywhere — contact section, footer, the
+"call" link and the WhatsApp button. You never write the phone number twice: the
+call and WhatsApp links are built from it automatically.
 
-Until you do this, the phone / WhatsApp / email links already work fine.
+To **hide** a social icon (e.g. no TikTok account yet), leave it empty: `tiktok: "",`
+
+> Don't edit the phone/email directly in `index.html` any more — those places are
+> filled from this file, so your change there would be overwritten on load.
 
 ---
 
@@ -106,6 +117,7 @@ misho/
 ├── css/style.css       ← colors, fonts, layout
 ├── js/
 │   ├── images.js       ← THE PHOTO LIST you edit to add carousel pictures
+│   ├── site-config.js  ← THE CONTACT DETAILS (phone, e-mail, address, socials)
 │   └── main.js         ← menu, language switch, carousel (rarely edited)
 ├── images/
 │   ├── gallery/        ← put carousel photos here
@@ -119,3 +131,74 @@ misho/
 The carousel uses [Swiper](https://swiperjs.com), icons by
 [Font Awesome](https://fontawesome.com), fonts by Google Fonts — all free and
 loaded automatically from the internet (so keep the computer online when viewing).
+
+---
+
+# 🇬🇪 მოკლე ინსტრუქცია (ქართულად)
+
+ორი ყველაზე ხშირი საქმე — ფოტოს დამატება და კონტაქტების შეცვლა. **`index.html`-ს
+ხელი არ უნდა ახლო არცერთ შემთხვევაში.**
+
+## ფოტოს დამატება გალერეაში
+
+**1.** ჩააგდე ფოტო საქაღალდეში `images/gallery/`
+
+  - ფორმატი: `.jpg`, `.png` ან `.webp`
+  - სახელი მარტივი, **ქართული ასოებისა და ხარვეზების გარეშე** — მაგ. `facade-vake.jpg`
+  - სასურველი ზომა: დაახლოებით **1200 × 800** პიქსელი
+
+**2.** გახსენი `js/images.js` და დაამატე **ერთი ხაზი**. დააკოპირე არსებული ხაზი და
+შეცვალე ფაილის სახელი და წარწერები:
+
+```js
+{ file: "facade-vake.jpg", en: "Facade cleaning", ka: "ფასადის წმენდა" },
+```
+
+- `file` — ფაილის ზუსტი სახელი, რომელიც `images/gallery/`-ში ჩააგდე
+- `en` — წარწერა ინგლისურ ვერსიაზე
+- `ka` — წარწერა ქართულ ვერსიაზე
+
+**3.** შეინახე ფაილი და გვერდი განაახლე. მზადაა.
+
+ფოტოს წასაშლელად უბრალოდ წაშალე მისი ხაზი.
+
+## ტელეფონის, ფოსტის ან მისამართის შეცვლა
+
+გახსენი `js/site-config.js` — ყველაფერი იქაა:
+
+```js
+phone: "+995 571 25 35 30",
+email: "info@oritoki.ge",
+```
+
+**ნომერი მხოლოდ ერთხელ იწერება.** დარეკვის ბმულიც და WhatsApp-იც ავტომატურად
+აეწყობა — ორჯერ წერა არ გჭირდება. ფოსტაც ორივე ადგილას (კონტაქტში და ფუთერში)
+თავისით განახლდება.
+
+მისამართს ორივე ენაზე შეცვლი:
+
+```js
+address: {
+  en: "Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia",
+  ka: "მისამართი: ე. ნინოშვილის ქ. 13, ბ. 23B, თბილისი, საქართველო"
+},
+```
+
+## სოციალური ქსელები
+
+```js
+social: {
+  facebook:  "https://www.facebook.com/...",
+  instagram: "https://www.instagram.com/...",
+  tiktok:    ""
+}
+```
+
+თუ ანგარიში ჯერ არ გაქვს — დატოვე ცარიელი ბრჭყალები (`""`) და **აიქონი საიტზე
+საერთოდ არ გამოჩნდება**. მოგვიანებით ბმულს ჩასვამ და თავისით გამოჩნდება.
+
+## რაზე მივაქციო ყურადღება
+
+- ბრჭყალები `" "` და ხაზის ბოლოს მძიმე **არ წაშალო**
+- მარცხნივ მდგარი სიტყვები (`phone`, `email`, `file`, `en`, `ka`) **არ გადაარქვა**
+- შეცვლის შემდეგ ყოველთვის შეინახე ფაილი და გვერდი განაახლე (Ctrl+F5)

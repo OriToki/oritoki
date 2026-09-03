@@ -1,0 +1,676 @@
+﻿<!DOCTYPE html>
+<!--
+  =====================================================================
+   ORITOKI — შემოგვიერთდი / Join Our Network (Talent Pool application)
+  ---------------------------------------------------------------------
+   This page saves applications to a Supabase table + storage bucket.
+   SETUP (once): create a free project at https://supabase.com, run the
+   SQL in  supabase-setup.sql , then paste your project URL + anon key
+   into SUPABASE_URL / SUPABASE_ANON_KEY in the script at the bottom.
+  =====================================================================
+-->
+<html lang="ka">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-ka="შემოგვიერთდი — ორითოკი">Join Our Network — Oritoki</title>
+  <meta name="description" content="Join the ORITOKI rope-access specialists database. Submit your certifications and experience — we'll contact you when a suitable project or vacancy is available." />
+
+  <!-- Google Analytics — set your Measurement ID in js/analytics.js -->
+  <script src="js/analytics.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {
+        colors: { night:"rgb(var(--c-night) / <alpha-value>)", panel:"rgb(var(--c-panel) / <alpha-value>)", deep:"rgb(var(--c-deep) / <alpha-value>)", surface:"rgb(var(--c-surface) / <alpha-value>)", line:"rgb(var(--c-line) / <alpha-value>)", light:"rgb(var(--c-light) / <alpha-value>)", mute:"rgb(var(--c-mute) / <alpha-value>)", accent:"#f97316", info:"#ca8a04" },
+        fontFamily: { display:['"Helvetica Neue"','"Noto Sans Georgian"','Arial','sans-serif'], body:['"Helvetica Neue"','"Noto Sans Georgian"','Arial','sans-serif'] },
+        fontWeight: { 500:"500",600:"600",700:"700",800:"800",900:"900" },
+      } },
+    };
+  </script>
+
+  <!-- Apply the saved / system theme before first paint (shared with the main site) -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("oritoki_theme");
+        if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        if (t === "dark") document.documentElement.classList.add("dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Supabase JS client (no build step needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="icon" type="image/png" href="images/favicon.png?v=5" />
+
+  <style>
+    @font-face { font-family:'Helvetica Neue'; src:url('fonts/HelveticaNeue-Roman.otf')  format('opentype'); font-weight:400;     font-style:normal; font-display:swap; }
+    @font-face { font-family:'Helvetica Neue'; src:url('fonts/HelveticaNeue-Medium.otf') format('opentype'); font-weight:500 600; font-style:normal; font-display:swap; }
+    @font-face { font-family:'Helvetica Neue'; src:url('fonts/HelveticaNeue-Bold.otf')   format('opentype'); font-weight:700;     font-style:normal; font-display:swap; }
+    @font-face { font-family:'Helvetica Neue'; src:url('fonts/HelveticaNeue-Black.otf')  format('opentype'); font-weight:800 900; font-style:normal; font-display:swap; }
+
+    /* Theme tokens — light default, overridden under html.dark (channel format for /opacity). */
+    :root {
+      --c-night:255 255 255; --c-panel:245 245 242; --c-deep:232 232 226;
+      --c-surface:255 255 255; --c-line:229 231 235; --c-light:20 20 42; --c-mute:82 82 91;
+      color-scheme:light;
+    }
+    html.dark {
+      --c-night:30 31 32; --c-panel:18 19 20; --c-deep:48 49 51;
+      --c-surface:32 33 35; --c-line:42 43 44; --c-light:236 237 242; --c-mute:158 158 160;
+      color-scheme:dark;
+    }
+    html { scroll-behavior:smooth; background-color:rgb(var(--c-surface)); }
+    body { font-family:'Helvetica Neue','Noto Sans Georgian',Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+    .lang-active { background:#f97316; color:#fff; }
+
+    /* Form controls */
+    .lbl { display:block; font-size:.875rem; font-weight:600; color:#14142a; margin-bottom:.4rem; }
+    .req::after { content:" *"; color:#f97316; }
+    .inp { width:100%; border-radius:.65rem; border:1px solid #e5e7eb; background-color:#fff; padding:.7rem .9rem; color:#14142a; font-size:.95rem; transition:border-color .18s, box-shadow .18s, background .18s; }
+    .inp::placeholder { color:#9ca3af; }
+    .inp:focus { outline:none; border-color:#f97316; background-color:#fff; box-shadow:0 0 0 3px rgba(249,115,22,.16); }
+    select.inp { appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2352525b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 8 10 12 6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .85rem center; padding-right:2.3rem; }
+
+    .sec { padding-top:1.9rem; margin-top:1.9rem; border-top:1px solid #eef1f5; }
+    .sec:first-of-type { border-top:0; margin-top:0; padding-top:0; }
+    .sec-title { display:flex; align-items:center; gap:.65rem; font-weight:700; color:#14142a; font-size:1.05rem; }
+    .sec-num { display:inline-flex; align-items:center; justify-content:center; height:1.7rem; width:1.7rem; border-radius:9999px; background:#f97316; color:#fff; font-size:.8rem; font-weight:700; flex:none; }
+
+    /* Chip-style checkboxes / radios */
+    .chips { display:flex; flex-wrap:wrap; gap:.5rem; }
+    .chip { position:relative; display:inline-flex; }
+    .chip input { position:absolute; inset:0; opacity:0; cursor:pointer; margin:0; }
+    .chip > span { display:inline-flex; align-items:center; gap:.4rem; padding:.5rem .95rem; border-radius:9999px; border:1px solid #e5e7eb; background:#fff; color:#14142a; font-size:.875rem; transition:all .18s ease; }
+    .chip:hover > span { border-color:#f97316; }
+    .chip input:checked + span { background:#f97316; border-color:#f97316; color:#fff; }
+    .chip input:focus-visible + span { box-shadow:0 0 0 3px rgba(249,115,22,.25); }
+
+    .reveal { opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease; }
+    .reveal.in { opacity:1; transform:none; }
+
+    /* ============================ DARK MODE ============================ */
+    html.dark header { background-color:rgba(28,29,31,.92); }  /* keep the header as it was after the bg swap */
+    html.dark .lbl { color:#ececf2; }
+    html.dark .sec-title { color:#ececf2; }
+    html.dark .sec { border-top-color:#2a2b2c; }
+    html.dark .inp { border-color:#2a2b2c; background-color:#202123; color:#ececf2; }
+    html.dark .inp::placeholder { color:#6f6f78; }
+    html.dark .inp:focus { background-color:#26282a; box-shadow:0 0 0 3px rgba(249,115,22,.22); }
+    html.dark select.inp { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23a0a0a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 8 10 12 6'/%3E%3C/svg%3E"); }
+    html.dark .chip > span { border-color:#2a2b2c; background:#202123; color:#ececf2; }
+    html.dark .chip input:checked + span { background:#f97316; border-color:#f97316; color:#fff; }
+
+    /* Rope-access gear doodles fill the margins AROUND the centered form, WhatsApp-wallpaper
+       style: one flat colour with a faint, endlessly repeating pattern of the kit we actually
+       use — anchors, ascenders, carabiners, rope, descenders, pulleys, helmet, lanyard, rope
+       clamp, harness. The 640px tile is drawn so shapes crossing an edge reappear on the
+       opposite one, which is what makes it repeat with no seam. Two bakes of the same tile:
+       dark ink for the light theme, light ink for the dark one. */
+    html:not(.dark) body {
+      background-color: #f0f0ec;
+      background-image: url('images/join-doodles-light.png?v=2');
+      background-repeat: repeat;
+      background-size: 320px 320px;
+      background-attachment: fixed;
+    }
+    html.dark body {
+      background-color: #121314;
+      background-image: url('images/join-doodles-dark.png?v=2');
+      background-repeat: repeat;
+      background-size: 320px 320px;
+      background-attachment: fixed;
+    }
+
+    /* Carabiner theme toggle (mirrors index.html): the gate is hinged at its lower end,
+       latched shut in light mode and swung wide open in dark mode. Colour is fixed per
+       theme and never recoloured on hover — orange in light, white on the dark page. */
+    /* More golden than the brand accent — matches index.html's --cb-gold. */
+    :root { --cb-gold: #f59e0b; }
+    /* Colour on the wrapper so the label and the icon (fill: currentColor) always match. */
+    #themeToggle { color: var(--cb-gold); }
+    /* The carabiner stands on its own — no ring, no plate behind it. Hover just dims it. */
+    #themeToggle:hover { opacity: .7; }
+    html.dark #themeToggle { color: #ffffff; }
+    .cb-icon { display: block; overflow: visible; }
+    /* Sun rays — dark mode only, hinting that the button switches to light. */
+    .cb-rays {
+      opacity: 0; transform: scale(.55);
+      transform-box: view-box; transform-origin: 11.97px 12px;
+      transition: opacity .22s ease, transform .3s cubic-bezier(.3,.85,.35,1);
+    }
+    html.dark .cb-rays {
+      opacity: 1; transform: scale(1);
+      transition: opacity .3s ease .08s, transform .46s cubic-bezier(.34,1.28,.5,1) .06s;
+    }
+    @media (prefers-reduced-motion: reduce) { .cb-rays { transition: none; } }
+    .cb-icon .cb-gate {
+      transform: rotate(3.4deg);
+      transform-box: view-box;
+      transform-origin: 16.31px 16px;
+      transition: transform .3s cubic-bezier(.3,.85,.35,1);
+    }
+    html.dark .cb-icon .cb-gate {
+      transform: rotate(-58deg);
+      transition: transform .46s cubic-bezier(.34,1.28,.5,1);
+    }
+    @media (prefers-reduced-motion: reduce) { .cb-icon .cb-gate { transition: none; } }
+  </style>
+</head>
+
+<body class="bg-surface font-body text-mute antialiased">
+
+  <!-- ============================ HEADER ============================ -->
+  <header class="sticky top-0 z-40 bg-surface/85 backdrop-blur border-b border-line">
+    <div class="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between gap-2 sm:gap-3">
+      <a href="index.html" class="flex items-center gap-2 min-w-0" aria-label="Oritoki — home">
+        <img src="images/emblem.png?v=2" alt="Oritoki" class="h-9 w-auto shrink-0" />
+        <span class="font-display font-700 tracking-wide text-light text-lg max-sm:hidden" data-ka="ორითოკი">Oritoki</span>
+      </a>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="index.html" class="inline-flex items-center gap-1.5 text-sm font-600 text-mute hover:text-accent transition"><i class="fa-solid fa-arrow-left text-xs"></i><span data-ka="მთავარი">Home</span></a>
+        <!-- Theme first, then language — same order as the main site's header. -->
+        <button id="themeToggle" type="button" aria-label="Toggle dark mode" title="Dark / light" class="w-7 h-9 shrink-0 inline-flex items-center justify-center text-base leading-none transition"><svg class="cb-icon" viewBox="-1.5 -4.5 27 33" width="27" height="33" fill="currentColor" aria-hidden="true" focusable="false"><g class="cb-rays" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M20.57 12h2"/><path d="M18.05 20.91l1.42 1.77"/><path d="M11.97 24.6v2.5"/><path d="M5.89 20.91l-1.42 1.77"/><path d="M3.37 12h-2"/><path d="M5.89 3.09 4.47 1.32"/><path d="M11.97-0.6v-2.5"/><path d="M18.05 3.09 19.47 1.32"/></g><path d="M17.85 7.3C17.88 6.9 17.9 6.6 17.88 6.4C17.85 5.9 17.75 5.2 17.5 4.6C17.1 3.4 15.9 2.05 14.7 2.02L12.7 2.02C11.2 2.05 9.6 2.6 8.5 3.8C6.9 5.3 6.25 6.9 6.12 8.8C6.03 10.6 6.05 12.6 6.3 14.6C6.6 16.8 7.4 19 8.5 20.3C9.7 21.5 10.9 22 11.9 22L14.1 22C14.35 22 14.6 21.9 14.9 21.7C16.4 21 17.15 19.2 17.27 17.56L15.21 17.56C15 18.75 14.35 19.9 13.35 20.4C12.65 20.7 11.85 20.25 11.15 19.4C10.2 18.25 9.45 17.15 9.1 15.8C8.85 14.6 8.8 13.2 8.85 11.8C8.9 10.2 8.85 8.2 9.35 6.7C9.85 5.3 11.1 4.3 12.6 4.32C14 4.4 15.45 5.3 15.75 6.6C15.82 6.9 15.85 7.1 15.85 7.3Z"/><g class="cb-gate"><rect x="15.285" y="7.75" width="2.05" height="1.12" rx=".5"/><rect x="15.095" y="9.32" width="2.3" height="5.17" rx=".72"/><path fill-rule="evenodd" d="M15.785 14.94h1.05c.28 0 .5.22.5.5v1.15c0 .28-.22.5-.5.5h-1.05a.5.5 0 0 1-.5-.5v-1.15c0-.28.22-.5.5-.5ZM16.86 16a.55.55 0 1 1-1.1 0 .55.55 0 0 1 1.1 0Z"/></g></svg></button>
+        <div id="langToggle" class="flex items-center rounded-full border border-line overflow-hidden text-xs font-600 font-display shrink-0">
+          <button type="button" data-lang="ka" class="px-3 py-1.5 transition">ქარ</button>
+          <button type="button" data-lang="en" class="px-3 py-1.5 transition">ENG</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================ HERO ============================ -->
+  <section class="bg-panel border-b border-line">
+    <div class="max-w-3xl mx-auto px-5 py-14 sm:py-20 text-center">
+      <p class="text-lg font-600 text-accent" data-ka="ფლობთ პროფესიულ სერტიფიკატს?">Do you hold a professional certificate?</p>
+      <p class="mt-4 text-mute leading-relaxed" data-ka="შეავსეთ განაცხადი და დაემატეთ ORITOKI-ის სპეციალისტების ბაზას.">Fill out the application and join the ORITOKI specialists database.</p>
+      <p class="mt-2 text-mute leading-relaxed" data-ka="შესაბამისი პროექტის ან ვაკანსიის არსებობის შემთხვევაში დაგიკავშირდებით.">We'll contact you when a suitable project or vacancy is available.</p>
+    </div>
+  </section>
+
+  <!-- ============================ FORM ============================ -->
+  <main class="max-w-3xl mx-auto px-5 py-12 sm:py-16">
+    <form id="joinForm" novalidate class="reveal rounded-3xl border border-line bg-panel p-6 sm:p-9 shadow-sm">
+
+      <!-- 1. Personal info -->
+      <div class="sec">
+        <h3 class="sec-title"><span class="sec-num">1</span><span data-ka="პირადი ინფორმაცია">Personal information</span></h3>
+        <div class="mt-5 grid sm:grid-cols-2 gap-4">
+          <div><label class="lbl req" data-ka="სახელი">First name</label><input class="inp" type="text" name="first_name" required placeholder="..." data-ka-placeholder="სახელი" /></div>
+          <div><label class="lbl req" data-ka="გვარი">Last name</label><input class="inp" type="text" name="last_name" required placeholder="..." data-ka-placeholder="გვარი" /></div>
+          <div><label class="lbl req" data-ka="ტელეფონი">Phone</label>
+            <div class="flex gap-2">
+              <select class="inp shrink-0 w-40" name="phone_code" aria-label="Country code">
+                <option value="+995" data-ka="+995 საქართველო">+995 Georgia</option>
+                <option value="+93" data-ka="+93 ავღანეთი">+93 Afghanistan</option>
+                <option value="+355" data-ka="+355 ალბანეთი">+355 Albania</option>
+                <option value="+213" data-ka="+213 ალჟირი">+213 Algeria</option>
+                <option value="+376" data-ka="+376 ანდორა">+376 Andorra</option>
+                <option value="+244" data-ka="+244 ანგოლა">+244 Angola</option>
+                <option value="+54" data-ka="+54 არგენტინა">+54 Argentina</option>
+                <option value="+374" data-ka="+374 სომხეთი">+374 Armenia</option>
+                <option value="+61" data-ka="+61 ავსტრალია">+61 Australia</option>
+                <option value="+43" data-ka="+43 ავსტრია">+43 Austria</option>
+                <option value="+994" data-ka="+994 აზერბაიჯანი">+994 Azerbaijan</option>
+                <option value="+973" data-ka="+973 ბაჰრეინი">+973 Bahrain</option>
+                <option value="+880" data-ka="+880 ბანგლადეში">+880 Bangladesh</option>
+                <option value="+375" data-ka="+375 ბელარუსი">+375 Belarus</option>
+                <option value="+32" data-ka="+32 ბელგია">+32 Belgium</option>
+                <option value="+591" data-ka="+591 ბოლივია">+591 Bolivia</option>
+                <option value="+387" data-ka="+387 ბოსნია და ჰერცეგოვინა">+387 Bosnia and Herzegovina</option>
+                <option value="+55" data-ka="+55 ბრაზილია">+55 Brazil</option>
+                <option value="+359" data-ka="+359 ბულგარეთი">+359 Bulgaria</option>
+                <option value="+855" data-ka="+855 კამბოჯა">+855 Cambodia</option>
+                <option value="+1" data-ka="+1 კანადა">+1 Canada</option>
+                <option value="+56" data-ka="+56 ჩილე">+56 Chile</option>
+                <option value="+86" data-ka="+86 ჩინეთი">+86 China</option>
+                <option value="+57" data-ka="+57 კოლუმბია">+57 Colombia</option>
+                <option value="+385" data-ka="+385 ხორვატია">+385 Croatia</option>
+                <option value="+357" data-ka="+357 კვიპროსი">+357 Cyprus</option>
+                <option value="+420" data-ka="+420 ჩეხეთი">+420 Czechia</option>
+                <option value="+45" data-ka="+45 დანია">+45 Denmark</option>
+                <option value="+593" data-ka="+593 ეკვადორი">+593 Ecuador</option>
+                <option value="+20" data-ka="+20 ეგვიპტე">+20 Egypt</option>
+                <option value="+372" data-ka="+372 ესტონეთი">+372 Estonia</option>
+                <option value="+251" data-ka="+251 ეთიოპია">+251 Ethiopia</option>
+                <option value="+358" data-ka="+358 ფინეთი">+358 Finland</option>
+                <option value="+33" data-ka="+33 საფრანგეთი">+33 France</option>
+                <option value="+49" data-ka="+49 გერმანია">+49 Germany</option>
+                <option value="+30" data-ka="+30 საბერძნეთი">+30 Greece</option>
+                <option value="+36" data-ka="+36 უნგრეთი">+36 Hungary</option>
+                <option value="+354" data-ka="+354 ისლანდია">+354 Iceland</option>
+                <option value="+91" data-ka="+91 ინდოეთი">+91 India</option>
+                <option value="+62" data-ka="+62 ინდონეზია">+62 Indonesia</option>
+                <option value="+98" data-ka="+98 ირანი">+98 Iran</option>
+                <option value="+964" data-ka="+964 ერაყი">+964 Iraq</option>
+                <option value="+353" data-ka="+353 ირლანდია">+353 Ireland</option>
+                <option value="+972" data-ka="+972 ისრაელი">+972 Israel</option>
+                <option value="+39" data-ka="+39 იტალია">+39 Italy</option>
+                <option value="+81" data-ka="+81 იაპონია">+81 Japan</option>
+                <option value="+962" data-ka="+962 იორდანია">+962 Jordan</option>
+                <option value="+7" data-ka="+7 ყაზახეთი">+7 Kazakhstan</option>
+                <option value="+965" data-ka="+965 ქუვეითი">+965 Kuwait</option>
+                <option value="+996" data-ka="+996 ყირგიზეთი">+996 Kyrgyzstan</option>
+                <option value="+371" data-ka="+371 ლატვია">+371 Latvia</option>
+                <option value="+961" data-ka="+961 ლიბანი">+961 Lebanon</option>
+                <option value="+370" data-ka="+370 ლიტვა">+370 Lithuania</option>
+                <option value="+352" data-ka="+352 ლუქსემბურგი">+352 Luxembourg</option>
+                <option value="+60" data-ka="+60 მალაიზია">+60 Malaysia</option>
+                <option value="+356" data-ka="+356 მალტა">+356 Malta</option>
+                <option value="+52" data-ka="+52 მექსიკა">+52 Mexico</option>
+                <option value="+373" data-ka="+373 მოლდოვა">+373 Moldova</option>
+                <option value="+377" data-ka="+377 მონაკო">+377 Monaco</option>
+                <option value="+976" data-ka="+976 მონღოლეთი">+976 Mongolia</option>
+                <option value="+382" data-ka="+382 მონტენეგრო">+382 Montenegro</option>
+                <option value="+212" data-ka="+212 მაროკო">+212 Morocco</option>
+                <option value="+31" data-ka="+31 ნიდერლანდები">+31 Netherlands</option>
+                <option value="+64" data-ka="+64 ახალი ზელანდია">+64 New Zealand</option>
+                <option value="+389" data-ka="+389 ჩრდილოეთ მაკედონია">+389 North Macedonia</option>
+                <option value="+47" data-ka="+47 ნორვეგია">+47 Norway</option>
+                <option value="+968" data-ka="+968 ომანი">+968 Oman</option>
+                <option value="+92" data-ka="+92 პაკისტანი">+92 Pakistan</option>
+                <option value="+51" data-ka="+51 პერუ">+51 Peru</option>
+                <option value="+63" data-ka="+63 ფილიპინები">+63 Philippines</option>
+                <option value="+48" data-ka="+48 პოლონეთი">+48 Poland</option>
+                <option value="+351" data-ka="+351 პორტუგალია">+351 Portugal</option>
+                <option value="+974" data-ka="+974 კატარი">+974 Qatar</option>
+                <option value="+40" data-ka="+40 რუმინეთი">+40 Romania</option>
+                <option value="+7" data-ka="+7 რუსეთი">+7 Russia</option>
+                <option value="+966" data-ka="+966 საუდის არაბეთი">+966 Saudi Arabia</option>
+                <option value="+381" data-ka="+381 სერბეთი">+381 Serbia</option>
+                <option value="+65" data-ka="+65 სინგაპური">+65 Singapore</option>
+                <option value="+421" data-ka="+421 სლოვაკეთი">+421 Slovakia</option>
+                <option value="+386" data-ka="+386 სლოვენია">+386 Slovenia</option>
+                <option value="+27" data-ka="+27 სამხრეთ აფრიკა">+27 South Africa</option>
+                <option value="+82" data-ka="+82 სამხრეთ კორეა">+82 South Korea</option>
+                <option value="+34" data-ka="+34 ესპანეთი">+34 Spain</option>
+                <option value="+46" data-ka="+46 შვედეთი">+46 Sweden</option>
+                <option value="+41" data-ka="+41 შვეიცარია">+41 Switzerland</option>
+                <option value="+963" data-ka="+963 სირია">+963 Syria</option>
+                <option value="+992" data-ka="+992 ტაჯიკეთი">+992 Tajikistan</option>
+                <option value="+66" data-ka="+66 ტაილანდი">+66 Thailand</option>
+                <option value="+90" data-ka="+90 თურქეთი">+90 Turkey</option>
+                <option value="+993" data-ka="+993 თურქმენეთი">+993 Turkmenistan</option>
+                <option value="+380" data-ka="+380 უკრაინა">+380 Ukraine</option>
+                <option value="+971" data-ka="+971 არაბთა გაერთიანებული საამიროები">+971 United Arab Emirates</option>
+                <option value="+44" data-ka="+44 გაერთიანებული სამეფო">+44 United Kingdom</option>
+                <option value="+1" data-ka="+1 ამერიკის შეერთებული შტატები">+1 United States</option>
+                <option value="+998" data-ka="+998 უზბეკეთი">+998 Uzbekistan</option>
+                <option value="+84" data-ka="+84 ვიეტნამი">+84 Vietnam</option>
+              </select>
+              <input class="inp flex-1 min-w-0" type="tel" name="phone" required placeholder="5xx xx xx xx" data-ka-placeholder="5xx xx xx xx" />
+            </div>
+          </div>
+          <div><label class="lbl req" data-ka="ელ. ფოსტა">Email</label><input class="inp" type="email" name="email" required placeholder="you@example.com" data-ka-placeholder="you@example.com" /></div>
+          <div><label class="lbl" data-ka="საცხოვრებელი ქალაქი">City of residence</label><input class="inp" type="text" name="city" placeholder="..." data-ka-placeholder="ქალაქი" /></div>
+          <div><label class="lbl" data-ka="ქვეყანა">Country</label>
+            <select class="inp" name="country">
+              <option value="" data-ka="აირჩიეთ ქვეყანა">Select country...</option>
+              <option value="Georgia" data-ka="საქართველო">Georgia</option>
+              <option value="Afghanistan" data-ka="ავღანეთი">Afghanistan</option>
+              <option value="Albania" data-ka="ალბანეთი">Albania</option>
+              <option value="Algeria" data-ka="ალჟირი">Algeria</option>
+              <option value="Andorra" data-ka="ანდორა">Andorra</option>
+              <option value="Angola" data-ka="ანგოლა">Angola</option>
+              <option value="Argentina" data-ka="არგენტინა">Argentina</option>
+              <option value="Armenia" data-ka="სომხეთი">Armenia</option>
+              <option value="Australia" data-ka="ავსტრალია">Australia</option>
+              <option value="Austria" data-ka="ავსტრია">Austria</option>
+              <option value="Azerbaijan" data-ka="აზერბაიჯანი">Azerbaijan</option>
+              <option value="Bahrain" data-ka="ბაჰრეინი">Bahrain</option>
+              <option value="Bangladesh" data-ka="ბანგლადეში">Bangladesh</option>
+              <option value="Belarus" data-ka="ბელარუსი">Belarus</option>
+              <option value="Belgium" data-ka="ბელგია">Belgium</option>
+              <option value="Bolivia" data-ka="ბოლივია">Bolivia</option>
+              <option value="Bosnia and Herzegovina" data-ka="ბოსნია და ჰერცეგოვინა">Bosnia and Herzegovina</option>
+              <option value="Brazil" data-ka="ბრაზილია">Brazil</option>
+              <option value="Bulgaria" data-ka="ბულგარეთი">Bulgaria</option>
+              <option value="Cambodia" data-ka="კამბოჯა">Cambodia</option>
+              <option value="Canada" data-ka="კანადა">Canada</option>
+              <option value="Chile" data-ka="ჩილე">Chile</option>
+              <option value="China" data-ka="ჩინეთი">China</option>
+              <option value="Colombia" data-ka="კოლუმბია">Colombia</option>
+              <option value="Croatia" data-ka="ხორვატია">Croatia</option>
+              <option value="Cyprus" data-ka="კვიპროსი">Cyprus</option>
+              <option value="Czechia" data-ka="ჩეხეთი">Czechia</option>
+              <option value="Denmark" data-ka="დანია">Denmark</option>
+              <option value="Ecuador" data-ka="ეკვადორი">Ecuador</option>
+              <option value="Egypt" data-ka="ეგვიპტე">Egypt</option>
+              <option value="Estonia" data-ka="ესტონეთი">Estonia</option>
+              <option value="Ethiopia" data-ka="ეთიოპია">Ethiopia</option>
+              <option value="Finland" data-ka="ფინეთი">Finland</option>
+              <option value="France" data-ka="საფრანგეთი">France</option>
+              <option value="Germany" data-ka="გერმანია">Germany</option>
+              <option value="Greece" data-ka="საბერძნეთი">Greece</option>
+              <option value="Hungary" data-ka="უნგრეთი">Hungary</option>
+              <option value="Iceland" data-ka="ისლანდია">Iceland</option>
+              <option value="India" data-ka="ინდოეთი">India</option>
+              <option value="Indonesia" data-ka="ინდონეზია">Indonesia</option>
+              <option value="Iran" data-ka="ირანი">Iran</option>
+              <option value="Iraq" data-ka="ერაყი">Iraq</option>
+              <option value="Ireland" data-ka="ირლანდია">Ireland</option>
+              <option value="Israel" data-ka="ისრაელი">Israel</option>
+              <option value="Italy" data-ka="იტალია">Italy</option>
+              <option value="Japan" data-ka="იაპონია">Japan</option>
+              <option value="Jordan" data-ka="იორდანია">Jordan</option>
+              <option value="Kazakhstan" data-ka="ყაზახეთი">Kazakhstan</option>
+              <option value="Kuwait" data-ka="ქუვეითი">Kuwait</option>
+              <option value="Kyrgyzstan" data-ka="ყირგიზეთი">Kyrgyzstan</option>
+              <option value="Latvia" data-ka="ლატვია">Latvia</option>
+              <option value="Lebanon" data-ka="ლიბანი">Lebanon</option>
+              <option value="Lithuania" data-ka="ლიტვა">Lithuania</option>
+              <option value="Luxembourg" data-ka="ლუქსემბურგი">Luxembourg</option>
+              <option value="Malaysia" data-ka="მალაიზია">Malaysia</option>
+              <option value="Malta" data-ka="მალტა">Malta</option>
+              <option value="Mexico" data-ka="მექსიკა">Mexico</option>
+              <option value="Moldova" data-ka="მოლდოვა">Moldova</option>
+              <option value="Monaco" data-ka="მონაკო">Monaco</option>
+              <option value="Mongolia" data-ka="მონღოლეთი">Mongolia</option>
+              <option value="Montenegro" data-ka="მონტენეგრო">Montenegro</option>
+              <option value="Morocco" data-ka="მაროკო">Morocco</option>
+              <option value="Netherlands" data-ka="ნიდერლანდები">Netherlands</option>
+              <option value="New Zealand" data-ka="ახალი ზელანდია">New Zealand</option>
+              <option value="North Macedonia" data-ka="ჩრდილოეთ მაკედონია">North Macedonia</option>
+              <option value="Norway" data-ka="ნორვეგია">Norway</option>
+              <option value="Oman" data-ka="ომანი">Oman</option>
+              <option value="Pakistan" data-ka="პაკისტანი">Pakistan</option>
+              <option value="Peru" data-ka="პერუ">Peru</option>
+              <option value="Philippines" data-ka="ფილიპინები">Philippines</option>
+              <option value="Poland" data-ka="პოლონეთი">Poland</option>
+              <option value="Portugal" data-ka="პორტუგალია">Portugal</option>
+              <option value="Qatar" data-ka="კატარი">Qatar</option>
+              <option value="Romania" data-ka="რუმინეთი">Romania</option>
+              <option value="Russia" data-ka="რუსეთი">Russia</option>
+              <option value="Saudi Arabia" data-ka="საუდის არაბეთი">Saudi Arabia</option>
+              <option value="Serbia" data-ka="სერბეთი">Serbia</option>
+              <option value="Singapore" data-ka="სინგაპური">Singapore</option>
+              <option value="Slovakia" data-ka="სლოვაკეთი">Slovakia</option>
+              <option value="Slovenia" data-ka="სლოვენია">Slovenia</option>
+              <option value="South Africa" data-ka="სამხრეთ აფრიკა">South Africa</option>
+              <option value="South Korea" data-ka="სამხრეთ კორეა">South Korea</option>
+              <option value="Spain" data-ka="ესპანეთი">Spain</option>
+              <option value="Sweden" data-ka="შვედეთი">Sweden</option>
+              <option value="Switzerland" data-ka="შვეიცარია">Switzerland</option>
+              <option value="Syria" data-ka="სირია">Syria</option>
+              <option value="Tajikistan" data-ka="ტაჯიკეთი">Tajikistan</option>
+              <option value="Thailand" data-ka="ტაილანდი">Thailand</option>
+              <option value="Turkey" data-ka="თურქეთი">Turkey</option>
+              <option value="Turkmenistan" data-ka="თურქმენეთი">Turkmenistan</option>
+              <option value="Ukraine" data-ka="უკრაინა">Ukraine</option>
+              <option value="United Arab Emirates" data-ka="არაბთა გაერთიანებული საამიროები">United Arab Emirates</option>
+              <option value="United Kingdom" data-ka="გაერთიანებული სამეფო">United Kingdom</option>
+              <option value="United States" data-ka="ამერიკის შეერთებული შტატები">United States</option>
+              <option value="Uzbekistan" data-ka="უზბეკეთი">Uzbekistan</option>
+              <option value="Vietnam" data-ka="ვიეტნამი">Vietnam</option>
+              <option value="Other" data-ka="სხვა">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Certifications -->
+      <div class="sec">
+        <h3 class="sec-title"><span class="sec-num">2</span><span data-ka="სერტიფიკატები">Certifications</span></h3>
+        <div class="chips mt-4">
+          <label class="chip"><input type="checkbox" name="certifications" value="IRATA"><span>IRATA</span></label>
+          <label class="chip"><input type="checkbox" name="certifications" value="SPRAT"><span>SPRAT</span></label>
+          <label class="chip"><input type="checkbox" name="certifications" value="IFMGA"><span>IFMGA</span></label>
+          <label class="chip"><input type="checkbox" name="certifications" value="FISAT"><span>FISAT</span></label>
+          <label class="chip"><input type="checkbox" name="certifications" value="SOFT"><span>SOFT</span></label>
+          <label class="chip"><input type="checkbox" name="certifications" value="GWO"><span>GWO</span></label>
+          <label class="chip"><input type="checkbox" name="certifications" value="__other__" data-other="certOther"><span data-ka="სხვა">Other</span></label>
+        </div>
+        <div id="certOther" class="hidden mt-3"><input class="inp" type="text" name="cert_other" placeholder="..." data-ka-placeholder="მიუთითეთ სხვა სერტიფიკატი" /></div>
+        <div class="mt-6">
+          <label class="lbl req" data-ka="სერტიფიკატის ატვირთვა">Upload certificate</label>
+          <p class="mb-2 text-sm text-mute" data-ka="PDF / JPG / PNG — მაქსიმუმ 10 MB">PDF / JPG / PNG — max 10 MB</p>
+          <input class="inp text-sm text-mute file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-600 file:text-white file:cursor-pointer hover:file:bg-accent/90" type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" required />
+        </div>
+      </div>
+
+      <!-- 3. Rope Access Level -->
+      <div class="sec">
+        <h3 class="sec-title"><span class="sec-num">3</span><span data-ka="Rope Access დონე">Rope Access Level</span></h3>
+        <div class="mt-4 sm:max-w-xs">
+          <select class="inp" name="rope_level">
+            <option value="" data-ka="აირჩიეთ...">Select...</option>
+            <option value="Level 1">Level 1</option>
+            <option value="Level 2">Level 2</option>
+            <option value="Level 3">Level 3</option>
+            <option value="Not specified" data-ka="არ არის მითითებული">Not specified</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 4. Languages -->
+      <div class="sec">
+        <h3 class="sec-title"><span class="sec-num">4</span><span data-ka="ენები">Languages</span></h3>
+        <div class="chips mt-4">
+          <label class="chip"><input type="checkbox" name="languages" value="ქართული"><span data-ka="ქართული">Georgian</span></label>
+          <label class="chip"><input type="checkbox" name="languages" value="ინგლისური"><span data-ka="ინგლისური">English</span></label>
+          <label class="chip"><input type="checkbox" name="languages" value="რუსული"><span data-ka="რუსული">Russian</span></label>
+          <label class="chip"><input type="checkbox" name="languages" value="გერმანული"><span data-ka="გერმანული">German</span></label>
+          <label class="chip"><input type="checkbox" name="languages" value="__other__" data-other="langOther"><span data-ka="სხვა">Other</span></label>
+        </div>
+        <div id="langOther" class="hidden mt-3"><input class="inp" type="text" name="lang_other" placeholder="..." data-ka-placeholder="მიუთითეთ სხვა ენა" /></div>
+      </div>
+
+      <!-- 5. Own PPE -->
+      <div class="sec">
+        <h3 class="sec-title"><span class="sec-num">5</span><span data-ka="საკუთარი აღჭურვილობა (PPE)">Own equipment (PPE)</span></h3>
+        <div class="chips mt-4">
+          <label class="chip"><input type="radio" name="own_ppe" value="სრული PPE"><span data-ka="მაქვს სრული PPE">I have full PPE</span></label>
+          <label class="chip"><input type="radio" name="own_ppe" value="ნაწილობრივი"><span data-ka="მაქვს ნაწილობრივ">I have partial</span></label>
+          <label class="chip"><input type="radio" name="own_ppe" value="არ მაქვს"><span data-ka="არ მაქვს">I don't have</span></label>
+        </div>
+      </div>
+
+      <!-- 6. Notes -->
+      <div class="sec">
+        <h3 class="sec-title"><span class="sec-num">6</span><span data-ka="დამატებითი ინფორმაცია">Additional information</span></h3>
+        <textarea class="inp mt-4" name="notes" rows="4" placeholder="..." data-ka-placeholder="მოკლედ დაწერეთ თქვენ შესახებ (არასავალდებულო)"></textarea>
+      </div>
+
+      <!-- Submit + status -->
+      <div class="sec">
+        <div id="formStatus" class="hidden mb-4 rounded-xl px-4 py-3 text-sm"></div>
+        <button id="submitBtn" type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-600 text-white hover:bg-accent/90 disabled:opacity-60 disabled:cursor-not-allowed transition">
+          <span id="submitLabel" data-ka="განაცხადის გაგზავნა">Submit application</span>
+          <i id="submitIcon" class="fa-solid fa-paper-plane"></i>
+        </button>
+        <p class="mt-3 text-center text-xs text-mute" data-ka="* — სავალდებულო ველები">* — required fields</p>
+      </div>
+    </form>
+
+    <!-- Success screen (hidden until submitted) -->
+    <div id="successScreen" class="hidden reveal in text-center rounded-3xl border border-line bg-panel p-10 shadow-sm">
+      <div class="mx-auto h-16 w-16 rounded-full bg-accent/15 text-accent flex items-center justify-center text-3xl"><i class="fa-solid fa-check"></i></div>
+      <h2 class="mt-5 font-display text-2xl font-700 text-light" data-ka="განაცხადი მიღებულია!">Application received!</h2>
+      <p class="mt-3 text-mute leading-relaxed" data-ka="გმადლობთ. თქვენი მონაცემები დაემატა ORITOKI-ის სპეციალისტების ბაზას. შესაბამისი პროექტის არსებობისას დაგიკავშირდებით.">Thank you. Your details have been added to the ORITOKI specialists database. We'll contact you when a suitable project comes up.</p>
+      <a href="index.html" class="mt-7 inline-flex items-center gap-2 rounded-full bg-light px-6 py-3 text-sm font-600 text-white hover:bg-light/90 transition"><i class="fa-solid fa-arrow-left text-xs"></i><span data-ka="მთავარ გვერდზე">Back to home</span></a>
+    </div>
+  </main>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="border-t border-line bg-surface">
+    <div class="max-w-5xl mx-auto px-5 py-8 text-sm text-mute flex flex-col sm:flex-row items-center justify-between gap-3">
+      <span>© <span id="year"></span> <span data-ka="შპს ორითოკი">Oritoki LTD</span></span>
+      <a href="index.html" class="hover:text-accent transition" data-ka="მთავარი გვერდი">Home page</a>
+    </div>
+  </footer>
+
+  <!-- =========================== SCRIPT =========================== -->
+  <script>
+  (function () {
+    "use strict";
+    var LANG_KEY = "oritoki_lang";
+
+    /* ---------- Bilingual ---------- */
+    // Convert Georgian mkhedruli to MTAVRULI (all-caps) — matches the main site headings.
+    function toMtavruli(s) {
+      var out = "";
+      for (var i = 0; i < s.length; i++) {
+        var c = s.charCodeAt(i);
+        out += (c >= 0x10D0 && c <= 0x10FF) ? String.fromCharCode(c + 0xBC0) : s.charAt(i);
+      }
+      return out;
+    }
+
+    function applyLanguage(lang) {
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-ka]").forEach(function (el) {
+        if (el.dataset.en === undefined) el.dataset.en = el.innerHTML;
+        var ka = el.dataset.ka;
+        if (lang === "ka" && el.closest("h1, h2, h3")) ka = toMtavruli(ka);
+        el.innerHTML = lang === "ka" ? ka : el.dataset.en;
+      });
+      document.querySelectorAll("[data-ka-placeholder]").forEach(function (el) {
+        if (el.dataset.enPlaceholder === undefined) el.dataset.enPlaceholder = el.placeholder;
+        el.placeholder = lang === "ka" ? el.dataset.kaPlaceholder : el.dataset.enPlaceholder;
+      });
+      document.querySelectorAll("[data-lang]").forEach(function (b) { b.classList.toggle("lang-active", b.getAttribute("data-lang") === lang); });
+      try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    }
+    var savedLang = "ka";
+    try { savedLang = localStorage.getItem(LANG_KEY) || "ka"; } catch (e) {}
+    applyLanguage(savedLang);
+    document.querySelectorAll("[data-lang]").forEach(function (b) { b.addEventListener("click", function () { applyLanguage(b.getAttribute("data-lang")); }); });
+
+    /* ---------- Dark / light theme (shared with the main site) ---------- */
+    var THEME_KEY = "oritoki_theme";
+    var themeBtn = document.getElementById("themeToggle");
+    var themeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    function currentTheme() { return document.documentElement.classList.contains("dark") ? "dark" : "light"; }
+    function applyTheme(theme, persist) {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      // The carabiner gate is animated by CSS off html.dark — no icon swap needed here.
+      if (themeBtn) {
+        themeBtn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+        themeBtn.title = theme === "dark" ? "Light mode" : "Dark mode";
+      }
+      if (persist) { try { localStorage.setItem(THEME_KEY, theme); } catch (e) {} }
+    }
+    applyTheme(currentTheme(), false);
+    if (themeBtn) themeBtn.addEventListener("click", function () { applyTheme(currentTheme() === "dark" ? "light" : "dark", true); });
+    themeMq.addEventListener("change", function (e) {
+      var s = null; try { s = localStorage.getItem(THEME_KEY); } catch (err) {}
+      if (!s) applyTheme(e.matches ? "dark" : "light", false);
+    });
+
+    /* ---------- "Other" fields toggle ---------- */
+    document.querySelectorAll("input[data-other]").forEach(function (cb) {
+      var box = document.getElementById(cb.getAttribute("data-other"));
+      cb.addEventListener("change", function () {
+        box.classList.toggle("hidden", !cb.checked);
+        if (!cb.checked) { var t = box.querySelector("input"); if (t) t.value = ""; }
+      });
+    });
+
+    /* ---------- Reveal + footer year ---------- */
+    var y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear();
+    document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("in"); });
+
+    /* ---------- Supabase ---------- */
+    // 1) create a project at https://supabase.com  2) run supabase-setup.sql
+    // 3) paste your values below (Project Settings → API):
+    var SUPABASE_URL = "YOUR_SUPABASE_URL";
+    var SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    var sb = null;
+    if (window.supabase && /^https?:\/\//.test(SUPABASE_URL) && SUPABASE_ANON_KEY.length > 20) {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    var form = document.getElementById("joinForm");
+    var statusBox = document.getElementById("formStatus");
+    var btn = document.getElementById("submitBtn");
+
+    function setStatus(kind, msg) {
+      statusBox.className = "mb-4 rounded-xl px-4 py-3 text-sm border";
+      if (kind === "error")   statusBox.classList.add("bg-red-50", "border-red-200", "text-red-700");
+      else if (kind === "info") statusBox.classList.add("bg-amber-50", "border-amber-200", "text-amber-800");
+      statusBox.textContent = msg;
+      statusBox.classList.remove("hidden");
+    }
+    function checkedValues(name) {
+      return Array.prototype.map.call(form.querySelectorAll('input[name="' + name + '"]:checked'), function (i) { return i.value; });
+    }
+    function withOther(arr, cbValue, otherName) {
+      var out = arr.filter(function (v) { return v !== "__other__"; });
+      if (arr.indexOf("__other__") !== -1) {
+        var t = form.querySelector('[name="' + otherName + '"]');
+        if (t && t.value.trim()) out.push(t.value.trim());
+      }
+      return out;
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      statusBox.classList.add("hidden");
+      if (!form.reportValidity()) return;
+
+      if (checkedValues("certifications").length === 0) { setStatus("error", document.documentElement.lang === "ka" ? "აირჩიეთ მინიმუმ ერთი სერტიფიკატი." : "Please select at least one certification."); return; }
+
+      var certFile = form.querySelector('input[name="certificate"]').files[0];
+      if (certFile && certFile.size > 10 * 1024 * 1024) { setStatus("error", document.documentElement.lang === "ka" ? "სერტიფიკატის ფაილი 10 MB-ს აღემატება." : "The certificate file exceeds 10 MB."); return; }
+
+      var payload = {
+        first_name: form.first_name.value.trim(),
+        last_name:  form.last_name.value.trim(),
+        phone:      (form.phone_code.value + " " + form.phone.value.trim()).trim(),
+        email:      form.email.value.trim(),
+        city:       form.city.value.trim(),
+        country:    form.country.value.trim(),
+        certifications:   withOther(checkedValues("certifications"), "__other__", "cert_other"),
+        rope_level:       form.rope_level.value || null,
+        languages:        withOther(checkedValues("languages"), "__other__", "lang_other"),
+        own_ppe:          (form.querySelector('input[name="own_ppe"]:checked') || {}).value || null,
+        notes:            form.notes.value.trim() || null
+      };
+
+      if (!sb) {
+        setStatus("info", document.documentElement.lang === "ka"
+          ? "ფორმა ჯერ არ არის ბაზასთან დაკავშირებული (Supabase გასაღებები საჭიროა). იხ. supabase-setup.sql."
+          : "The form is not connected to the database yet (Supabase keys required). See supabase-setup.sql.");
+        return;
+      }
+
+      btn.disabled = true;
+      document.getElementById("submitIcon").className = "fa-solid fa-spinner fa-spin";
+
+      (async function () {
+        try {
+          var certificate_url = null;
+          if (certFile) {
+            var safe = certFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+            var path = Date.now() + "_" + Math.random().toString(36).slice(2, 8) + "_" + safe;
+            var up = await sb.storage.from("certificates").upload(path, certFile, { cacheControl: "3600", upsert: false });
+            if (up.error) throw up.error;
+            certificate_url = sb.storage.from("certificates").getPublicUrl(path).data.publicUrl;
+          }
+          payload.certificate_url = certificate_url;
+          var ins = await sb.from("specialist_applications").insert([payload]);
+          if (ins.error) throw ins.error;
+
+          form.classList.add("hidden");
+          document.getElementById("successScreen").classList.remove("hidden");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch (err) {
+          setStatus("error", (document.documentElement.lang === "ka" ? "შეცდომა გაგზავნისას: " : "Error while submitting: ") + (err.message || err));
+          btn.disabled = false;
+          document.getElementById("submitIcon").className = "fa-solid fa-paper-plane";
+        }
+      })();
+    });
+  })();
+  </script>
+</body>
+</html>

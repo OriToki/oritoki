@@ -1,347 +1,1876 @@
 <!DOCTYPE html>
 <!--
   =====================================================================
-   ORITOKI (LTD Oritoki / შპს ორითოკი) — Height Works  (one-page website)
+   ORITOKI (LTD Oritoki / შპს ორითოკი) — Industrial Rope Access
+   One-page landing (dark industrial theme, Tailwind CDN + vanilla JS)
   ---------------------------------------------------------------------
-   HOW TO EDIT TEXT:
-   - English text is written normally inside the tags.
-   - The Georgian version is in the  data-ka="..."  attribute next to it.
-   - To change a wording, edit BOTH (the English text and data-ka).
+   HOW TO EDIT TEXT (bilingual):
+   - The visible text in the tag is the ENGLISH version.
+   - The Georgian version sits in the  data-ka="..."  attribute.
+   - To change a wording, edit BOTH the English text AND its data-ka.
+   - The site loads in Georgian by default; the ENG/ქარ toggle swaps it.
 
    HOW TO ADD GALLERY PHOTOS:
-   - Open  js/images.js  and follow the instructions there.
-
-   Full step-by-step guide is in  README.md
-  =====================================================================
+   - Drop the file into  images/gallery/  and add one line in  js/images.js
+   =====================================================================
 -->
-<html lang="en">
+<html lang="ka">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-ka="ორითოკი — მაღალ სიმაღლეზე სამუშაოები">Oritoki — Height Works &amp; Industrial Climbing</title>
-  <meta name="description" content="Professional works at height: facade cleaning, painting, waterproofing, installation and rope-access services. Certified and insured." />
+  <title data-ka="ორითოკი — სამრეწველო ალპინიზმი და სასიმაღლო სამუშაოები">Oritoki — Industrial Rope Access &amp; Works at Height</title>
+  <meta name="description" content="Oritoki — high-rise maintenance and repair without scaffolding. IRATA rope-access standards: facade painting, window cleaning, inspection and B2B services." />
 
-  <!-- Google Fonts (free) -->
+  <!-- Google Analytics — set your Measurement ID in js/analytics.js -->
+  <script src="js/analytics.js"></script>
+
+  <!-- Google Search Console: in GSC pick the "HTML tag" verification method and
+       paste ONLY the code (the content value it gives you) between the quotes. -->
+  <meta name="google-site-verification" content="" />
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+  <!-- Noto Sans Georgian kept only as a fallback for Mtavruli (caps) glyphs the local font may lack -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-  <!-- Font Awesome icons (free CDN) -->
+  <!-- Font Awesome (icons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-  <!-- Swiper carousel (free CDN) -->
+  <!-- Swiper (gallery carousel) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-  <!-- Our styles -->
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="icon" href="images/logo.svg" type="image/svg+xml" />
+  <!-- Tailwind (no build step — Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            night:   "rgb(var(--c-night) / <alpha-value>)",
+            panel:   "rgb(var(--c-panel) / <alpha-value>)",
+            deep:    "rgb(var(--c-deep) / <alpha-value>)",
+            surface: "rgb(var(--c-surface) / <alpha-value>)",
+            line:    "rgb(var(--c-line) / <alpha-value>)",
+            light:   "rgb(var(--c-light) / <alpha-value>)",
+            mute:    "rgb(var(--c-mute) / <alpha-value>)",
+            heading: "rgb(var(--c-heading) / <alpha-value>)",
+            accent:  "#f97316",
+            info:    "#ca8a04",
+          },
+          fontFamily: {
+            display: ['"Helvetica Neue"', '"Noto Sans Georgian"', 'Arial', 'sans-serif'],
+            body:    ['"Helvetica Neue"', '"Noto Sans Georgian"', 'Arial', 'sans-serif'],
+          },
+          fontWeight: {
+            500: "500",
+            600: "600",
+            700: "700",
+            800: "800",
+            900: "900",
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Apply the saved / system theme before first paint (avoids a light flash) -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("oritoki_theme");
+        if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        if (t === "dark") document.documentElement.classList.add("dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="icon" type="image/png" href="images/favicon.png?v=5" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png?v=5" />
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png?v=5" />
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png?v=5" />
+
+  <style>
+    /* Local Helvetica Neue (has Georgian glyphs) — self-hosted from /fonts */
+    @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Roman.otf')  format('opentype'); font-weight: 400;     font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Medium.otf') format('opentype'); font-weight: 500 600; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Bold.otf')   format('opentype'); font-weight: 700;     font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Black.otf')  format('opentype'); font-weight: 800 900; font-style: normal; font-display: swap; }
+
+    /* Theme tokens — light by default, overridden under html.dark. Channel format
+       (R G B) so Tailwind's /opacity modifiers keep working on these colours. */
+    :root {
+      --c-night: 255 255 255; --c-panel: 245 245 242; --c-deep: 232 232 226;
+      --c-surface: 255 255 255; --c-line: 229 231 235; --c-light: 20 20 42; --c-mute: 82 82 91;
+      --c-heading: 20 20 42;   /* section headings — near-black ink (light mode) */
+      color-scheme: light;
+    }
+    html.dark {
+      --c-night: 30 31 32; --c-panel: 25 26 27; --c-deep: 48 49 51;
+      --c-surface: 18 19 20; --c-line: 42 43 44; --c-light: 236 237 242; --c-mute: 158 158 160;
+      --c-heading: 255 255 255;   /* section headings — pure white on dark */
+      color-scheme: dark;
+    }
+
+    html { scroll-behavior: smooth; background-color: rgb(var(--c-surface)); }
+    body { font-family: 'Helvetica Neue', 'Noto Sans Georgian', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    section[id] { scroll-margin-top: 6rem; }
+
+    /* Logo stays a fixed size — only the header background/shadow react to scroll */
+    #header { transition: background-color .3s ease, box-shadow .3s ease; }
+    /* Sized/positioned so the emblem's ground line (the long horizontal band) sits
+       just above the header's bottom edge, and only the rope tips spill below.
+       (art top=y151, ground=y719 of the 1024px source.) */
+    /* Rope-access technician as the custom scrollbar thumb — he rappels down as you scroll
+       and climbs back up, with subtle cinematic easing / tilt / sway (JS-driven). Tunables: */
+    :root {
+      /* This one width drives the logo, the technician and the rope spacing together.
+         The two rope stems are 0.092 of the width apart in the logo artwork, so the strip
+         must be the same width for them to stay parallel down to the climber — shrinking
+         the technician here would pull the ropes into a V under the logo. At 97px the
+         "or / tok" letters read at ~13px, which is the smallest that stays legible. */
+      --worker-width: 97px;         /* technician width (desktop); logo + ropes scale with it */
+      --climber-left: 52px;         /* distance from the LEFT viewport edge — moves the logo,
+                                       the technician and both ropes together */
+      --climber-bottom-gap: 10px;   /* space kept at the very bottom */
+    }
+    /* Brand lockup — pinned to the SAME left/width as #ropeClimber so the two rope stems
+       in the artwork continue seamlessly into the SVG ropes drawn below it. */
+    #brandRope { position: absolute; left: var(--climber-left); top: 5px; width: var(--worker-width); z-index: 2; display: block; }
+    #brandRope img { display: block; width: 100%; height: auto; }
+    /* The artwork is black line-art: invert it on dark backgrounds so it stays visible. */
+    html.dark #brandRope img, #header:not(.scrolled) #brandRope img { filter: invert(1); }
+    /* z-40 keeps the ropes BEHIND the z-50 header, so they look anchored under the bar. */
+    #ropeClimber { position: fixed; left: var(--climber-left); top: 0; height: 100vh; width: var(--worker-width); z-index: 40; pointer-events: none; transition: opacity .25s ease; }
+    #ropeBack, #ropeFront { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    #ropeBack  { z-index: 1; }   /* rope parts that pass behind the body */
+    #ropeFront { z-index: 3; }   /* the brake strand, in front of the lap */
+    /* Braided-rope look matching the reference: light core + dark outline. Solid strokes give one
+       constant colour (no shimmer, now that horizontal sway is disabled). */
+    /* Colours and widths are SAMPLED from the logo's rope at the size it actually renders.
+       The logo rope is 51px wide in the artwork — 10px black edge, a 31px white core filled
+       with a black diamond weave, 10px black edge. Scaled to ~3px on the page that resolves
+       to exactly three pixels: rgb(101,100,101) / rgb(195,195,195) / rgb(94,94,94). Using
+       near-black + near-white here instead is what made this rope read as a bright bar next
+       to the logo's. Widths come from JS (--rope-w) so the match holds at any strip size. */
+    .rope-out { fill: none; stroke: #616161; stroke-width: var(--rope-w, 3.06); stroke-linecap: round; stroke-linejoin: round; }
+    .rope-in  { fill: none; stroke: url(#ropeWeave) #c3c3c3; stroke-width: var(--rope-core, 2.75); stroke-linecap: round; stroke-linejoin: round; }
+    /* The brake strand lives in the second SVG (#ropeFront), which can't reach #ropeBack's
+       pattern — point it at its own local copy so it keeps the dark weave, like the tail. */
+    #ropeFront .rope-in { stroke: url(#ropeWeaveF) #c3c3c3; }
+    #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+    body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
+    body.climber-grabbing #climber { cursor: grabbing; }
+    /* The native scrollbar stays on the right (scroll box, thumb, arrows). The technician is a
+       decorative rappeller on the LEFT that still tracks scroll progress. */
+    /* Hide him while the mobile menu is open (otherwise he shows over the drawer). */
+    body.menu-open #ropeClimber { opacity: 0; visibility: hidden; }
+    @media (prefers-reduced-motion: reduce) { #climber { transition: none !important; } }
+    /* Mobile: shrink the emblem so it fits the 80px header and leaves room for the
+       wordmark + language toggle (otherwise they overlap on narrow screens). */
+    @media (max-width: 640px) {
+      #header { height: 60px; }          /* shorter header bar on phones */
+      /* Sized so the emblem's ground line sits just above the 60px header's bottom
+         edge; only the rope tips spill below.
+         (uses the side-cropped emblem-narrow.png; art top=y151, ground=y719/1024.) */
+      #ropeClimber { left: 2px; width: 72px; }
+      #ropeClimber #climber { width: 72px; }
+      #brandRope { left: 2px; width: 72px; top: 3px; }
+      /* Keep the wordmark centred on the logo's horizontal line. */
+      #brandText { transform: none; }
+      /* The enlarged logo eats width, so tighten the toggle/burger and the
+         sub-line a touch to keep everything on one row next to the wordmark. */
+      #langToggle button { padding: 4px 8px; }
+      #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
+      #brandSub { font-size: 10px; letter-spacing: .06em; white-space: nowrap; }
+    }
+    /* Very narrow phones: drop the sub-line so the wordmark never collides with the toggle. */
+    @media (max-width: 372px) {
+      #brandSub { display: none; }
+    }
+    #header.scrolled { background-color: rgba(244,243,236,.96); border-bottom: 1px solid rgba(0,0,0,.06); box-shadow: 0 6px 22px -6px rgba(0,0,0,.12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+
+    /* HERO STATE (not scrolled): the header floats transparent over the hero photo, so the
+       brand, controls and nav all flip to white. Once scrolled the header gains its solid
+       bar (beige in light mode / dark in dark mode) and these controls revert to the token
+       defaults, which are dark-on-beige and light-on-dark respectively. */
+    #header:not(.scrolled) #brandText > span:first-child { color: #ffffff; }
+    #header:not(.scrolled) #brandSub { color: #f97316; }
+    #header:not(.scrolled) #langToggle { border-color: rgba(255,255,255,.30); background: rgba(255,255,255,.10); }
+    #header:not(.scrolled) #langToggle button { color: rgba(255,255,255,.9); }
+    #header:not(.scrolled) #burger { color: #ffffff; }
+    #logoEmblem { transition: filter .25s ease; }
+    /* White logo over the hero and everywhere in dark mode; its normal dark self on the
+       light beige bar once scrolled. */
+    #header:not(.scrolled) #logoEmblem, html.dark #logoEmblem { filter: brightness(0) invert(1); }
+    @media (min-width: 1280px) {
+      /* Nav is clean text (no default pill); hover shows a faint neutral pill. The current
+         section is marked by orange text ONLY — no tinted pill behind it, in any bar state.
+         Colours otherwise follow whatever bar sits beneath the nav. */
+      #header #nav a { background: transparent; transition: background .18s ease, color .18s ease; }
+      /* over the hero photo — white */
+      #header:not(.scrolled) #nav a { color: rgba(255,255,255,.85); }
+      #header:not(.scrolled) #nav a:hover { background: rgba(255,255,255,.12); color: #ffffff; }
+      #header:not(.scrolled) #nav a.active { background: transparent; color: #f97316; }
+      /* scrolled, light beige bar — dark text */
+      #header.scrolled #nav a { color: #3b3b45; }
+      #header.scrolled #nav a:hover { background: rgba(0,0,0,.06); color: #14142a; }
+      #header.scrolled #nav a.active { background: transparent; color: #f97316; }
+      /* scrolled, dark bar — light text */
+      html.dark #header.scrolled #nav a { color: rgba(255,255,255,.82); }
+      html.dark #header.scrolled #nav a:hover { background: rgba(255,255,255,.10); color: #ffffff; }
+      html.dark #header.scrolled #nav a.active { background: transparent; color: #f97316; }
+      /* Catch-all: the drawer-style pill rules further down (#nav a.active) also carry a
+         box-shadow, which the background overrides above do not clear — on the desktop bar
+         it reads as a faint halo. Kill both so the active item is pure orange text. */
+      #header #nav a.active { background: transparent; box-shadow: none; }
+    }
+
+    /* Scroll-reveal animation */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* Hero headline: the English wording is shorter than the Georgian, so scale it
+       up a step for more impact. Georgian keeps the base (Tailwind) sizes so the
+       longer Mtavruli lines still fit the hero column. */
+    html[lang="en"] #heroTitle { font-size: 2rem; line-height: 1.05; }                                  /* base */
+    @media (min-width: 640px)  { html[lang="en"] #heroTitle { font-size: 3rem; } }                      /* sm  */
+    @media (min-width: 1024px) { html[lang="en"] #heroTitle { font-size: 3.75rem; } }                   /* lg  */
+    @media (min-width: 1280px) { html[lang="en"] #heroTitle { font-size: 4.5rem; } }                    /* xl  */
+
+    /* Mobile (< sm): enlarge the hero headline further for both languages. clamp()
+       scales it with the viewport, so it grows on big phones but still fits small ones. */
+    @media (max-width: 639px) {
+      #heroTitle, html[lang="en"] #heroTitle { font-size: clamp(30px, 9vw, 38px); line-height: 1.08; }
+      /* Lower the hero block slightly below centre so the rope-access workers in the
+         upper part of the photo stay visible, while the content still clears the
+         About section that overlaps the hero's bottom. */
+      #heroContent { transform: translateY(3vh); }
+    }
+
+    /* Mobile only (< lg, where About is single-column): the heading (eyebrow + title)
+       sits on a beige band with dark text, and only the body paragraphs get the
+       hero-style photo treatment — the same about.jpg as a full-bleed background
+       with a dark scrim and white text. Desktop keeps the two-column card layout. */
+    @media (max-width: 1023px) {
+      #about {
+        background: #f5f5f2;               /* beige heading zone — same tone as the Services section */
+        border-color: transparent;
+        padding-top: 2rem;                 /* trimmed so the heading sits neatly in the band */
+        padding-bottom: 0;                 /* let the photo band reach the section's bottom */
+        overflow: hidden;                  /* clip the full-bleed band's negative margins */
+        position: relative;
+        z-index: 10;                       /* paint the beige band above the hero photo */
+        margin-top: -20vh;                 /* pull the heading up into the hero's empty bottom */
+        box-shadow: 0 -12px 28px rgba(0,0,0,.18);  /* soft edge where it meets the photo */
+      }
+      #aboutPhoto { display: none; }       /* photo now lives in the paragraph band */
+      #aboutBody {
+        position: relative;
+        margin: 1.5rem -1.25rem 0;         /* full-bleed past the wrapper's px-5 */
+        padding: 1.5rem 1.25rem 4rem;      /* breathing room, incl. the removed bottom pad */
+        background: url('images/about.jpg?v=3') center / cover no-repeat;
+      }
+      #aboutBody::before {
+        content: "";
+        position: absolute; inset: 0; z-index: 0;
+        background: linear-gradient(to bottom right, rgba(0,0,0,.82), rgba(0,0,0,.55) 60%, rgba(0,0,0,.32));
+      }
+      #aboutBody > * { position: relative; z-index: 1; }
+      #aboutBody .text-mute { color: rgba(255,255,255,.92); }
+    }
+
+    /* Mobile (< sm): centre the stacked footer for a cleaner, more balanced look.
+       (The orange column labels are hidden on mobile via max-sm:hidden.) */
+    @media (max-width: 639px) {
+      .footer-grid { text-align: center; }
+      .footer-grid > div { display: flex; flex-direction: column; align-items: center; }
+      .footer-grid > div > .flex { justify-content: center; }  /* brand, socials, standards rows */
+    }
+
+    /* Mobile (< lg): highlight the two quick-contact cards (Phone + WhatsApp) with a
+       subtle accent tint so the tap-to-contact actions stand out. Desktop unchanged. */
+    @media (max-width: 1023px) {
+      #contact .quick-contact { border-color: rgba(249,115,22,.40); background-color: rgba(249,115,22,.06); }
+    }
+
+    /* Language segmented toggle */
+    .lang-active { background: #f97316; color: #ffffff; }
+
+    /* Navigation (mobile drawer / desktop row) */
+    #nav { display: flex; flex: none; justify-content: center; align-items: center; gap: .12rem; }
+    #nav a { padding: 8px 14px; border-radius: 999px; background: #f1f1ec; transition: background .2s, color .2s; }
+    #nav a:hover { background: #e6e6e0; }
+    #nav a.active { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,.10); }
+    #nav a.active { color: #f97316; }
+    /* Keep each nav item a fixed width (sized to its Georgian label) so the words
+       stay in the same place when the language is switched to English. The icon +
+       word are centred as one group inside that width, so they stay close together. */
+    .nav-label { display: inline-grid; justify-items: center; }
+    .nav-label > * { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: .35rem; }
+    .nav-ghost { visibility: hidden; pointer-events: none; }
+    @media (max-width: 1279px) {
+      #nav {
+        position: fixed; inset: 64px 0 auto 0;
+        flex-direction: column; align-items: stretch; gap: .25rem;
+        background: #ffffff; border: none; border-bottom: 1px solid #e5e7eb; border-radius: 0 0 18px 18px;
+        padding: 1rem 1.25rem 1.5rem;
+        box-shadow: 0 22px 32px -20px rgba(20,20,42,.35);
+        /* Kept in the DOM (not display:none) so it can animate. Hidden via opacity +
+           a slide/scale from the top; the whole panel "drops down" when opened. */
+        display: flex;
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transform: translateY(var(--dd-lift)) scaleY(.96); transform-origin: top center;
+        transition: var(--dd-fade), var(--dd-slide), visibility 0s linear .34s;
+      }
+      #nav.open {
+        opacity: 1; visibility: visible; pointer-events: auto;
+        transform: translateY(0) scaleY(1);
+        transition: var(--dd-fade), var(--dd-slide), visibility 0s;
+      }
+      /* The links have no motion of their own — they simply come in with the panel as it
+         unfolds, which is how the desktop dropdown behaves. */
+      #nav a {
+        padding: .65rem 0; border-radius: 0; background: transparent; box-shadow: none;
+        border-bottom: 1px solid rgba(0,0,0,.08);
+      }
+      /* Left-align every label in the drawer. On desktop each label is centred inside
+         a fixed Georgian-width slot; in the vertical list that makes short English
+         labels (About, Join Us) sit shifted to the right — start-align fixes it. */
+      #nav .nav-link { justify-content: flex-start; }
+      #nav .nav-label { justify-items: start; }
+    }
+    /* Phones: header is only 60px tall, so the drawer must open right below it
+       (this rule comes after the ≤1023px block so it wins over inset: 80px). */
+    @media (max-width: 640px) {
+      #nav { top: 60px; }
+    }
+
+    /* Language + theme controls relocated into the mobile drawer (JS moves the nodes).
+       Hidden on desktop, where they live in the header bar instead. */
+    .nav-actions { display: none; }
+    @media (max-width: 1279px) {
+      #nav .nav-actions {
+        display: flex; align-items: center; gap: .75rem;
+        padding-bottom: .85rem; margin-bottom: .1rem;
+        border-bottom: 1px solid rgba(0,0,0,.08);   /* divider between the controls and the links below */
+        /* sits at the TOP of the drawer, above "Home" */
+      }
+      html.dark #nav .nav-actions { border-bottom-color: rgba(255,255,255,.09); }
+      /* In the drawer, always use its own (solid-bg) colours — never the
+         transparent-hero white-on-image treatment the header applies at the top. */
+      #header #nav .nav-actions #langToggle { border-color: rgb(var(--c-line)); }
+      #header #nav .nav-actions #langToggle button { color: rgb(var(--c-light)); }
+      #header #nav .nav-actions #langToggle button.lang-active { background: #f97316; color: #fff; }
+      /* The drawer keeps the per-theme toggle colour: orange in light, white on its own
+         dark panel (the black hero treatment would disappear there). */
+      #header #nav .nav-actions #themeToggle { color: var(--cb-gold); }
+      html.dark #header #nav .nav-actions #themeToggle { color: #ffffff; }
+    }
+
+    /* ============== SHARED "DROP DOWN" MOTION ==============
+       The desktop "What We Do" dropdown and the mobile burger drawer open with exactly the
+       same effect: the panel unfolds from its top edge while its rows cascade in one by one.
+       Both read these tokens, so the two can never drift apart — change the motion here and
+       it changes in both places. */
+    :root {
+      --dd-fade:  opacity .28s ease;                          /* panel fade */
+      --dd-slide: transform .34s cubic-bezier(.2,.85,.25,1);  /* panel unfold */
+      --dd-lift:  -16px;   /* how far above its resting place the panel starts */
+    }
+    /* "What We Do" hover dropdown — on desktop, hovering the button reveals the
+       service names (non-clickable); the button itself still links to #services.
+       Below xl (mobile drawer) the dropdown is hidden and it's a normal link. */
+    .nav-dd { position: relative; display: inline-flex; }
+    .nav-dd-caret { transition: transform .25s ease; }
+    .nav-dd:hover .nav-dd-caret { transform: rotate(180deg); }
+    /* Dropdown items are links — override the aggressive #nav a pill/colour styling. */
+    #nav .nav-dd-item { display: flex !important; align-items: center; gap: .55rem; padding: .5rem .7rem !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important; border: 0 !important; font-size: 14px; font-weight: 500; text-transform: none; letter-spacing: normal; color: #14142a !important; white-space: nowrap; transition: background .06s linear, color .06s linear; }
+    #nav .nav-dd-item:hover { background: #f5f5f2 !important; color: #f97316 !important; }
+    .nav-dd-ic { flex: none; display: inline-flex; color: #f97316; }
+    .nav-dd-ic svg { width: 18px; height: 18px; }
+    /* Offset for the fixed header when a dropdown link jumps to a specific service card. */
+    #services article { scroll-margin-top: 6rem; }
+    /* Flash-highlight the target service card (added via JS on dropdown click). */
+    @keyframes svcFlash {
+      0%   { border-color: #f97316; background-color: #fff7ed; box-shadow: 0 0 0 0 rgba(249,115,22,.55), 0 20px 42px -22px rgba(249,115,22,.55); }
+      55%  { border-color: #f97316; background-color: #fff7ed; box-shadow: 0 0 0 5px rgba(249,115,22,.38), 0 20px 42px -22px rgba(249,115,22,.4); }
+      100% { border-color: #e5e7eb; background-color: #ffffff; box-shadow: 0 0 0 16px rgba(249,115,22,0), 0 20px 42px -22px rgba(249,115,22,0); }
+    }
+    #services article.svc-flash { animation: svcFlash 2.4s ease-out; }
+    /* Flash-highlight the "Join Us" strip in Contact when its nav link is clicked. */
+    #technicians { scroll-margin-top: 6rem; }
+    @keyframes joinFlash {
+      0%   { border-color: #f97316; box-shadow: 0 0 0 0 rgba(249,115,22,.5); }
+      15%  { border-color: #f97316; box-shadow: 0 0 0 5px rgba(249,115,22,.4); }
+      70%  { border-color: #f97316; box-shadow: 0 0 0 12px rgba(249,115,22,.12); }
+      100% { border-color: rgba(249,115,22,.4); box-shadow: 0 0 0 18px rgba(249,115,22,0); }
+    }
+    #technicians.join-flash { animation: joinFlash 2.4s ease-out; }
+    @media (min-width: 1280px) {
+      .nav-dd-menu {
+        position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+        padding-top: 14px;
+        opacity: 0; visibility: hidden; pointer-events: none; z-index: 60;
+        transition: var(--dd-fade), visibility 0s linear .34s;
+      }
+      .nav-dd:hover .nav-dd-menu, .nav-dd:focus-within .nav-dd-menu {
+        opacity: 1; visibility: visible; pointer-events: auto;
+        transition: var(--dd-fade), visibility 0s;
+      }
+      /* Card "unfolds" downward from the top — identical motion to the mobile drawer. */
+      .nav-dd-inner {
+        background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px;
+        box-shadow: 0 22px 44px -22px rgba(20,20,42,.4);
+        padding: .6rem;
+        display: flex; flex-direction: column; gap: 2px;
+        transform: translateY(var(--dd-lift)) scaleY(.96); transform-origin: top center;
+        transition: var(--dd-slide);
+      }
+      .nav-dd:hover .nav-dd-inner, .nav-dd:focus-within .nav-dd-inner { transform: translateY(0) scaleY(1); }
+    }
+    @media (max-width: 1279px) {
+      .nav-dd-menu { display: none; }
+      .nav-dd-caret { display: none; }   /* no dropdown in the drawer → no caret hint */
+      #nav .nav-dd { display: block; }
+      #nav .nav-dd > a { display: flex; width: 100%; }
+    }
+
+    /* Gallery cards (slides built by JS) */
+    .gallery-swiper { --swiper-theme-color: #f97316; padding-bottom: 3rem; }
+    .gallery-card { position: relative; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: #ffffff; height: 100%; }
+    .gallery-card img { width: 100%; height: 260px; object-fit: cover; display: block; }
+    .slide-caption { position: absolute; left: 0; right: 0; bottom: 0; padding: .8rem 1rem; font-weight: 600; color: #f5f5f0; background: linear-gradient(transparent, rgba(20,20,42,.92)); }
+    .swiper-button-next, .swiper-button-prev { color: #f97316; }
+
+    /* Keep the white hero text legible over bright parts of the photo */
+    .hero-shadow { text-shadow: 0 2px 18px rgba(0,0,0,.7), 0 1px 4px rgba(0,0,0,.6); }
+
+    /* ---------- Service detail modal (iOS-style zoom-from-card) ---------- */
+    #services article { cursor: pointer; position: relative; }
+    /* Compact: cards show only the icon + title; the sub-services live in the modal. */
+    #services article > ul { display: none; }
+    #services article > h3 { margin-bottom: .1rem; }
+    #services article::after { content: "\f067"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: .68rem; position: absolute; top: 1rem; right: 1rem; height: 1.7rem; width: 1.7rem; border-radius: 9999px; background: #f5f5f2; color: #9ca3af; display: flex; align-items: center; justify-content: center; transition: background .2s ease, color .2s ease; }
+    #services article:hover::after { background: #f97316; color: #fff; }
+    /* Auto card numbers (01, 02, …) top-left; stroke-icon sizing. Hover-lift is in the markup. */
+    #svcGrid { counter-reset: svc; }
+    #services article { counter-increment: svc; }
+    #services article::before {
+      content: counter(svc, decimal-leading-zero);
+      position: absolute; top: 1.15rem; left: 1.4rem;
+      font-size: 12px; font-weight: 700; letter-spacing: .5px; color: #9ca3af;
+    }
+    html.dark #services article::before { color: #8a8a90; }
+    #services .svc-ico { color: #f97316; }
+    #services .svc-ico svg { width: 2rem; height: 2rem; }
+    .svc-ic svg { width: 2.4rem; height: 2.4rem; }
+    #services article:hover { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
+    #svcModal { position: fixed; inset: 0; z-index: 120; display: none; }
+    #svcModal.open { display: block; }
+    #svcBackdrop { position: absolute; inset: 0; background: rgba(11,12,13,.55); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); opacity: 0; transition: opacity .42s ease; }
+    #svcModal.show #svcBackdrop { opacity: 1; }
+    #svcModalCard { position: fixed; box-sizing: border-box; background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 40px 90px -30px rgba(20,20,42,.55); overflow: hidden; will-change: top, left, width, height; }
+    /* Photo background — applied only to the "Glass Facades" modal (svc-glass). */
+    #svcModalCard.svc-modal-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.18); }
+    #svcModalCard.svc-modal-photo .svc-detail h3 { color: #ffffff; }
+    #svcModalCard.svc-modal-photo .svc-detail li { color: rgba(255,255,255,.92); }
+    #svcModalCard.svc-modal-photo .svc-close { background: rgba(255,255,255,.18); color: #fff; }
+    #svcModalCard.svc-modal-photo .svc-close:hover { background: #f97316; color: #fff; }
+    .svc-close { position: absolute; top: 1rem; right: 1rem; height: 2.25rem; width: 2.25rem; border-radius: 9999px; background: #f5f5f2; color: #52525b; display: inline-flex; align-items: center; justify-content: center; z-index: 2; transition: background .2s, color .2s; }
+    .svc-close:hover { background: #f97316; color: #fff; }
+    .svc-detail { padding: 2.6rem; opacity: 0; transition: opacity .25s ease; }
+    #svcModal.show .svc-detail { opacity: 1; transition: opacity .35s ease .14s; }
+    .svc-ic { height: 4.25rem; width: 4.25rem; border-radius: 1.2rem; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; background: #f5f5f2; color: #f97316; border: 1px solid #e5e7eb; overflow: hidden; }
+    .svc-ic img { height: 100%; width: 100%; object-fit: contain; }
+    .svc-detail h3 { margin-top: 0; font-family: 'Helvetica Neue','Noto Sans Georgian',Arial,sans-serif; font-weight: 700; font-size: 2.5rem; line-height: 1.1; color: #14142a; text-transform: uppercase; }
+    .svc-detail ul { margin-top: 1.6rem; display: grid; gap: 1.7rem; }
+    @media (min-width: 540px) { .svc-detail ul.two-col { grid-template-columns: 1fr 1fr; gap: 1.7rem 2.4rem; } }
+    .svc-detail li { display: flex; align-items: flex-start; gap: .9rem; color: #3f3f46; font-size: 1.45rem; line-height: 1.45; }
+    .svc-detail li > span:first-child { margin-top: .6rem !important; height: .5rem !important; width: .5rem !important; }
+
+    /* ===================== CARABINER THEME TOGGLE ===================== */
+    /* The gate pivots on its rivet (16.31, 16 in the icon's viewBox). Closed sits at 3.4deg
+       because the frame's gate side leans by that much, so "shut" means flush with the
+       nose, not vertical. Closing is a short snap that must never overshoot past the
+       closed angle — a real gate is stopped by the nose. Opening swings wide and settles. */
+    .cb-icon { display: block; overflow: visible; }
+    /* Rays burst outwards as the site goes dark, on the same curve as the gate swing. */
+    .cb-rays {
+      opacity: 0; transform: scale(.55);
+      transform-box: view-box; transform-origin: 11.97px 12px;
+      transition: opacity .22s ease, transform .3s cubic-bezier(.3,.85,.35,1);
+    }
+    html.dark .cb-rays {
+      opacity: 1; transform: scale(1);
+      transition: opacity .3s ease .08s, transform .46s cubic-bezier(.34,1.28,.5,1) .06s;
+    }
+    @media (prefers-reduced-motion: reduce) { .cb-rays { transition: none; } }
+    .cb-icon .cb-gate {
+      transform: rotate(3.4deg);
+      transform-box: view-box;
+      transform-origin: 16.31px 16px;
+      transition: transform .3s cubic-bezier(.3,.85,.35,1);
+    }
+    html.dark .cb-icon .cb-gate {
+      transform: rotate(-58deg);
+      transition: transform .46s cubic-bezier(.34,1.28,.5,1);
+    }
+    @media (prefers-reduced-motion: reduce) { .cb-icon .cb-gate { transition: none; } }
+
+    /* ---- Toggle colour: fixed per theme, never recoloured on hover ----
+       Light mode is always the brand orange — over the hero photo, on the scrolled beige
+       bar and in the mobile drawer alike. Dark mode is black over the hero photo, but
+       flips to white once the header becomes a solid dark bar (see the rule further down),
+       where black would be invisible. Hover only lifts the backdrop, never the colour. */
+    /* A deliberately more golden orange than the brand accent (--accent #f97316), so the
+       toggle reads as its own control rather than as another accent element. */
+    :root { --cb-gold: #f59e0b; }
+    /* The carabiner stands on its own — no ring, no plate behind it. Hover just dims it.
+       One colour per theme, the same over the hero photo and on the scrolled bar.
+       The search icon is treated as its pair, so they always match. */
+    #themeToggle, #searchBtn { color: var(--cb-gold); }
+    html.dark #themeToggle, html.dark #searchBtn { color: #ffffff; }
+    #themeToggle:hover, #searchBtn:hover { opacity: .7; }
+
+    /* ===================== SERVICE SEARCH (overlay panel) =====================
+       A command-palette style overlay rather than a field in the header: the bar is
+       already full at 1280px, and one overlay serves desktop and mobile alike. It
+       borrows the dropdown's motion tokens so it feels like part of the same system. */
+    #svcSearch { position: fixed; inset: 0; z-index: 130; display: none; }
+    #svcSearch.open { display: block; }
+    #ssBackdrop { position: absolute; inset: 0; background: rgba(11,12,13,.55); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); opacity: 0; transition: var(--dd-fade); }
+    #svcSearch.show #ssBackdrop { opacity: 1; }
+    #ssPanel {
+      position: relative; margin: 11vh auto 0; width: min(640px, calc(100% - 2rem));
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px;
+      box-shadow: 0 40px 90px -30px rgba(20,20,42,.55); overflow: hidden;
+      opacity: 0; transform: translateY(var(--dd-lift)) scaleY(.96); transform-origin: top center;
+      transition: var(--dd-fade), var(--dd-slide);
+    }
+    #svcSearch.show #ssPanel { opacity: 1; transform: translateY(0) scaleY(1); }
+    #ssField { display: flex; align-items: center; gap: .7rem; padding: .95rem 1.05rem; border-bottom: 1px solid #eef1f5; }
+    #ssField > svg { flex: none; color: #f97316; }
+    #ssInput { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-family: inherit; font-size: 1.05rem; color: #14142a; }
+    #ssInput::placeholder { color: #9ca3af; }
+    #ssHint { flex: none; font-size: 11px; font-weight: 600; letter-spacing: .04em; color: #9ca3af; border: 1px solid #e5e7eb; border-radius: 6px; padding: .15rem .4rem; }
+    #ssResults { max-height: min(58vh, 420px); overflow-y: auto; padding: .35rem; }
+    #ssResults:empty { display: none; }
+    .ss-item { display: block; padding: .6rem .75rem; border-radius: 10px; text-decoration: none; transition: background .06s linear, color .06s linear; }
+    .ss-item .ss-t { display: block; font-weight: 600; font-size: .95rem; color: #14142a; }
+    .ss-item .ss-b { display: block; margin-top: .1rem; font-size: .82rem; color: #52525b; }
+    .ss-item:hover, .ss-item.sel { background: #f5f5f2; }
+    .ss-item:hover .ss-t, .ss-item.sel .ss-t { color: #f97316; }
+    .ss-empty { padding: 1.1rem .9rem; text-align: center; color: #6b7280; font-size: .9rem; }
+    @media (prefers-reduced-motion: reduce) { #ssPanel, #ssBackdrop { transition: none; } }
+    html.dark #ssPanel { background: #202123; border-color: #2a2b2c; box-shadow: 0 40px 90px -30px rgba(0,0,0,.8); }
+    html.dark #ssField { border-bottom-color: #2a2b2c; }
+    html.dark #ssInput { color: #ececf2; }
+    html.dark #ssHint { border-color: #2a2b2c; color: #6f6f78; }
+    html.dark .ss-item .ss-t { color: #ececf2; }
+    html.dark .ss-item .ss-b { color: #a0a0a8; }
+    html.dark .ss-item:hover, html.dark .ss-item.sel { background: #303133; }
+    html.dark .ss-item:hover .ss-t, html.dark .ss-item.sel .ss-t { color: #f97316; }
+    html.dark .ss-empty { color: #a0a0a8; }
+
+    /* ============================ DARK MODE ============================ */
+    /* Dark mode: transparent over the hero (like light mode); a solid, OPAQUE dark bar once
+       scrolled, so neither the dark body nor a bright photo behind it bleeds through. */
+    html.dark #header.scrolled { background-color: rgba(22,24,28,.97); border-bottom-color: rgba(255,255,255,.10); box-shadow: 0 12px 30px -8px rgba(0,0,0,.6); }
+    html.dark #header.scrolled #langToggle { border-color: rgba(255,255,255,.22); background: transparent; }
+    html.dark #header.scrolled #langToggle button { color: rgba(255,255,255,.82); }
+
+    /* Desktop nav pills */
+    html.dark #nav a { background: #303133; }
+    html.dark #nav a:hover { background: #34353a; }
+    html.dark #nav a.active { background: #121314; color: #f97316; box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+    /* Mobile nav drawer */
+    @media (max-width: 1279px) {
+      html.dark #nav { background: #121314; border-bottom-color: #2a2b2c; box-shadow: 0 22px 32px -20px rgba(0,0,0,.7); }
+      html.dark #nav a { background: transparent; border-bottom-color: rgba(255,255,255,.09); }
+    }
+    /* "What We Do" dropdown */
+    html.dark .nav-dd-inner { background: #202123; border-color: #2a2b2c; box-shadow: 0 22px 44px -22px rgba(0,0,0,.75); }
+    html.dark #nav .nav-dd-item { color: #ececf2 !important; }
+    html.dark #nav .nav-dd-item:hover { background: #303133 !important; color: #f97316 !important; }
+    /* Mobile About heading band */
+    @media (max-width: 1023px) {
+      html.dark #about { background: #202123; box-shadow: 0 -12px 28px rgba(0,0,0,.55); }
+    }
+    /* Service cards — lift them slightly above the section for depth in the dark. */
+    html.dark #services article { background-color: #202123; }
+    html.dark #services article::after { background: #303133; color: #78787e; }
+    html.dark #services article:hover::after { background: #f97316; color: #fff; }
+    html.dark #services article.svc-flash { animation: svcFlashDark 2.4s ease-out; }
+    @keyframes svcFlashDark {
+      0%   { border-color: #f97316; background-color: #2a1c0c; box-shadow: 0 0 0 0 rgba(249,115,22,.55), 0 20px 42px -22px rgba(249,115,22,.55); }
+      55%  { border-color: #f97316; background-color: #2a1c0c; box-shadow: 0 0 0 5px rgba(249,115,22,.38), 0 20px 42px -22px rgba(249,115,22,.4); }
+      100% { border-color: #2a2b2c; background-color: #202123; box-shadow: 0 0 0 16px rgba(249,115,22,0), 0 20px 42px -22px rgba(249,115,22,0); }
+    }
+    /* Gallery + service-detail modal */
+    html.dark .gallery-card { background: #202123; border-color: #2a2b2c; }
+    html.dark #svcModalCard { background: #202123; border-color: #2a2b2c; box-shadow: 0 40px 90px -30px rgba(0,0,0,.8); }
+    /* Keep the photo background on the glass-facades modal in dark mode (the rule above would otherwise cover it). */
+    html.dark #svcModalCard.svc-modal-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.18); }
+    html.dark .svc-close { background: #303133; color: #a0a0a8; }
+    html.dark .svc-close:hover { background: #f97316; color: #fff; }
+    html.dark .svc-ic { background: #303133; border-color: #2a2b2c; }
+    html.dark .svc-detail h3 { color: #ececf2; }
+    html.dark .svc-detail li { color: #c6c6cc; }
+  </style>
 </head>
 
-<body>
+<body class="bg-surface font-body text-mute antialiased">
+
+  <!-- Rope-access technician = custom scrollbar thumb. He rappels the WORKING rope
+       (down from the top, in front of his face → into the descender → out to the brake
+       hand → behind him to the ground) beside a straight BACKUP rope. Ropes are drawn
+       in two SVGs so the working line can pass in front of the face yet behind the body,
+       and their geometry is updated in JS as he slides (see drawRopes()). -->
+  <div id="ropeClimber" aria-hidden="true">
+    <!-- The technician (perfect.png) already contains BOTH ropes, the descender, the backup
+         cam + lanyard, both hands and the slack loop. These four SVG lines only EXTEND the two
+         ropes off the top/bottom of the image out to the page edges, so they run continuously
+         as he rappels. Their x-positions and thickness match where the ropes leave the image. -->
+    <svg id="ropeBack" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <!-- The braided core, copied from the logo artwork: a black diamond lattice over a
+             near-white cord. In the source the weave repeats every ~11px across a 51px rope;
+             at the size the logo renders that is ~0.66px, so the tile is sized in the same
+             CSS-pixel space (userSpaceOnUse) and the browser resolves it exactly as it does
+             the logo's PNG — invisible on a 1x screen, visible weave on a retina one. -->
+        <pattern id="ropeWeave" patternUnits="userSpaceOnUse" width=".66" height=".66" patternTransform="rotate(45)">
+          <rect width=".66" height=".66" fill="#eeeeee"/>
+          <path d="M0 0V.66M0 0H.66" stroke="#151515" stroke-width=".24"/>
+        </pattern>
+      </defs>
+      <path class="rope-out" id="rBackO"></path><path class="rope-in" id="rBackI"></path>  <!-- backup rope (straight, cam slides on it) -->
+      <path class="rope-out" id="rWupO"></path><path class="rope-in" id="rWupI"></path>    <!-- working rope: ceiling → descender -->
+      <path class="rope-out" id="rWloO"></path><path class="rope-in" id="rWloI"></path>    <!-- working rope: brake hand → ground -->
+    </svg>
+    <img id="climber" src="images/climber.png?v=12" alt="" draggable="false" />
+    <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
+      <!-- A LOCAL copy of the weave: Chrome won't apply #ropeBack's pattern to a path in this
+           second SVG (it falls back to the flat #c3c3c3, so the brake strand lost its dark weave
+           while the tail kept it). Same tile, own id, referenced by #ropeFront .rope-in below. -->
+      <defs>
+        <pattern id="ropeWeaveF" patternUnits="userSpaceOnUse" width=".66" height=".66" patternTransform="rotate(45)">
+          <rect width=".66" height=".66" fill="#eeeeee"/>
+          <path d="M0 0V.66M0 0H.66" stroke="#151515" stroke-width=".24"/>
+        </pattern>
+      </defs>
+      <path class="rope-out" id="rBrkO"></path><path class="rope-in" id="rBrkI"></path>    <!-- working rope brake strand: descender → brake hand -->
+    </svg>
+  </div>
+
 
   <!-- ============================ HEADER / NAV ============================ -->
-  <header class="site-header" id="header">
-    <div class="container nav-wrap">
-      <a href="#home" class="brand">
-        <img src="images/logo.svg" alt="Oritoki logo — two ropes" class="brand-logo" />
-        <span class="brand-name"><span data-ka="ორითოკი">ORITOKI</span><small data-ka="მაღალი სამუშაოები">Height Works</small></span>
-      </a>
+  <header id="header" class="fixed top-0 inset-x-0 z-50 h-16">
+    <div id="headerInner" class="w-full h-full max-w-[96rem] mx-auto px-6 flex items-center gap-2 lg:gap-3">
 
-      <nav class="nav" id="nav">
-        <a href="#home"     class="nav-link" data-ka="მთავარი">Home</a>
-        <a href="#about"    class="nav-link" data-ka="ჩვენ შესახებ">About</a>
-        <a href="#services" class="nav-link" data-ka="სერვისები">Services</a>
-        <a href="#gallery"  class="nav-link" data-ka="გალერეა">Gallery</a>
-        <a href="#team"     class="nav-link" data-ka="გუნდი">Team</a>
-        <a href="#contact"  class="nav-link" data-ka="კონტაქტი">Contact</a>
+      <!-- Left group (brand). flex-1 grows so the nav is pushed to the right, next to the toggle. -->
+      <div class="flex-1 min-w-0 flex justify-start">
+      <!-- Brand = the top half of the rope artwork: the letters "or" / "tok" plus the two
+           bolt anchors that are the dots of the two i's. It is pinned to the same fixed
+           left/width as #ropeClimber below, so the two rope stems in this image continue
+           straight into the SVG ropes with no seam. Absolutely positioned, so the empty
+           flex-1 wrapper still balances the centred nav. -->
+      <a href="#home" id="brandRope" aria-label="Oritoki — home">
+        <img src="images/logo-rope.png?v=2" alt="Oritoki" draggable="false" />
+      </a>
+      </div>
+
+      <!-- Navigation -->
+      <!-- No `uppercase` class here on purpose: text-transform:uppercase makes Chrome render
+           Georgian Mtavruli back as Mkhedruli, so the labels are authored already-capitalised
+           (English in caps, Georgian in Mtavruli) — the same approach as the section h2s. -->
+      <nav id="nav" class="font-display text-[15px] font-600 tracking-wide text-light">
+        <!-- Lang + theme controls: on mobile they sit here, ABOVE the nav links (JS fills this). -->
+        <div id="navActions" class="nav-actions"></div>
+        <a href="#home"     class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲛᲗᲐᲕᲐᲠᲘ">HOME</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲛᲗᲐᲕᲐᲠᲘ</span></span></span></a>
+        <a href="#about"    class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ">ABOUT</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ</span></span></span></a>
+        <div class="nav-dd">
+          <a href="#services" class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ">WHAT WE DO</span><i class="fa-solid fa-chevron-down nav-dd-caret text-[10px]"></i></span><span aria-hidden="true" class="nav-ghost"><span>ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ</span><i class="fa-solid fa-chevron-down text-[10px]"></i></span></span></a>
+          <div class="nav-dd-menu" aria-hidden="true">
+            <div class="nav-dd-inner">
+              <a href="#svc-glass" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></span><span data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</span></a>
+              <a href="#svc-buildings" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span data-ka="შენობების მოვლა">Building Maintenance</span></a>
+              <a href="#svc-electrical" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span data-ka="ელექტროობა და ტელეკომუნიკაცია">Electrical &amp; Telecom</span></a>
+              <a href="#svc-signage" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><span data-ka="რეკლამები">Advertising &amp; Signage</span></a>
+              <a href="#svc-painting" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></span><span data-ka="ღებვა და დაცვა">Painting &amp; Protection</span></a>
+              <a href="#svc-construction" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></span><span data-ka="სამშენებლო სამუშაოები და იზოლაცია">Construction &amp; Insulation</span></a>
+              <a href="#svc-rock" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></span><span data-ka="კლდეები, ფერდობები და გარემო">Rock, Slope &amp; Environment</span></a>
+              <a href="#svc-industrial" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></span><span data-ka="ინდუსტრიული ობიექტები">Industrial Facilities</span></a>
+              <a href="#svc-inspection" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span data-ka="ინსპექტირება">Inspection</span></a>
+              <a href="#svc-film" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></span><span data-ka="სცენა და გადაღებები">Stage &amp; Filming</span></a>
+              <a href="#svc-emergency" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</span></a>
+            </div>
+          </div>
+        </div>
+        <a href="#gallery"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲒᲐᲚᲔᲠᲔᲐ</span></span></span></a>
+        <a href="#contact"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲙᲝᲜᲢᲐᲥᲢᲘ">CONTACT</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲙᲝᲜᲢᲐᲥᲢᲘ</span></span></span></a>
       </nav>
 
-      <div class="nav-actions">
-        <button class="lang-toggle" id="langToggle" type="button" aria-label="Switch language">
-          <i class="fa-solid fa-globe"></i> <span id="langLabel">ქართული</span>
+      <!-- Right group (actions). On desktop it mirrors the brand (flex-1) so the nav
+           stays perfectly centred; on mobile it stays natural width. -->
+      <div class="flex justify-end">
+      <div id="headerActions" class="flex items-center gap-3">
+        <!-- Search, then theme, then language (JS keeps this order when it relocates them). -->
+        <button id="searchBtn" type="button" aria-label="Search services" title="Search services" class="w-7 h-9 shrink-0 inline-flex items-center justify-center transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
         </button>
-        <a href="#contact" class="btn btn-primary btn-sm hide-mobile" data-ka="დაგვიკავშირდით">Get a Quote</a>
-        <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false">
-          <span></span><span></span><span></span>
+        <button id="themeToggle" type="button" aria-label="Toggle dark mode" title="Dark / light" class="w-7 h-9 shrink-0 inline-flex items-center justify-center text-base leading-none transition">
+          <!-- Carabiner: the gate hangs open in light mode and snaps shut when the site goes dark. -->
+          <!-- viewBox is padded out from the original 0 0 24 24 so the dark-mode rays have
+               room around the frame; 1 unit still = 1px, so the carabiner itself is
+               unchanged in size and stays centred. -->
+          <svg class="cb-icon" viewBox="-1.5 -4.5 27 33" width="27" height="33" fill="currentColor" aria-hidden="true" focusable="false">
+            <!-- Sun rays — dark mode only, hinting that the button switches to light. -->
+            <g class="cb-rays" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <path d="M20.57 12h2"/>
+              <path d="M18.05 20.91l1.42 1.77"/>
+              <path d="M11.97 24.6v2.5"/>
+              <path d="M5.89 20.91l-1.42 1.77"/>
+              <path d="M3.37 12h-2"/>
+              <path d="M5.89 3.09 4.47 1.32"/>
+              <path d="M11.97-0.6v-2.5"/>
+              <path d="M18.05 3.09 19.47 1.32"/>
+            </g>
+            <!-- Frame: solid offset-D body traced off the owner's carabiner photo — widest in
+                 the upper third, and the gate side leans ~3.4 degrees inward going down. -->
+            <path d="M17.85 7.3C17.88 6.9 17.9 6.6 17.88 6.4C17.85 5.9 17.75 5.2 17.5 4.6C17.1 3.4 15.9 2.05 14.7 2.02L12.7 2.02C11.2 2.05 9.6 2.6 8.5 3.8C6.9 5.3 6.25 6.9 6.12 8.8C6.03 10.6 6.05 12.6 6.3 14.6C6.6 16.8 7.4 19 8.5 20.3C9.7 21.5 10.9 22 11.9 22L14.1 22C14.35 22 14.6 21.9 14.9 21.7C16.4 21 17.15 19.2 17.27 17.56L15.21 17.56C15 18.75 14.35 19.9 13.35 20.4C12.65 20.7 11.85 20.25 11.15 19.4C10.2 18.25 9.45 17.15 9.1 15.8C8.85 14.6 8.8 13.2 8.85 11.8C8.9 10.2 8.85 8.2 9.35 6.7C9.85 5.3 11.1 4.3 12.6 4.32C14 4.4 15.45 5.3 15.75 6.6C15.82 6.9 15.85 7.1 15.85 7.3Z"/>
+            <!-- Gate: nose piece, screwgate sleeve and hinge lug, swinging as one on the rivet. -->
+            <g class="cb-gate">
+              <rect x="15.285" y="7.75" width="2.05" height="1.12" rx=".5"/>
+              <rect x="15.095" y="9.32" width="2.3" height="5.17" rx=".72"/>
+              <path fill-rule="evenodd" d="M15.785 14.94h1.05c.28 0 .5.22.5.5v1.15c0 .28-.22.5-.5.5h-1.05a.5.5 0 0 1-.5-.5v-1.15c0-.28.22-.5.5-.5ZM16.86 16a.55.55 0 1 1-1.1 0 .55.55 0 0 1 1.1 0Z"/>
+            </g>
+          </svg>
         </button>
+        <!-- Language toggle -->
+        <div id="langToggle" class="flex items-center rounded-full border border-line overflow-hidden text-xs font-600 font-display">
+          <button type="button" data-lang="ka" class="px-3 py-1.5 transition">ქარ</button>
+          <button type="button" data-lang="en" class="px-3 py-1.5 transition">ENG</button>
+        </div>
+        <button id="burger" type="button" aria-label="Menu" aria-expanded="false" class="xl:hidden text-light text-2xl leading-none w-9 h-9 flex items-center justify-center">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
       </div>
     </div>
   </header>
 
-  <!-- ============================ HERO / HOME ============================ -->
-  <section id="home" class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-overlay"></div>
-    <div class="container hero-inner">
-      <p class="hero-eyebrow" data-ka="სამრეწველო ალპინიზმი • სერტიფიცირებული • დაზღვეული">
-        Industrial Climbing • Certified • Insured
-      </p>
-      <h1 class="hero-title">
-        <span data-ka="მაღალ სიმაღლეზე">Works at Height,</span>
-        <span class="accent" data-ka="უსაფრთხოდ შესრულებული">Done Safely.</span>
-      </h1>
-      <p class="hero-text" data-ka="ფასადების წმენდა, შეღებვა, ჰიდროიზოლაცია, მონტაჟი და სარემონტო სამუშაოები ნებისმიერ სიმაღლეზე — თოკური წვდომის პროფესიონალი გუნდის მიერ.">
-        Facade cleaning, painting, waterproofing, installation and repair works at any
-        height — delivered by a professional rope-access team.
-      </p>
-      <div class="hero-buttons">
-        <a href="#contact" class="btn btn-primary" data-ka="უფასო შეფასება">Get a Free Quote</a>
-        <a href="#gallery" class="btn btn-ghost" data-ka="ჩვენი ნამუშევრები">See Our Work</a>
-      </div>
-    </div>
-    <a href="#about" class="scroll-cue" aria-label="Scroll down"><i class="fa-solid fa-chevron-down"></i></a>
-  </section>
+  <!-- ============================ HERO ============================ -->
+  <section id="home" class="relative isolate min-h-screen flex items-center overflow-hidden bg-[#14142a]">
+    <!-- Full-bleed background photo (natural blue sky) -->
+    <img src="images/hero-photo.jpg?v=11" alt="Oritoki rope-access technicians on a glass skyscraper facade" class="absolute inset-0 -z-20 w-full h-full object-cover object-[10%_0%] sm:object-[26%_0%]" />
+    <!-- Left-dark gradient for text contrast + a soft top gradient for the header -->
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
+    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+    <div class="absolute inset-x-0 top-0 -z-10 h-36 bg-gradient-to-b from-black/30 to-transparent"></div>
 
-  <!-- ============================ STATS BAR ============================ -->
-  <section class="stats">
-    <div class="container stats-grid">
-      <div class="stat"><span class="stat-num">10+</span><span class="stat-label" data-ka="წლის გამოცდილება">Years of Experience</span></div>
-      <div class="stat"><span class="stat-num">500+</span><span class="stat-label" data-ka="დასრულებული პროექტი">Projects Completed</span></div>
-      <div class="stat"><span class="stat-num">15</span><span class="stat-label" data-ka="სერტიფიცირებული სპეციალისტი">Certified Specialists</span></div>
-      <div class="stat"><span class="stat-num">100%</span><span class="stat-label" data-ka="უსაფრთხოების დაცვა">Safety Compliance</span></div>
-    </div>
-  </section>
+    <!-- Overlaid content, left-aligned -->
+    <div class="relative w-full max-w-7xl mx-auto px-6 lg:px-12">
+      <div id="heroContent" class="max-w-2xl">
+        <!-- Headline: two lines, white + orange -->
+        <h1 id="heroTitle" class="reveal hero-shadow font-display font-900 leading-[1.06] text-[26px] sm:text-4xl lg:text-5xl xl:text-6xl">
+          <span class="block text-white" data-ka="ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ">ROPE ACCESS</span>
+          <span class="block text-white" data-ka="ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘ">TECHNICIANS</span>
+        </h1>
 
-  <!-- ============================ ABOUT ============================ -->
-  <section id="about" class="section">
-    <div class="container about-grid">
-      <div class="about-media reveal">
-        <img src="images/about.svg" alt="Our team at work" />
-        <div class="about-badge"><i class="fa-solid fa-shield-halved"></i>
-          <span data-ka="დაზღვეული & სერტიფიცირებული">Insured &amp; Certified</span>
+        <!-- Supporting description -->
+        <p class="reveal hero-shadow mt-5 max-w-xl text-sm sm:text-base text-white leading-relaxed" data-ka="ვახორციელებთ სამრეწველო ალპინიზმის მომსახურებას ობიექტებზე, სადაც ტრადიციული მეთოდებით სამუშაოს შესრულება არაეფექტური ან შეუძლებელია">We provide industrial rope-access services on structures where traditional methods make the work ineffective or impossible</p>
+
+        <!-- CTA (outline, white) -->
+        <div class="reveal mt-8">
+          <a href="#services" class="group inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 text-sm font-600 text-white hover:bg-accent/90 transition">
+            <span data-ka="რას ვაკეთებთ">What We Do</span>
+            <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+          </a>
         </div>
       </div>
-      <div class="about-text reveal">
-        <p class="eyebrow" data-ka="ჩვენ შესახებ">About Us</p>
-        <h2 data-ka="სანდო გუნდი მაღალი სირთულის სამუშაოებისთვის">A Trusted Team for High-Difficulty Work</h2>
-        <p data-ka="ორითოკი არის სამრეწველო ალპინიზმის კომპანია, რომელიც ასრულებს მაღალ სიმაღლეზე სამუშაოებს იქ, სადაც ხარაჩოები და ამწეები ვერ აღწევს. ჩვენ ვმუშაობთ უსაფრთხოდ, სწრაფად და ზუსტად.">
-          Oritoki is an industrial-climbing company that performs works at height where
-          scaffolding and cranes cannot reach. We work safely, quickly and precisely —
-          with full safety equipment and certified specialists.
+    </div>
+
+    <a href="#about" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60 hover:text-white transition max-lg:hidden" aria-label="Scroll down">
+      <i class="fa-solid fa-chevron-down text-xl animate-bounce"></i>
+    </a>
+  </section>
+
+  <!-- These sections are visually ordered with flex `order`
+       (About → Projects → Services) without changing DOM/anchor order.
+       The Why-Us section lives further down, right after the gallery. -->
+  <div class="flex flex-col">
+  <!-- ============================ ABOUT ============================ -->
+  <section id="about" class="order-1 py-20 bg-panel border-y border-line">
+    <div class="max-w-7xl mx-auto px-5 grid gap-8 lg:grid-cols-2 lg:gap-x-12 lg:gap-y-0 lg:items-stretch">
+      <!-- Photo: after the text on mobile (order-2); right column on desktop.
+           On mobile it is hidden and the same image is used as the section
+           background instead (hero-style) — see the #about mobile CSS. -->
+      <div id="aboutPhoto" class="reveal relative order-2 lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2">
+        <img src="images/about.jpg?v=3" alt="Oritoki rope-access technicians working on a glass high-rise" class="w-full h-full min-h-[520px] object-cover rounded-2xl border border-line" />
+      </div>
+      <!-- Text: first on mobile (order-1); left column on desktop -->
+      <div class="reveal order-1 lg:order-none lg:col-start-1 lg:row-start-1">
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲡᲘᲛᲐᲦᲚᲔ ᲩᲕᲔᲜᲘ ᲡᲐᲛᲣᲨᲐᲝ ᲡᲘᲕᲠᲪᲔᲐ, ᲣᲡᲐᲤᲠᲗᲮᲝᲔᲑᲐ ᲞᲠᲘᲝᲠᲘᲢᲔᲢᲘ">HEIGHT IS OUR WORKSPACE, SAFETY OUR PRIORITY</h2>
+        <div id="aboutBody">
+        <p class="mt-5 text-mute leading-relaxed" data-ka="ორითოკი არის სამრეწველო ალპინიზმის კომპანია, რომელიც უზრუნველყოფს სასიმაღლო სამუშაოების უსაფრთხო, სწრაფ და ეფექტურ შესრულებას იქ, სადაც ხარაჩოების, ამწეების ან სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელია ან არაეფექტურია.">
+          Oritoki is an industrial rope-access company that delivers safe, fast and
+          effective works at height where the use of scaffolding, cranes or other
+          traditional methods is impossible or ineffective.
         </p>
-        <ul class="checklist">
-          <li><i class="fa-solid fa-circle-check"></i> <span data-ka="სრული უსაფრთხოების აღჭურვილობა">Full safety equipment &amp; rope access</span></li>
-          <li><i class="fa-solid fa-circle-check"></i> <span data-ka="სერტიფიცირებული და გამოცდილი სპეციალისტები">Certified, experienced specialists</span></li>
-          <li><i class="fa-solid fa-circle-check"></i> <span data-ka="უფასო შეფასება და სწრაფი მომსახურება">Free assessment &amp; fast service</span></li>
-          <li><i class="fa-solid fa-circle-check"></i> <span data-ka="პასუხისმგებლობის დაზღვევა">Liability insurance included</span></li>
-        </ul>
-        <a href="#contact" class="btn btn-primary" data-ka="დაგვიკავშირდით">Contact Us</a>
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი გუნდი აერთიანებს მრავალწლიანი პრაქტიკული გამოცდილების მქონე მთამსვლელებს, მეკლდეურებსა და სასიმაღლო სამუშაოების სერტიფიცირებულ სპეციალისტებს.">
+          Our team brings together mountaineers, rock climbers and certified works-at-height
+          specialists with many years of hands-on experience.
+        </p>
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ამ სფეროში უკვე 18 წელზე მეტია ვოპერირებთ. წლების მანძილზე დაგროვილი ტექნიკური ცოდნა და საერთაშორისო გამოცდილება გვაძლევს საშუალებას, რომ უმაღლესი სიზუსტითა და უსაფრთხოებით შევასრულოთ ნებისმიერი სირთულის პროექტი.">
+          We have been operating in this field for over 18 years. The technical knowledge and
+          international experience accumulated over the years allow us to carry out projects of
+          any complexity with the highest precision and safety.
+        </p>
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი საქმიანობა ეფუძნება IRATA, SPRAT, IFMGA Rope Access საერთაშორისო სტანდარტებს, რაც უზრუნველყოფს უსაფრთხოების, ხარისხისა და პროფესიონალიზმის უმაღლეს დონეს.">
+          Our work is based on the IRATA, SPRAT and IFMGA international rope-access
+          standards, ensuring the highest level of safety, quality and professionalism.
+        </p>
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენთვის მთავარი ღირებულებებია უსაფრთხოება, პასუხისმგებლობა, სიზუსტე და მომხმარებლის ნდობა. თითოეულ სამუშაოს ვასრულებთ თანამედროვე აღჭურვილობით, საერთაშორისო სტანდარტების დაცვით და შედეგზე პასუხისმგებლობით.">
+          Our core values are safety, responsibility, precision and client trust. We carry
+          out every job with modern equipment, in compliance with international
+          standards, and with accountability for the result.
+        </p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ============================ SERVICES ============================ -->
-  <section id="services" class="section section-soft">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow" data-ka="რას ვაკეთებთ">What We Do</p>
-        <h2 data-ka="ჩვენი სერვისები">Our Services</h2>
-        <p class="section-sub" data-ka="სრული სპექტრი მაღალ სიმაღლეზე სამუშაოებისა — ერთი სანდო გუნდისგან.">
-          A full range of works at height — from one reliable team.
-        </p>
+  <section id="services" class="order-3 py-20 bg-surface border-y border-line">
+    <div class="max-w-7xl mx-auto px-5">
+      <div class="reveal max-w-3xl">
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ">WHAT WE DO</h2>      </div>
+
+      <!-- All service categories (glass first, styled like the rest) -->
+      <div id="svcGrid" class="mt-10 grid gap-4 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
+        <article id="svc-glass" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="მაღალსართულიანი შენობების წმენდა, ჰერმეტიზაცია და მოვლა.">High-rise building cleaning, sealing and maintenance.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის ფასადების წმენდა">Glass facade cleaning</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფანჯრების გარედან წმენდა">Exterior window cleaning</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის მონტაჟი და დემონტაჟი">Glass installation &amp; removal</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დაზიანებული მინის შეცვლა">Replacement of damaged glass</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის სილიკონის შეცვლა და ჰერმეტიზაცია">Facade silicone replacement &amp; sealing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის კონსტრუქციების მონტაჟი">Glass structures installation</span></li>
+          </ul>
+        </article>
+        <article id="svc-buildings" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="შენობების მოვლა">Building Maintenance</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ტექნიკური მომსახურება, რემონტი და პრევენციული ინსპექტირება.">Technical maintenance, repairs and preventive inspection.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადების წმენდა და რეცხვა">Facade cleaning &amp; washing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის ელემენტების შეკეთება">Facade element repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="შენობების ტექნიკური მომსახურება">Building technical maintenance</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="წვიმის წყლის სისტემების (ღარები, მილები) მონტაჟი და შეკეთება">Rainwater systems (gutters, pipes) — install &amp; repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ვენტილაციის სისტემების მონტაჟი და დემონტაჟი">Ventilation systems — install &amp; dismantle</span></li>
+          </ul>
+        </article>
+
+        <article id="svc-electrical" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ელექტროობა და ტელეკომუნიკაცია">Electrical &amp; Telecom</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკაბელო სისტემების, განათებისა და ანძების მონტაჟი.">Cabling systems, lighting and mast installation.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="განათებებისა და პროჟექტორების მონტაჟი და შეცვლა">Lighting &amp; floodlights — install &amp; replace</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტენებისა და სატელეკომუნიკაციო მოწყობილობების მონტაჟი">Antennas &amp; telecom equipment installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ელვისდამცავი სისტემების მონტაჟი">Lightning-protection systems</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების, კამერებისა და სენსორების მონტაჟი">Security systems, cameras &amp; sensors</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კაბელებისა და საკაბელო არხების მონტაჟი">Cables &amp; cable-tray installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მზის პანელების მონტაჟი">Solar panel installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონდიციონერის გარე აგრეგატის მონტაჟი და სერვისი">Air-conditioner outdoor unit installation &amp; servicing</span></li>
+          </ul>
+        </article>
+
+        <article id="svc-signage" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="რეკლამები">Advertising &amp; Signage</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების ინსტალაცია.">Installation of banners, billboards and advertising structures.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბანერების მონტაჟი და დემონტაჟი">Banner install &amp; dismantle</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სარეკლამო კონსტრუქციების მონტაჟი">Advertising-structure installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="აბრებისა და LED აბრების მონტაჟი">Signs &amp; LED signs installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დროშების მონტაჟი">Flag installation</span></li>
+          </ul>
+        </article>
+
+        <article id="svc-painting" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ღებვა და დაცვა">Painting &amp; Protection</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა.">Treatment and painting of facades and metal structures.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების ღებვა">Structure painting</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტიკოროზიული სამუშაოები">Anti-corrosion works</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დამცავი საფარების დატანა">Protective coatings</span></li>
+          </ul>
+        </article>
+
+        <article id="svc-construction" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სამშენებლო სამუშაოები და იზოლაცია">Construction &amp; Insulation</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამონტაჟო, საიზოლაციო და სარეკონსტრუქციო სერვისები.">Assembly, insulation and reconstruction services.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბეტონისა და ბზარების შეკეთება">Concrete &amp; crack repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქვისა და აგურის წყობის აღდგენა">Stone &amp; brickwork restoration</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადისა და ისტორიული ძეგლების რესტავრაცია">Facade &amp; historical monument restoration</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო- და ჰიდროიზოლაცია">Thermal insulation &amp; waterproofing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მეტალის კონსტრუქციების მონტაჟი და დემონტაჟი">Metal structures — install &amp; dismantle</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის დალუქვა">Facade sealing</span></li>
+          </ul>
+        </article>
+
+        <article id="svc-rock" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="კლდეები, ფერდობები და გარემო">Rock, Slope &amp; Environment</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფერდობების გამაგრება, დამცავი ბადეების მონტაჟი და დამუშავება.">Slope reinforcement, protective-mesh installation and treatment.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდის ბადეებით გამაგრება და სტაბილიზაცია">Rock-mesh reinforcement &amp; stabilization</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდიდან ქვების ჩამოშლა">Rockfall removal</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდის ინსპექტირება და წმენდა">Rock inspection &amp; cleaning</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ხეების გასხვლა და სახიფათო ტოტების მოცილება">Tree pruning &amp; hazardous-branch removal</span></li>          </ul>
+        </article>
+
+        <article id="svc-industrial" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინდუსტრიული ობიექტები">Industrial Facilities</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ქარხნების, ქიმწარმოების და სპეციალური ნაგებობების მომსახურება.">Servicing of plants, chemical facilities and special structures.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რეზერვუარებისა და სილოსების ინსპექტირება და წმენდა">Tank &amp; silo inspection &amp; cleaning</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კვამლსადენებისა და საკვამურების ინსპექტირება და შეკეთება">Chimney inspection &amp; repair</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქარხნების ტექნიკური მომსახურება">Factory technical maintenance</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქარის ტურბინების ინსპექტირება და შეკეთება">Wind-turbine inspection &amp; repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მილსადენების მონტაჟი">Pipeline installation</span></li>
+          </ul>
+        </article>
+
+        <article id="svc-inspection" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინსპექტირება">Inspection</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება.">Structural diagnostics, ultrasonic and visual inspection.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ვიზუალური და კონსტრუქციული ინსპექტირება">Visual &amp; structural inspection</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების ინსპექტირება">Safety-system inspection</span></li>          </ul>
+        </article>
+
+        <article id="svc-film" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სცენა და გადაღებები">Stage &amp; Filming</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკინემატოგრაფიო და შოუ-ბიზნესის კონსტრუქციების უსაფრთხოება.">Safety for cinematographic and show-business structures.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფილმების, სერიალებისა და რეკლამების გადაღების ტექნიკური მხარდაჭერა">Technical support for film, series &amp; commercial shoots</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სცენური კონსტრუქციებისა და განათებების მონტაჟი">Stage-structure &amp; lighting installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="Rigging მომსახურება">Rigging services</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების გადაადგილება და დეკორაციების მონტაჟი">Moving structures &amp; decoration installation</span></li>
+          </ul>
+        </article>
+
+        <article id="svc-emergency" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+          <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამშველო ოპერაციები, ავარიული აღმოფხვრა და რთული წვდომა.">Rescue operations, emergency response and difficult access.</p>
+          <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რთულად მისადგომ ადგილებზე წვდომა">Access to hard-to-reach locations</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ავარიული სამუშაოები">Emergency works</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="საგნების უსაფრთხო ჩამოხსნა, აწევა და ჩამოშვება">Safe removal, lifting &amp; lowering of objects</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მაშველის დახმარება">Rescue assistance</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ინდივიდუალური სასიმაღლო გადაწყვეტილებები">Custom works-at-height solutions</span></li>
+          </ul>
+        </article>
       </div>
-
-      <div class="services-grid">
-        <article class="service-card reveal">
-          <div class="service-icon"><i class="fa-solid fa-spray-can-sparkles"></i></div>
-          <h3 data-ka="ფასადის წმენდა">Facade &amp; Window Cleaning</h3>
-          <p data-ka="შენობების ფასადებისა და მინების პროფესიონალური წმენდა ნებისმიერ სიმაღლეზე.">
-            Professional cleaning of building facades and glass at any height.
-          </p>
-        </article>
-
-        <article class="service-card reveal">
-          <div class="service-icon"><i class="fa-solid fa-paint-roller"></i></div>
-          <h3 data-ka="შეღებვა და დეკორი">Painting &amp; Coating</h3>
-          <p data-ka="ფასადების შეღებვა, დაცვითი საფარის დატანა და განახლება.">
-            Facade painting, protective coatings and surface restoration.
-          </p>
-        </article>
-
-        <article class="service-card reveal">
-          <div class="service-icon"><i class="fa-solid fa-droplet"></i></div>
-          <h3 data-ka="ჰიდროიზოლაცია">Waterproofing &amp; Sealing</h3>
-          <p data-ka="ნაკერების, სახურავებისა და ფასადების ჰიდროიზოლაცია გაჟონვის წინააღმდეგ.">
-            Sealing of seams, roofs and facades to stop leaks and moisture.
-          </p>
-        </article>
-
-        <article class="service-card reveal">
-          <div class="service-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-          <h3 data-ka="მონტაჟი და შეკეთება">Installation &amp; Repair</h3>
-          <p data-ka="რეკლამის, კონსტრუქციების და ელემენტების მონტაჟი და სარემონტო სამუშაოები.">
-            Mounting signs, structures and elements, plus repair works at height.
-          </p>
-        </article>
-
-        <article class="service-card reveal">
-          <div class="service-icon"><i class="fa-solid fa-icicles"></i></div>
-          <h3 data-ka="თოვლისა და ყინულის მოცილება">Snow &amp; Ice Removal</h3>
-          <p data-ka="სახურავებიდან თოვლისა და ყინულის უსაფრთხო მოცილება.">
-            Safe removal of snow and ice build-up from roofs and ledges.
-          </p>
-        </article>
-
-        <article class="service-card reveal">
-          <div class="service-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-          <h3 data-ka="ინსპექცია და მომსახურება">Inspection &amp; Maintenance</h3>
-          <p data-ka="ფასადებისა და კონსტრუქციების ვიზუალური შემოწმება და მოვლა.">
-            Visual inspection and maintenance of facades and structures.
-          </p>
-        </article>
-      </div>
+      <p class="mt-10 text-left text-sm sm:text-base text-mute"><span data-ka="თქვენი ამოცანა სიაში ვერ ნახეთ? ">Don’t see your task on the list? </span><a href="#contact" class="text-accent font-600 hover:underline" data-ka="დაგვიკავშირდით">Get in touch</a><span data-ka=" — ვასრულებთ ინდივიდუალურ და არასტანდარტულ სამუშაოებსაც."> — we also carry out custom and non-standard works.</span></p>
     </div>
   </section>
 
-  <!-- ============================ GALLERY / CAROUSEL ============================ -->
-  <section id="gallery" class="section">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow" data-ka="ჩვენი ნამუშევრები">Our Work</p>
-        <h2 data-ka="გალერეა">Project Gallery</h2>
-        <p class="section-sub" data-ka="რამდენიმე მაგალითი ჩვენი შესრულებული სამუშაოებიდან.">
-          A few examples from our completed projects.
-        </p>
+  </div>
+  <!-- ============================ GALLERY ============================ -->
+  <section id="gallery" class="py-20 bg-panel border-y border-line">
+    <div class="max-w-7xl mx-auto px-5">
+      <div class="reveal max-w-2xl">
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</h2>
       </div>
     </div>
 
-    <!-- The slides are filled automatically from js/images.js -->
-    <div class="swiper gallery-swiper">
-      <div class="swiper-wrapper" id="gallery-wrapper">
-        <!-- slides injected by JavaScript -->
-      </div>
+    <!-- Slides are built automatically from js/images.js -->
+    <div class="swiper gallery-swiper mt-12 px-5">
+      <div class="swiper-wrapper" id="gallery-wrapper"></div>
       <div class="swiper-button-prev"></div>
       <div class="swiper-button-next"></div>
       <div class="swiper-pagination"></div>
     </div>
   </section>
 
-  <!-- ============================ TEAM ============================ -->
-  <section id="team" class="section section-soft">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow" data-ka="გაიცანით">Meet Us</p>
-        <h2 data-ka="ჩვენი გუნდი">Our Team</h2>
-        <p class="section-sub" data-ka="გამოცდილი და სერტიფიცირებული სპეციალისტები.">
-          Experienced and certified specialists you can rely on.
-        </p>
-      </div>
-
-      <div class="team-grid">
-        <article class="team-card reveal">
-          <img src="images/team/member-1.svg" alt="Team member" />
-          <h3>Giorgi M.</h3>
-          <p class="team-role" data-ka="დამფუძნებელი / ხელმძღვანელი">Founder / Lead Climber</p>
-        </article>
-        <article class="team-card reveal">
-          <img src="images/team/member-2.svg" alt="Team member" />
-          <h3>Davit K.</h3>
-          <p class="team-role" data-ka="უსაფრთხოების ინჟინერი">Safety Engineer</p>
-        </article>
-        <article class="team-card reveal">
-          <img src="images/team/member-3.svg" alt="Team member" />
-          <h3>Nika T.</h3>
-          <p class="team-role" data-ka="სამრეწველო ალპინისტი">Industrial Climber</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <!-- ============================ CONTACT ============================ -->
-  <section id="contact" class="section">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow" data-ka="დაგვიკავშირდით">Get in Touch</p>
-        <h2 data-ka="კონტაქტი">Contact Us</h2>
-        <p class="section-sub" data-ka="მოგვწერეთ ან დაგვირეკეთ უფასო შეფასებისთვის.">
-          Message or call us for a free, no-obligation quote.
-        </p>
-      </div>
+  <section id="contact" class="py-20 bg-surface border-t border-line">
+    <div class="max-w-7xl mx-auto px-5">
 
-      <div class="contact-grid">
-        <!-- Contact info -->
-        <div class="contact-info reveal">
-          <a class="contact-item" href="tel:+995500000000">
-            <span class="ci-icon"><i class="fa-solid fa-phone"></i></span>
-            <span><strong data-ka="ტელეფონი">Phone</strong><br />+995 500 00 00 00</span>
-          </a>
-          <a class="contact-item" href="https://wa.me/995500000000" target="_blank" rel="noopener">
-            <span class="ci-icon"><i class="fa-brands fa-whatsapp"></i></span>
-            <span><strong>WhatsApp</strong><br />+995 500 00 00 00</span>
-          </a>
-          <a class="contact-item" href="mailto:info@oritoki.ge">
-            <span class="ci-icon"><i class="fa-solid fa-envelope"></i></span>
-            <span><strong data-ka="ელ. ფოსტა">Email</strong><br />info@oritoki.ge</span>
-          </a>
-          <div class="contact-item">
-            <span class="ci-icon"><i class="fa-solid fa-location-dot"></i></span>
-            <span><strong data-ka="მისამართი">Address</strong><br /><span data-ka="თბილისი, საქართველო">Tbilisi, Georgia</span></span>
+      <!-- Contact info (minimal / editorial — no form) -->
+      <div class="reveal">
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲛᲘᲘᲦᲔᲗ ᲣᲤᲐᲡᲝ ᲙᲝᲜᲡᲣᲚᲢᲐᲪᲘᲐ ᲓᲐ ᲨᲔᲤᲐᲡᲔᲑᲐ">GET A FREE CONSULTATION &amp; QUOTE</h2>
+
+        <div class="mt-10 space-y-5">
+          <div>
+            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="ᲢᲔᲚᲔᲤᲝᲜᲘ / WhatsApp">Phone / WhatsApp</span>
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-phone text-accent text-base leading-none"></i>
+              <a data-si="tel" href="tel:+995571253530" class="text-lg text-mute hover:text-accent transition">+995 571 25 35 30</a>
+              <a data-si="whatsapp" href="https://wa.me/995571253530" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp" class="text-xl leading-none text-mute hover:text-[#25D366] transition"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
           </div>
-          <div class="contact-socials">
-            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+          <div>
+            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="ᲔᲚ. ᲤᲝᲡᲢᲐ">Email</span>
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-envelope text-accent text-base leading-none"></i>
+              <a data-si="email" href="mailto:info@oritoki.ge" class="text-lg text-mute hover:text-accent transition">info@oritoki.ge</a>
+            </div>
           </div>
         </div>
 
-        <!-- Contact form -->
-        <!--
-          The form below uses Formspree (free) so messages are emailed to you.
-          To turn it on: create a free form at https://formspree.io and replace
-          YOUR_ID in the action URL with the ID they give you.
-          Until then, the direct phone/email links above work immediately.
-        -->
-        <form class="contact-form reveal" action="https://formspree.io/f/YOUR_ID" method="POST">
-          <div class="field">
-            <label data-ka="თქვენი სახელი">Your Name</label>
-            <input type="text" name="name" required placeholder="Name" data-ka-placeholder="სახელი" />
-          </div>
-          <div class="field">
-            <label data-ka="ელ. ფოსტა ან ტელეფონი">Email or Phone</label>
-            <input type="text" name="contact" required placeholder="you@example.com" data-ka-placeholder="you@example.com" />
-          </div>
-          <div class="field">
-            <label data-ka="თქვენი შეტყობინება">Your Message</label>
-            <textarea name="message" rows="5" required placeholder="How can we help?" data-ka-placeholder="როგორ შეგვიძლია დაგეხმაროთ?"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary btn-block" data-ka="გაგზავნა">Send Message</button>
-        </form>
+        <!-- Join CTA relocated to the footer (Professional Standards column). -->
       </div>
+
     </div>
   </section>
 
   <!-- ============================ FOOTER ============================ -->
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div class="footer-brand">
-        <span class="brand-name"><span data-ka="ორითოკი">ORITOKI</span><small data-ka="მაღალი სამუშაოები">Height Works</small></span>
-        <p data-ka="სამრეწველო ალპინიზმი და მაღალ სიმაღლეზე სამუშაოები.">
-          Industrial climbing and professional works at height.
-        </p>
+  <footer class="bg-panel border-t border-line">
+    <div class="footer-grid max-w-7xl mx-auto px-5 py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1.3fr]">
+      <div>
+        <div class="text-sm text-mute leading-relaxed space-y-1.5">
+          <p data-ka="შპს ორითოკი">Oritoki LLC</p>
+          <p data-ka="საიდენტიფიკაციო კოდი: 402372918">Identification Code: 402372918</p>
+          <p data-si="address" data-ka="მისამართი: ე. ნინოშვილის ქ. 13, ბ. 23B, თბილისი, საქართველო">Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia</p>
+          <p><span data-ka="ელ. ფოსტა:">Email:</span> <a data-si="email" href="mailto:info@oritoki.ge" class="hover:text-accent transition">info@oritoki.ge</a></p>
+        </div>
+        <!-- Social icons — sit directly under the email -->
+        <div class="mt-4 flex gap-3">
+          <a data-si="facebook" href="https://www.facebook.com/profile.php?id=61591512283062" target="_blank" rel="noopener" aria-label="Facebook" class="h-10 w-10 rounded-lg border border-line bg-surface flex items-center justify-center text-mute hover:text-[#1877F2] hover:border-[#1877F2] transition"><i class="fa-brands fa-facebook-f"></i></a>
+          <a data-si="instagram" href="https://www.instagram.com/oritoki.ge/" target="_blank" rel="noopener" aria-label="Instagram" class="h-10 w-10 rounded-lg border border-line bg-surface flex items-center justify-center text-mute hover:text-[#E4405F] hover:border-[#E4405F] transition"><i class="fa-brands fa-instagram"></i></a>
+          <a data-si="tiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok" class="h-10 w-10 rounded-lg border border-line bg-surface flex items-center justify-center text-mute hover:text-[#FE2C55] hover:border-[#FE2C55] transition"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="#about" data-ka="ჩვენ შესახებ">About</a>
-        <a href="#services" data-ka="სერვისები">Services</a>
-        <a href="#gallery" data-ka="გალერეა">Gallery</a>
-        <a href="#team" data-ka="გუნდი">Team</a>
-        <a href="#contact" data-ka="კონტაქტი">Contact</a>
+      <div>
+        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="ნავიგაცია">Navigation</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#home" class="hover:text-accent transition" data-ka="მთავარი">Home</a></li>
+          <li><a href="#about" class="hover:text-accent transition" data-ka="ჩვენ შესახებ">About</a></li>
+          <li><a href="#services" class="hover:text-accent transition" data-ka="რას ვაკეთებთ">What We Do</a></li>
+          <li><a href="#gallery" class="hover:text-accent transition" data-ka="გალერეა">Gallery</a></li>
+          <li><a href="join.html" class="hover:text-accent transition" data-ka="შემოგვიერთდი">Join Us</a></li>
+          <li><a href="#contact" class="hover:text-accent transition" data-ka="კონტაქტი">Contact</a></li>
+        </ul>
       </div>
-      <div class="footer-socials">
-        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+      <div>
+        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="პროფესიული სტანდარტები">Professional Standards</h4>
+        <div class="flex flex-wrap gap-2.5">
+          <a href="https://irata.org/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>IRATA</a>
+          <a href="https://sprat.org/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>SPRAT</a>
+          <a href="https://ifmga.net/about-ifmga/committees/rope-access" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>IFMGA Rope Access</a>
+        </div>
+        <div class="mt-6">
+          <p class="text-sm text-accent" data-ka="ხართ სასიმაღლო სამუშაოს სპეციალისტი?">Are you a rope-access technician?</p>
+          <div class="mt-2 flex items-center gap-3">
+            <i class="fa-solid fa-handshake-simple text-accent text-[1.05rem] leading-none shrink-0"></i>
+            <a href="join.html" class="inline-flex items-center gap-2 font-display font-700 text-lg text-accent uppercase tracking-wide hover:gap-3 transition-all"><span data-ka="ᲨᲔᲛᲝᲒᲕᲘᲔᲠᲗᲓᲘ">Join Us</span><i class="fa-solid fa-arrow-right text-sm"></i></a>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="footer-bottom container">
-      <span>© <span id="year"></span> <span data-ka="შპს ორითოკი">Oritoki LTD</span>. <span data-ka="ყველა უფლება დაცულია.">All rights reserved.</span></span>
+    <div class="border-t border-line">
+      <div class="max-w-7xl mx-auto px-5 py-5 text-sm text-mute max-sm:text-center">
+        © <span id="year"></span> <span data-ka="შპს ორითოკი">Oritoki LTD</span>. <span data-ka="ყველა უფლება დაცულია.">All rights reserved.</span>
+      </div>
     </div>
   </footer>
 
-  <!-- Swiper carousel library (free CDN) -->
+  <!-- ============================ SERVICE DETAIL MODAL ============================ -->
+  <div id="svcModal" aria-hidden="true">
+    <div id="svcBackdrop"></div>
+    <div id="svcModalCard" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <!-- ============================ SERVICE SEARCH ============================ -->
+  <div id="svcSearch" aria-hidden="true">
+    <div id="ssBackdrop"></div>
+    <div id="ssPanel" role="dialog" aria-modal="true" aria-label="Search services">
+      <div id="ssField">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+        <input id="ssInput" type="text" autocomplete="off" autocorrect="off" spellcheck="false"
+               placeholder="Search services…" data-ka-placeholder="მოძებნე სერვისი…" />
+        <span id="ssHint">ESC</span>
+      </div>
+      <div id="ssResults"></div>
+    </div>
+  </div>
+
+  <!-- Swiper (gallery) -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <!-- Our photo list (edit this to add photos) -->
+  <!-- Photo list (edit this file to add gallery photos) -->
   <script src="js/images.js"></script>
-  <!-- Our scripts -->
-  <script src="js/main.js"></script>
+  <!-- Phone / e-mail / address / social links — the owner edits this one file. -->
+  <script src="js/site-config.js"></script>
+
+  <!-- =========================== PAGE SCRIPT =========================== -->
+  <script>
+  (function () {
+    "use strict";
+    var LANG_KEY = "oritoki_lang";
+
+    /* ---------- 1. Build gallery slides from js/images.js ---------- */
+    var wrapper = document.getElementById("gallery-wrapper");
+    if (wrapper && Array.isArray(window.galleryImages)) {
+      window.galleryImages.forEach(function (img) {
+        var slide = document.createElement("div");
+        slide.className = "swiper-slide";
+        slide.innerHTML =
+          '<div class="gallery-card">' +
+            '<img src="images/gallery/' + img.file + '" alt="' + img.en + '" loading="lazy" />' +
+            '<div class="slide-caption" data-ka="' + img.ka + '">' + img.en + '</div>' +
+          '</div>';
+        wrapper.appendChild(slide);
+      });
+    }
+
+    /* ---------- 2. Start the Swiper carousel ---------- */
+    if (window.Swiper && document.querySelector(".gallery-swiper")) {
+      new Swiper(".gallery-swiper", {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: window.galleryImages && window.galleryImages.length > 2,
+        grabCursor: true,
+        autoplay: { delay: 4000, disableOnInteraction: false },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+        breakpoints: { 640: { slidesPerView: 2 }, 1000: { slidesPerView: 3 } },
+      });
+    }
+
+    /* ---------- 3. Language switch (Georgian default / English) ---------- */
+    // Convert Georgian mkhedruli letters to their MTAVRULI (all-caps) forms.
+    function toMtavruli(s) {
+      var out = "";
+      for (var i = 0; i < s.length; i++) {
+        var c = s.charCodeAt(i);
+        out += (c >= 0x10D0 && c <= 0x10FF) ? String.fromCharCode(c + 0xBC0) : s.charAt(i);
+      }
+      return out;
+    }
+
+    function applyLanguage(lang) {
+      document.documentElement.lang = lang;
+
+      document.querySelectorAll("[data-ka]").forEach(function (el) {
+        if (el.dataset.en === undefined) el.dataset.en = el.innerHTML; // remember English once
+        var ka = el.dataset.ka;
+        // Headings render in Georgian MTAVRULI (all-caps). Skip if the text is already
+        // authored in Mtavruli (lets a heading mix in lowercase words on purpose).
+        if (lang === "ka" && el.closest("h1, h2, h3") && !/[Ა-Ჿ]/.test(ka)) ka = toMtavruli(ka);
+        el.innerHTML = lang === "ka" ? ka : el.dataset.en;
+      });
+
+      document.querySelectorAll("[data-ka-placeholder]").forEach(function (el) {
+        if (el.dataset.enPlaceholder === undefined) el.dataset.enPlaceholder = el.placeholder;
+        el.placeholder = lang === "ka" ? el.dataset.kaPlaceholder : el.dataset.enPlaceholder;
+      });
+
+      document.querySelectorAll("[data-lang]").forEach(function (btn) {
+        btn.classList.toggle("lang-active", btn.getAttribute("data-lang") === lang);
+      });
+
+      try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    }
+
+    /* ---------- 2b. Contact details from js/site-config.js ----------
+       Fills every place the phone / e-mail / address / social links appear, so the
+       owner edits one file instead of hunting through the markup. Runs BEFORE
+       applyLanguage, because that is what captures the English copy into data-en. */
+    function applySiteInfo() {
+      if (typeof siteInfo === "undefined" || !siteInfo) return;
+      var digits = String(siteInfo.phone || "").replace(/[^0-9]/g, "");
+      document.querySelectorAll("[data-si]").forEach(function (el) {
+        var key = el.getAttribute("data-si");
+        if (key === "tel") {
+          if (digits) el.href = "tel:+" + digits;
+          if (siteInfo.phone) el.textContent = siteInfo.phone;
+        } else if (key === "whatsapp") {
+          if (digits) el.href = "https://wa.me/" + digits;
+        } else if (key === "email") {
+          if (!siteInfo.email) return;
+          el.href = "mailto:" + siteInfo.email;
+          el.textContent = siteInfo.email;
+        } else if (key === "address") {
+          if (!siteInfo.address) return;
+          el.innerHTML = siteInfo.address.en || "";
+          el.setAttribute("data-ka", siteInfo.address.ka || "");
+        } else if (siteInfo.social && key in siteInfo.social) {
+          var url = siteInfo.social[key];
+          // An empty link in the config means "we don't have this account yet" — hide it.
+          if (url) el.href = url; else el.style.display = "none";
+        }
+      });
+    }
+    applySiteInfo();
+
+    var savedLang = "ka";
+    try { savedLang = localStorage.getItem(LANG_KEY) || "ka"; } catch (e) {}
+    applyLanguage(savedLang);
+
+    document.querySelectorAll("[data-lang]").forEach(function (btn) {
+      btn.addEventListener("click", function () { applyLanguage(btn.getAttribute("data-lang")); });
+    });
+
+    /* ---------- 3b. Dark / light theme (system default + manual toggle) ---------- */
+    var THEME_KEY = "oritoki_theme";
+    var themeBtn = document.getElementById("themeToggle");
+    var themeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    function currentTheme() {
+      return document.documentElement.classList.contains("dark") ? "dark" : "light";
+    }
+    function applyTheme(theme, persist) {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      // The carabiner icon itself is driven by CSS off html.dark — only the state flag
+      // and the tooltip need updating here.
+      if (themeBtn) {
+        themeBtn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+        themeBtn.title = theme === "dark" ? "Light mode" : "Dark mode";
+      }
+      if (persist) { try { localStorage.setItem(THEME_KEY, theme); } catch (e) {} }
+    }
+    // Sync the button state with the class the early head-script already applied.
+    applyTheme(currentTheme(), false);
+    if (themeBtn) {
+      themeBtn.addEventListener("click", function () {
+        applyTheme(currentTheme() === "dark" ? "light" : "dark", true);
+      });
+    }
+    // Follow the OS setting live — but only until the user makes an explicit choice.
+    themeMq.addEventListener("change", function (e) {
+      var saved = null;
+      try { saved = localStorage.getItem(THEME_KEY); } catch (err) {}
+      if (!saved) applyTheme(e.matches ? "dark" : "light", false);
+    });
+
+    /* ---------- 4. Sticky header shadow on scroll ---------- */
+    var header = document.getElementById("header");
+
+    /* Sticky-header state on scroll (transparent hero → solid bar). */
+    function onHeaderScroll() {
+      if (header) header.classList.toggle("scrolled", (window.scrollY || window.pageYOffset || 0) > 40);
+    }
+    onHeaderScroll();
+    window.addEventListener("scroll", onHeaderScroll, { passive: true });
+
+    /* ---------- Rope-access technician = the custom scrollbar thumb (cinematic) ----------
+       Native scrollbar is hidden via CSS; the worker follows scroll progress with inertia,
+       and tilts / sways subtly based on scroll direction & velocity, settling when idle. */
+    (function () {
+      var climber = document.getElementById("climber");
+      if (!climber) return;
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var rootCS = getComputedStyle(document.documentElement);
+      function cssPx(name, fallback) { var v = parseFloat(rootCS.getPropertyValue(name)); return isNaN(v) ? fallback : v; }
+
+      /* ----- Rope geometry — the FULL ropes are drawn here (clean.png has no ropes of its own).
+         Anchor points are fractions of the figure box (measured off clean.png):
+         backup rope is a straight vertical the cam slides on; the working rope runs ceiling →
+         descender → (brake strand, in front) → brake hand → ground. The descender + hand hide
+         where the segments meet. */
+      var svgBack = document.getElementById("ropeBack"), svgFront = document.getElementById("ropeFront");
+      var rBackO = document.getElementById("rBackO"), rBackI = document.getElementById("rBackI");
+      var rWupO = document.getElementById("rWupO"), rWupI = document.getElementById("rWupI");
+      var rWloO = document.getElementById("rWloO"), rWloI = document.getElementById("rWloI");
+      var rBrkO = document.getElementById("rBrkO"), rBrkI = document.getElementById("rBrkI");
+      var hasRopes = !!(svgBack && svgFront && rBackO && rWupO && rWloO && rBrkO);
+      /* climber.png is the technician ALONE — no ropes are drawn into it, so every rope here
+         is free geometry. The two vertical x's are therefore set to the fractions of the two
+         rope stems in the header logo (0.481 / 0.573), which is what makes them continue out
+         of the two i's with no kink; both still pass correctly through his devices (the cam
+         sits at ~0.575, so 0.573 threads it better than the old 0.56 did). The body-relative
+         points below are the original, tuned-to-this-artwork values. */
+      var A = {
+        backupX: 0.573,              // backup rope — straight vertical, through the cam device
+                                     // AND through the second i of the header logo
+        workTopX: 0.399,             // working rope meets the ceiling at the logo's first i;
+                                     // it drifts only 0.02 of the width down to the descender,
+                                     // i.e. ~2px at 97px — visually still a straight drop
+        desc:   { x: 0.42, y: 0.37 },// working rope comes down INTO the descender
+        // Sits between the two hands. Both ends measured off the owner's marked-up screenshot,
+        // normalised to the figure: the upper end sits IN the gripping hand, not above it.
+        descOut:{ x: 0.478, y: 0.324 },
+        // Two separate points, both taken from the owner's pixel-marked screenshot: the strand
+        // stops where the rope enters the top of the glove, and the tail restarts where it
+        // leaves the bottom of it. Keeping them independent is what lets the glove read as
+        // gripping the rope rather than the rope passing over it.
+        // Measured off the glove in climber.png (it sits at x 75..145, y 351..413 of the 560x686
+        // artwork): the rope enters the fist on the thumb side at the top-right and leaves it
+        // on the little-finger side at the bottom, so the two segments read as ONE rope running
+        // through the hand rather than two pieces parked either side of it.
+        brakeIn:{ x: 0.226, y: 0.528 },// enters the fist — thumb side (owner's yellow mark)
+        brake:  { x: 0.165, y: 0.585 },// leaves the fist — little-finger side (owner's rose mark)
+        brakeTrimTop: 1,             // small pull-back at the gripping hand
+        brakeTrimBottom: 0.04,       // end the strand right at the fist's top-right edge so the
+                                     // glove's own dark outline frames the entry (fraction of length)
+        workGroundX: 0.165           // the tail hangs straight down from the exit point
+      };
+      var wrapEl = document.getElementById("ropeClimber");
+      var brandEl = document.getElementById("brandRope");   // ropes hang from its lower edge
+      function sizeRopes() {
+        if (!hasRopes) return;
+        var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
+        svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box);
+        // The rope is 23px wide in the 826px-wide source crop — keep the drawn rope the
+        // same thickness at any width, so it continues the artwork without stepping.
+        if (wrapEl) {
+          // Deliberately thinner than the logo's own rope (which measures 0.0387 of the strip):
+          // at full match the drawn ropes read as heavy bars next to the figure.
+          var w = vw * 0.020;
+          wrapEl.style.setProperty("--rope-w", w.toFixed(2));
+          wrapEl.style.setProperty("--rope-core", (w * 0.733).toFixed(2));
+        }
+      }
+      function setSeg(o, i, d) { o.setAttribute("d", d); i.setAttribute("d", d); }
+      function drawRopes() {
+        if (!hasRopes) return;
+        var Wn = climber.offsetWidth || cssPx("--worker-width", 58);
+        var Hn = climber.offsetHeight || Wn * 1.225;
+        var VH = window.innerHeight, top = currentY;
+        function pt(fx, fy) { return (fx * Wn).toFixed(1) + " " + (top + fy * Hn).toFixed(1); }
+        function px(fx) { return (fx * Wn).toFixed(1); }
+        /* Both ropes begin at the BOTTOM EDGE OF THE LOGO, not at the top of the viewport.
+           Above that line the rope (and its bolt) is already part of the logo artwork, and
+           the header is transparent until you scroll — so drawing from -24 made a second,
+           bolt-less rope appear above the wordmark. The 2px overlap hides the join. */
+        var ceil = -24;
+        if (brandEl) {
+          var lb = brandEl.getBoundingClientRect().bottom;
+          if (lb > 0) ceil = lb - 2;
+        }
+        // BACKUP rope, behind: logo bolt to ground (cam slides down it)
+        setSeg(rBackO, rBackI, "M " + px(A.backupX) + " " + ceil + " L " + px(A.backupX) + " " + (VH + 24));
+        // WORKING rope, behind: logo bolt → descender (grows as he descends)
+        setSeg(rWupO, rWupI, "M " + px(A.workTopX) + " " + ceil + " L " + pt(A.desc.x, A.desc.y));
+        // WORKING rope, behind: brake hand → ground (shrinks as he descends)
+        setSeg(rWloO, rWloI, "M " + pt(A.brake.x, A.brake.y) + " L " + px(A.workGroundX) + " " + (VH + 24));
+        // WORKING rope brake strand, in front: gripping hand → brake hand, trimmed at both
+        // ends so the hands appear to hold it instead of the rope lying across them.
+        var ax = A.descOut.x * Wn, ay = top + A.descOut.y * Hn;
+        var bx = A.brakeIn.x * Wn, by = top + A.brakeIn.y * Hn;
+        var vx = bx - ax, vy = by - ay, len = Math.sqrt(vx * vx + vy * vy) || 1;
+        // End the strand a little SHORT of the fist (brakeTrimBottom) so the glove's own dark
+        // outline frames the rope's entry — like the tail does at the bottom — instead of the
+        // rope lying on top of the glove and hiding that outline.
+        var ex = bx - vx * A.brakeTrimBottom, ey = by - vy * A.brakeTrimBottom;
+        setSeg(rBrkO, rBrkI,
+          "M " + (ax + (vx / len) * A.brakeTrimTop).toFixed(1) + " " + (ay + (vy / len) * A.brakeTrimTop).toFixed(1) +
+          " L " + ex.toFixed(1) + " " + ey.toFixed(1));
+      }
+
+      var targetY = 0, currentY = 0, targetRot = 0, currentRot = 0, targetSway = 0, currentSway = 0;
+      var lastScrollY = window.scrollY || 0, idleTimer = null, running = false;
+
+      function trackBounds() {
+        var top0 = (header ? header.offsetHeight : 64) + 6;               // start just below the header
+        var bottom = window.innerHeight - climber.offsetHeight - cssPx("--climber-bottom-gap", 10);
+        return { top0: top0, bottom: Math.max(top0, bottom) };
+      }
+      function computeTarget() {
+        var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        var p = maxScroll > 0 ? Math.min(Math.max((window.scrollY || 0) / maxScroll, 0), 1) : 0;
+        var b = trackBounds();
+        targetY = b.top0 + p * (b.bottom - b.top0);
+      }
+      function draw() {
+        climber.style.transform = "translate(-50%,0) translate3d(" + currentSway.toFixed(2) + "px," + currentY.toFixed(2) + "px,0) rotate(" + currentRot.toFixed(2) + "deg)";
+        drawRopes();
+      }
+      function loop() {
+        currentY    += (targetY    - currentY)    * 0.14;   // inertia: trail then catch up
+        currentRot  += (targetRot  - currentRot)  * 0.12;
+        currentSway += (targetSway - currentSway) * 0.12;
+        draw();
+        if (Math.abs(targetY - currentY) < 0.25 && Math.abs(targetRot - currentRot) < 0.04 && Math.abs(targetSway - currentSway) < 0.04) { running = false; return; }
+        requestAnimationFrame(loop);
+      }
+      function run() { if (!running) { running = true; requestAnimationFrame(loop); } }
+
+      function onScroll() {
+        computeTarget();
+        if (reduce) { currentY = targetY; currentRot = targetRot = currentSway = targetSway = 0; draw(); return; }
+        var y = window.scrollY || 0, v = y - lastScrollY; lastScrollY = y;   // v > 0 = scrolling down
+        targetRot  = 0;                                                     // no tilt: keeps the rope strips aligned at the seams
+        targetSway = 0;                                                     // no sideways sway: keeps the thin rope strips from shimmering
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(function () { targetRot = 0; targetSway = 0; run(); }, 160);   // settle to neutral
+        run();
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", function () { sizeRopes(); computeTarget(); run(); });
+      window.addEventListener("load", function () { sizeRopes(); computeTarget(); currentY = targetY; draw(); });
+      climber.addEventListener("load", function () { sizeRopes(); computeTarget(); currentY = targetY; draw(); });  // wait for the PNG so offsetHeight is real
+      if (window.ResizeObserver) { try { new ResizeObserver(function () { computeTarget(); run(); }).observe(document.body); } catch (e) {} }
+
+      /* ---- Grab the technician and drag to scroll (he acts as a scrollbar thumb) ---- */
+      var dragging = false, dragStartClientY = 0, dragStartScroll = 0;
+      function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
+      climber.addEventListener("pointerdown", function (e) {
+        dragging = true;
+        dragStartClientY = e.clientY;
+        dragStartScroll = window.scrollY || window.pageYOffset || 0;
+        document.body.classList.add("climber-grabbing");
+        document.documentElement.style.scrollBehavior = "auto";      // instant while dragging (page scrolls smooth otherwise)
+        if (climber.setPointerCapture) { try { climber.setPointerCapture(e.pointerId); } catch (x) {} }
+        e.preventDefault();
+      });
+      climber.addEventListener("pointermove", function (e) {
+        if (!dragging) return;
+        var b = trackBounds(), range = b.bottom - b.top0, ms = maxScroll();
+        if (range > 0 && ms > 0) {
+          var dy = e.clientY - dragStartClientY;
+          var y = Math.max(0, Math.min(ms, dragStartScroll + dy * (ms / range)));
+          window.scrollTo(0, y);
+          computeTarget(); currentY = targetY; draw();               // stick to the cursor, no inertia lag while dragging
+        }
+        e.preventDefault();
+      });
+      function endDrag(e) {
+        if (!dragging) return;
+        dragging = false;
+        document.body.classList.remove("climber-grabbing");
+        document.documentElement.style.scrollBehavior = "";          // restore smooth scrolling
+        if (e && e.pointerId != null && climber.releasePointerCapture) { try { climber.releasePointerCapture(e.pointerId); } catch (x) {} }
+      }
+      climber.addEventListener("pointerup", endDrag);
+      climber.addEventListener("pointercancel", endDrag);
+      climber.addEventListener("dragstart", function (e) { e.preventDefault(); });   // stop the browser's native image drag stealing the first grab
+
+      sizeRopes(); computeTarget(); currentY = targetY; draw();
+    })();
+
+    /* ---------- 5. Mobile menu ---------- */
+    var burger = document.getElementById("burger");
+    var nav = document.getElementById("nav");
+    function closeMenu() {
+      nav.classList.remove("open");
+      document.body.classList.remove("menu-open");
+      burger.setAttribute("aria-expanded", "false");
+      burger.innerHTML = '<i class="fa-solid fa-bars"></i>';
+    }
+    if (burger && nav) {
+      burger.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var open = nav.classList.toggle("open");
+        document.body.classList.toggle("menu-open", open);
+        burger.setAttribute("aria-expanded", open ? "true" : "false");
+        burger.innerHTML = open ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+      });
+      nav.querySelectorAll("a").forEach(function (link) { link.addEventListener("click", closeMenu); });
+      /* Close the mobile drawer when tapping the empty area outside it (not only the X). */
+      document.addEventListener("click", function (e) {
+        if (!nav.classList.contains("open")) return;
+        if (nav.contains(e.target) || burger.contains(e.target)) return;
+        closeMenu();
+      });
+    }
+
+    // Move the language + theme controls into the drawer on mobile, back to the header
+    // bar on desktop. Moving the actual nodes keeps their existing click wiring intact.
+    var headerActions = document.getElementById("headerActions");
+    var navActions = document.getElementById("navActions");
+    var langToggleEl = document.getElementById("langToggle");
+    var controlsMq = window.matchMedia("(max-width: 1279px)");
+    function placeControls() {
+      if (!headerActions || !navActions || !langToggleEl || !themeBtn || !burger) return;
+      // Theme first, language second — same order as in the markup.
+      if (controlsMq.matches) {
+        navActions.appendChild(themeBtn);
+        navActions.appendChild(langToggleEl);
+      } else {
+        headerActions.insertBefore(themeBtn, burger);
+        headerActions.insertBefore(langToggleEl, burger);
+      }
+    }
+    placeControls();
+    if (controlsMq.addEventListener) controlsMq.addEventListener("change", placeControls);
+    else if (controlsMq.addListener) controlsMq.addListener(placeControls);
+
+    /* ---------- 6. Active nav link while scrolling ---------- */
+    var sections = document.querySelectorAll("section[id]");
+    var navLinks = document.querySelectorAll("#nav a");
+    if ("IntersectionObserver" in window && sections.length) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var id = entry.target.getAttribute("id");
+          navLinks.forEach(function (link) {
+            link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+          });
+        });
+      }, { rootMargin: "-45% 0px -50% 0px" });
+      sections.forEach(function (s) { spy.observe(s); });
+    }
+
+    /* ---------- 7. Reveal on scroll ---------- */
+    var reveals = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window && reveals.length) {
+      var revObserver = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) { entry.target.classList.add("in"); obs.unobserve(entry.target); }
+        });
+      }, { threshold: 0.12 });
+      reveals.forEach(function (el) { revObserver.observe(el); });
+    } else {
+      reveals.forEach(function (el) { el.classList.add("in"); });
+    }
+
+    /* ---------- 8. Footer year ---------- */
+    var yearEl = document.getElementById("year");
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    /* ---------- 9. Flash-highlight a service card reached from the dropdown ---------- */
+    function flashService(id) {
+      var el = id && document.getElementById(id);
+      if (!el) return;
+      el.classList.remove("svc-flash");
+      void el.offsetWidth;                 // restart the animation on repeat clicks
+      el.classList.add("svc-flash");
+      window.setTimeout(function () { el.classList.remove("svc-flash"); }, 2400);
+    }
+    document.querySelectorAll(".nav-dd-item").forEach(function (a) {
+      a.addEventListener("click", function () {
+        var id = (a.getAttribute("href") || "").replace("#", "");
+        if (id) window.setTimeout(function () { flashService(id); }, 420);
+      });
+    });
+    if (location.hash.indexOf("#svc-") === 0) {
+      window.setTimeout(function () { flashService(location.hash.slice(1)); }, 650);
+    }
+
+    /* Flash the "Join Us" strip (in Contact) when its nav/footer link is clicked. */
+    var joinEl = document.getElementById("technicians");
+    document.querySelectorAll('a[href="#technicians"]').forEach(function (a) {
+      a.addEventListener("click", function () {
+        if (!joinEl) return;
+        window.setTimeout(function () {
+          joinEl.classList.remove("join-flash");
+          void joinEl.offsetWidth;
+          joinEl.classList.add("join-flash");
+          window.setTimeout(function () { joinEl.classList.remove("join-flash"); }, 2400);
+        }, 500);
+      });
+    });
+
+    /* ---------- 10. Service detail modal (iOS-style zoom-from-card) ---------- */
+    (function () {
+      var m = document.getElementById("svcModal");
+      var mCard = document.getElementById("svcModalCard");
+      var mBack = document.getElementById("svcBackdrop");
+      if (!m || !mCard || !mBack) return;
+      var openCard = null, animTimer = null;
+
+      function buildDetail(card) {
+        var h3 = card.querySelector("h3");
+        var ul = card.querySelector("ul");
+        var twoCol = (ul && ul.children.length >= 5) ? "two-col" : "";
+        return '<button class="svc-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>'
+          + '<div class="svc-detail">'
+          + "<h3>" + (h3 ? h3.innerHTML : "") + "</h3>"
+          + '<ul class="' + twoCol + '">' + (ul ? ul.innerHTML : "") + "</ul></div>";
+      }
+
+      function openSvc(card) {
+        openCard = card;
+        var r = card.getBoundingClientRect();
+        mCard.innerHTML = buildDetail(card);
+        mCard.classList.toggle("svc-modal-photo", card.id === "svc-glass");
+        m.classList.add("open");
+        document.body.style.overflow = "hidden";
+        mCard.style.overflowY = "hidden";
+        mCard.style.transition = "none";
+        mCard.style.borderRadius = "1rem";
+        // measure the target height at the final width
+        var tw = Math.min(800, window.innerWidth - 40);
+        mCard.style.left = "0px"; mCard.style.top = "0px";
+        mCard.style.width = tw + "px"; mCard.style.height = "auto";
+        // Pin the content to its FINAL width before the card starts growing. The card
+        // animates width/height, so without this the text re-wraps on every frame and
+        // visibly reshuffles; pinned, it is laid out once and the growing card simply
+        // uncovers it (the card is overflow:hidden). Released once the card has settled.
+        var detail = mCard.querySelector(".svc-detail");
+        if (detail) detail.style.width = mCard.clientWidth + "px";
+        var th = mCard.offsetHeight;
+        var maxH = window.innerHeight - 40;
+        if (th > maxH) th = maxH;
+        var tl = (window.innerWidth - tw) / 2;
+        var tt = (window.innerHeight - th) / 2;
+        // start collapsed at the clicked card's rect
+        mCard.style.width = r.width + "px"; mCard.style.height = r.height + "px";
+        mCard.style.left = r.left + "px"; mCard.style.top = r.top + "px";
+        mCard.getBoundingClientRect(); // reflow
+        window.requestAnimationFrame(function () {
+          mCard.style.transition = "top .5s cubic-bezier(.22,1,.36,1), left .5s cubic-bezier(.22,1,.36,1), width .5s cubic-bezier(.22,1,.36,1), height .5s cubic-bezier(.22,1,.36,1), border-radius .5s ease";
+          mCard.style.left = tl + "px"; mCard.style.top = tt + "px";
+          mCard.style.width = tw + "px"; mCard.style.height = th + "px";
+          mCard.style.borderRadius = "1.5rem";
+          m.classList.add("show");
+        });
+        clearTimeout(animTimer);
+        animTimer = window.setTimeout(function () {
+          if (!m.classList.contains("open")) return;
+          mCard.style.overflowY = "auto";
+          // Re-pin to the settled inner width. Enabling the scrollbar narrows the content
+          // box, so simply releasing the width here would re-wrap the text one last time —
+          // a visible blink right as the card finishes opening.
+          var d = mCard.querySelector(".svc-detail");
+          if (d) d.style.width = mCard.clientWidth + "px";
+        }, 560);
+        var cb = mCard.querySelector(".svc-close");
+        if (cb) cb.addEventListener("click", closeSvc);
+      }
+
+      function closeSvc() {
+        if (!openCard) return;
+        var r = openCard.getBoundingClientRect();
+        mCard.style.overflowY = "hidden";
+        // Pin the content again so it does not re-wrap while the card shrinks back.
+        var detail = mCard.querySelector(".svc-detail");
+        if (detail) detail.style.width = detail.offsetWidth + "px";
+        mCard.style.transition = "top .42s cubic-bezier(.4,0,.2,1), left .42s cubic-bezier(.4,0,.2,1), width .42s cubic-bezier(.4,0,.2,1), height .42s cubic-bezier(.4,0,.2,1), border-radius .42s ease";
+        mCard.style.left = r.left + "px"; mCard.style.top = r.top + "px";
+        mCard.style.width = r.width + "px"; mCard.style.height = r.height + "px";
+        mCard.style.borderRadius = "1rem";
+        m.classList.remove("show");
+        clearTimeout(animTimer);
+        animTimer = window.setTimeout(function () {
+          m.classList.remove("open");
+          document.body.style.overflow = "";
+          mCard.innerHTML = "";
+          mCard.removeAttribute("style");
+          openCard = null;
+        }, 440);
+      }
+
+      mBack.addEventListener("click", closeSvc);
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && m.classList.contains("open")) closeSvc(); });
+      document.querySelectorAll("#services article").forEach(function (card) {
+        card.addEventListener("click", function () { if (!m.classList.contains("open")) openSvc(card); });
+      });
+    })();
+
+    /* ---------- 11. Service search (command-palette overlay) ----------
+       The index is read straight out of the service cards, so adding or editing a
+       service needs no change here. Matching is prefix-first: Georgian inflects with
+       suffixes (ფასადი / ფასადის / ფასადებზე), so a prefix hit is what makes a search
+       for the base word find them all. Exact substring ranks highest, then prefix,
+       then a small typo tolerance. */
+    (function () {
+      var wrap  = document.getElementById("svcSearch");
+      var panel = document.getElementById("ssPanel");
+      var input = document.getElementById("ssInput");
+      var list  = document.getElementById("ssResults");
+      var btn   = document.getElementById("searchBtn");
+      var back  = document.getElementById("ssBackdrop");
+      if (!wrap || !panel || !input || !list || !btn || !back) return;
+
+      /* Words people search for that do not appear in the card text. Never displayed —
+         they only widen what a card matches. */
+      var EXTRA = {
+        "svc-glass":        "რეცხვა დასუფთავება წმენდა შუშა ვიტრაჟი ცხაური washing cleaning window glazing curtain wall highrise",
+        "svc-buildings":    "სახლი კორპუსი შენობა რემონტი მოვლა ფასადი building repair upkeep facade housing",
+        "svc-electrical":   "სინათლე კაბელი ანტენა ინტერნეტი განათება ელექტრიკა light cable antenna internet lighting wiring",
+        "svc-signage":      "ბანერი აბრა ვიტრინა ბილბორდი ლოგო banner sign billboard logo branding advertising",
+        "svc-painting":     "საღებავი ფერი ანტიკოროზიული გრუნტი paint colour coating anticorrosion primer",
+        "svc-construction": "მშენებლობა იზოლაცია ბეტონი აგური ჰიდროიზოლაცია construction insulation concrete brick waterproofing",
+        "svc-rock":         "მთა ფერდობი ბადე ქვა ეროზია mountain slope rockfall netting geotechnical erosion",
+        "svc-industrial":   "ქარხანა მილი რეზერვუარი საკვამური ბუნკერი factory chimney tank pipe silo plant",
+        "svc-inspection":   "შემოწმება დათვალიერება ექსპერტიზა აუდიტი inspection survey audit check report",
+        "svc-film":         "კინო ვიდეო კამერა კონცერტი დეკორაცია stage concert rigging camera film event",
+        "svc-emergency":    "სასწრაფო ავარია გადაუდებელი სამაშველო emergency rescue urgent accident"
+      };
+
+      /* ---- text helpers ---- */
+      var scratch = document.createElement("div");
+      function plain(html) { scratch.innerHTML = html || ""; return scratch.textContent || ""; }
+      function norm(s) {
+        return plain(s)
+          // Headings render in Mtavruli; fold back so typed Mkhedruli still matches.
+          .replace(/[Ა-Ჺ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0x0BC0); })
+          .toLowerCase()
+          .replace(/[^0-9a-zა-ჿ]+/g, " ")
+          .trim();
+      }
+      /* Levenshtein that bails out as soon as it passes the cap. */
+      function within(a, b, max) {
+        if (Math.abs(a.length - b.length) > max) return false;
+        var prev = [], cur = [], i, j;
+        for (j = 0; j <= b.length; j++) prev[j] = j;
+        for (i = 1; i <= a.length; i++) {
+          cur = [i];
+          var best = i;
+          for (j = 1; j <= b.length; j++) {
+            cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1,
+                              prev[j - 1] + (a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1));
+            if (cur[j] < best) best = cur[j];
+          }
+          if (best > max) return false;
+          prev = cur;
+        }
+        return prev[b.length] <= max;
+      }
+
+      /* ---- index ---- */
+      var entries = [];
+      function bothLangs(el) {
+        if (!el) return "";
+        var en = (el.dataset && el.dataset.en !== undefined) ? el.dataset.en : el.innerHTML;
+        var ka = (el.dataset && el.dataset.ka) ? el.dataset.ka : "";
+        return plain(en) + " " + plain(ka);
+      }
+      function buildIndex() {
+        entries = [];
+        document.querySelectorAll("#services article").forEach(function (card) {
+          var h3 = card.querySelector("h3");
+          var p  = card.querySelector("p");
+          var bullets = [].slice.call(card.querySelectorAll("li span[data-ka]"));
+          entries.push({
+            id: card.id,
+            titleEl: h3,
+            title: norm(bothLangs(h3)),
+            desc:  norm(bothLangs(p)),
+            extra: norm(EXTRA[card.id] || ""),
+            bullets: bullets.map(function (b) { return { el: b, text: norm(bothLangs(b)) }; })
+          });
+        });
+      }
+
+      /* ---- matching ---- */
+      function scoreField(text, tok, weight) {
+        if (!text) return 0;
+        var ws = text.split(" "), i;
+        for (i = 0; i < ws.length; i++) if (ws[i].indexOf(tok) === 0) return weight * 3;
+        if (text.indexOf(tok) > -1) return weight * 2;
+        if (tok.length >= 4) {
+          var tol = tok.length >= 7 ? 2 : 1;
+          for (i = 0; i < ws.length; i++) if (within(ws[i], tok, tol)) return weight;
+        }
+        return 0;
+      }
+      function search(raw) {
+        var query = norm(raw);
+        if (!query) return [];
+        var toks = query.split(" ");
+        var out = [];
+        entries.forEach(function (e) {
+          var total = 0, bullet = null, bulletBest = 0, ok = true;
+          toks.forEach(function (t) {
+            if (!ok) return;
+            var s = Math.max(scoreField(e.title, t, 6), scoreField(e.desc, t, 3), scoreField(e.extra, t, 1));
+            e.bullets.forEach(function (b) {
+              var bs = scoreField(b.text, t, 2);
+              if (bs > bulletBest) { bulletBest = bs; bullet = b.el; }
+              if (bs > s) s = bs;
+            });
+            if (s === 0) { ok = false; return; }   // every word must land somewhere
+            total += s;
+          });
+          if (!ok) return;
+          if (e.title.indexOf(query) === 0) total += 20;
+          else if (e.title.indexOf(query) > -1) total += 10;
+          out.push({ entry: e, score: total, bullet: bullet });
+        });
+        out.sort(function (a, b) { return b.score - a.score; });
+        return out.slice(0, 8);
+      }
+
+      /* ---- rendering ---- */
+      function render() {
+        list.innerHTML = "";
+        if (!input.value.trim()) return;
+        var results = search(input.value);
+        if (!results.length) {
+          var none = document.createElement("div");
+          none.className = "ss-empty";
+          none.textContent = document.documentElement.lang === "ka" ? "ვერაფერი მოიძებნა" : "No matches";
+          list.appendChild(none);
+          return;
+        }
+        results.forEach(function (r, i) {
+          var a = document.createElement("a");
+          a.className = "ss-item" + (i === 0 ? " sel" : "");
+          a.href = "#" + r.entry.id;
+          var t = document.createElement("span"); t.className = "ss-t";
+          // Read the live cards, so results follow whichever language is on screen.
+          t.textContent = r.entry.titleEl ? r.entry.titleEl.textContent.trim() : "";
+          a.appendChild(t);
+          if (r.bullet) {
+            var b = document.createElement("span"); b.className = "ss-b";
+            b.textContent = r.bullet.textContent.trim();
+            a.appendChild(b);
+          }
+          a.addEventListener("click", function (ev) { ev.preventDefault(); go(r.entry.id); });
+          list.appendChild(a);
+        });
+      }
+      function items() { return [].slice.call(list.querySelectorAll(".ss-item")); }
+      function move(step) {
+        var all = items(), i = -1, k;
+        if (!all.length) return;
+        for (k = 0; k < all.length; k++) if (all[k].classList.contains("sel")) i = k;
+        if (i > -1) all[i].classList.remove("sel");
+        i = (i + step + all.length) % all.length;
+        all[i].classList.add("sel");
+        all[i].scrollIntoView({ block: "nearest" });
+      }
+
+      /* ---- open / close / go ---- */
+      function open() {
+        buildIndex();                     // cheap, and picks up any content change
+        wrap.classList.add("open");
+        wrap.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        window.requestAnimationFrame(function () {
+          wrap.classList.add("show");
+          input.focus(); input.select();
+        });
+      }
+      function close() {
+        wrap.classList.remove("show");
+        wrap.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        window.setTimeout(function () { wrap.classList.remove("open"); }, 300);
+      }
+      function go(id) {
+        // Close first: the scroll cannot run while the body is locked.
+        close();
+        window.setTimeout(function () {
+          location.hash = "#" + id;
+          window.setTimeout(function () { flashService(id); }, 420);
+        }, 60);
+      }
+
+      btn.addEventListener("click", open);
+      back.addEventListener("click", close);
+      input.addEventListener("input", render);
+      document.getElementById("ssHint").addEventListener("click", close);
+      document.addEventListener("keydown", function (e) {
+        var live = wrap.classList.contains("open");
+        if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) { e.preventDefault(); live ? close() : open(); return; }
+        if (!live) return;
+        if (e.key === "Escape") { e.preventDefault(); close(); }
+        else if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
+        else if (e.key === "ArrowUp")   { e.preventDefault(); move(-1); }
+        else if (e.key === "Enter") {
+          var sel = list.querySelector(".ss-item.sel");
+          if (sel) { e.preventDefault(); go(sel.getAttribute("href").slice(1)); }
+        }
+      });
+    })();
+  })();
+  </script>
 </body>
 </html>

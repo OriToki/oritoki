@@ -6,5 +6,8 @@ Desktop.ini
 *.swp
 .vscode/
 
+# Claude Code local workspace (settings, session data — not part of the site)
+.claude/
+
 # Local deploy artifact (the upload ZIP is generated outside the repo)
 misho-website.zip

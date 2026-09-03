@@ -11,8 +11,8 @@
   --ink-2: #16223a;
   --slate: #41506a;        /* body text */
   --muted: #6b7890;        /* secondary text */
-  --bg: #ffffff;
-  --bg-soft: #f4f6fa;      /* alternate section background */
+  --bg: #eaf3fc;           /* calm light-blue page background */
+  --bg-soft: #d9e9f8;      /* alternate section background (soft blue) */
   --line: #e5e9f1;
   --white: #ffffff;
   --radius: 14px;
@@ -30,7 +30,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: "Inter", "Noto Sans Georgian", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--slate);
   background: var(--bg);
   line-height: 1.65;
@@ -41,7 +41,7 @@ img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3 {
-  font-family: "Oswald", "Inter", sans-serif;
+  font-family: "Oswald", "Noto Sans Georgian", "Inter", sans-serif;
   color: var(--ink);
   line-height: 1.12;
   font-weight: 600;
@@ -109,10 +109,18 @@ section[id] { scroll-margin-top: var(--header-h); }
 }
 .nav-wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 
+/* header spans the full browser width so the brand, menu and action
+   buttons spread out instead of clustering in the centered container */
+.site-header > .container {
+  max-width: none;
+  padding-left: clamp(22px, 4vw, 56px);
+  padding-right: clamp(22px, 4vw, 56px);
+}
+
 .brand { display: flex; align-items: center; gap: 11px; }
 .brand-logo { width: 40px; height: 40px; }
 .brand-name {
-  font-family: "Oswald", sans-serif;
+  font-family: "Oswald", "Noto Sans Georgian", sans-serif;
   font-weight: 700;
   font-size: 1.35rem;
   letter-spacing: 1.5px;
@@ -122,7 +130,7 @@ section[id] { scroll-margin-top: var(--header-h); }
   flex-direction: column;
 }
 .brand-name small {
-  font-family: "Inter", sans-serif;
+  font-family: "Inter", "Noto Sans Georgian", sans-serif;
   font-weight: 500;
   font-size: 0.6rem;
   letter-spacing: 2.5px;
@@ -131,8 +139,11 @@ section[id] { scroll-margin-top: var(--header-h); }
   margin-top: 3px;
 }
 
-.nav { display: flex; gap: 6px; }
+.nav { display: flex; gap: 12px; }
 .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   color: rgba(255, 255, 255, 0.86);
   font-weight: 500;
   font-size: 0.95rem;
@@ -141,8 +152,16 @@ section[id] { scroll-margin-top: var(--header-h); }
   position: relative;
   transition: color 0.2s, background 0.2s;
 }
+.nav-link i {
+  font-size: 0.82rem;
+  color: var(--orange);
+  opacity: 0.85;
+  transition: opacity 0.2s, transform 0.2s;
+}
 .nav-link:hover { color: #fff; }
+.nav-link:hover i { opacity: 1; transform: translateY(-1px); }
 .nav-link.active { color: var(--orange); }
+.nav-link.active i { opacity: 1; }
 .nav-link.active::after {
   content: "";
   position: absolute;
@@ -255,7 +274,7 @@ section[id] { scroll-margin-top: var(--header-h); }
 .stat { text-align: center; padding: 6px; }
 .stat-num {
   display: block;
-  font-family: "Oswald", sans-serif;
+  font-family: "Oswald", "Noto Sans Georgian", sans-serif;
   font-size: clamp(1.9rem, 4vw, 2.8rem);
   font-weight: 700;
   color: var(--orange);
@@ -424,7 +443,7 @@ a.contact-item:hover { border-color: var(--orange); transform: translateX(3px); 
   color: #fff;
   font-size: 1.1rem;
 }
-.contact-item strong { color: var(--ink); font-family: "Oswald", sans-serif; letter-spacing: 0.5px; }
+.contact-item strong { color: var(--ink); font-family: "Oswald", "Noto Sans Georgian", sans-serif; letter-spacing: 0.5px; }
 .contact-socials { display: flex; gap: 12px; margin-top: 6px; }
 .contact-socials a {
   width: 44px; height: 44px;

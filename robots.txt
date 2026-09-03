@@ -1,0 +1,7 @@
+# robots.txt — oritoki.ge
+# Allow all search engines to crawl the whole site.
+User-agent: *
+Allow: /
+
+# Point crawlers to the sitemap (update the domain if it changes).
+Sitemap: https://oritoki.ge/sitemap.xml
