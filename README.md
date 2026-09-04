@@ -89,7 +89,7 @@ Pick any one of these (all have free plans and give you a web address):
 
 **Easiest — Netlify Drop**
 1. Go to **https://app.netlify.com/drop**
-2. Drag the whole `misho` folder onto the page.
+2. Drag the whole `oritoki` folder onto the page.
 3. You instantly get a link like `your-site.netlify.app`. To update, drag again.
 
 **Cloudflare Pages** — https://pages.cloudflare.com (similar, free)
@@ -102,31 +102,38 @@ You can later connect your own domain (e.g. `oritoki.ge`) in the host's settings
 
 ## 6. Change the colors / company name
 
-- **Colors:** open `css/style.css`, edit the values at the very top under
-  `:root` (e.g. `--orange` is the main accent color).
+- **Colors:** they live at the top of `index.html`, inside the `<style>` block —
+  the block that starts with `:root {`. The orange accent is `#f97316`.
+  (`css/style.css` is left over from an older version of the site and is **not**
+  used any more — editing it changes nothing.)
 - **Company name "Oritoki":** search for `ORITOKI` in `index.html` and replace it.
-- **Logo:** replace `images/logo.svg` with your own logo (keep the same name).
+- **Logo:** there is no logo in the header by design. `join.html` shows
+  `images/emblem.png` in its header — replace that file to change it.
 
 ---
 
 ## File overview
 
 ```
-misho/
-├── index.html          ← the page + all text (English + Georgian)
-├── css/style.css       ← colors, fonts, layout
+oritoki/
+├── index.html          ← the page + all text (English + Georgian), and its styles
+├── join.html           ← the "Join our network" application form
 ├── js/
 │   ├── images.js       ← THE PHOTO LIST you edit to add carousel pictures
 │   ├── site-config.js  ← THE CONTACT DETAILS (phone, e-mail, address, socials)
-│   └── main.js         ← menu, language switch, carousel (rarely edited)
+│   └── analytics.js    ← where the Google Analytics ID goes
 ├── images/
 │   ├── gallery/        ← put carousel photos here
 │   ├── team/           ← team member photos
-│   ├── hero.svg        ← big background image on the home screen
-│   ├── about.svg       ← picture in the About section
-│   └── logo.svg        ← logo
+│   ├── hero-photo.jpg  ← big background image on the home screen
+│   ├── about.jpg       ← picture in the About section
+│   └── climber.png     ← the rope-access technician who rides the scrollbar
+├── tools/              ← scripts used to build the artwork (not part of the site)
 └── README.md           ← this guide
 ```
+
+`css/style.css` and `js/main.js` are also in the folder but are **no longer used** —
+they belong to an earlier version of the site.
 
 The carousel uses [Swiper](https://swiperjs.com), icons by
 [Font Awesome](https://fontawesome.com), fonts by Google Fonts — all free and
