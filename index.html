@@ -172,9 +172,17 @@
     /* The brake strand lives in the second SVG (#ropeFront), which can't reach #ropeBack's
        pattern — point it at its own local copy so it keeps the dark weave, like the tail. */
     #ropeFront .rope-in { stroke: url(#ropeWeaveF) #c3c3c3; }
+    /* Bolted to the building: fixed size, fixed place, never transformed. z-1 puts them in the
+       same layer as the back ropes, so a rope's first pixels tuck behind the knot. */
+    /* The width is also set from JS, which is the source of truth; this default just stops the
+       full-size asset flashing before the script runs. */
+    .anchor { position: absolute; z-index: 1; width: calc(var(--worker-width) * 0.145); height: auto; pointer-events: none; }
     #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
     body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
     body.climber-grabbing #climber { cursor: grabbing; }
+    /* Set while the pointer is over a rope above or below him — the ropes act as the scrollbar's
+       track, so they should read as clickable. */
+    body.rope-track { cursor: pointer; }
     /* The native scrollbar stays on the right (scroll box, thumb, arrows). The technician is a
        decorative rappeller on the LEFT that still tracks scroll progress. */
     /* Hide him while the mobile menu is open (otherwise he shows over the drawer). */
@@ -669,6 +677,13 @@
       <path class="rope-out" id="rKnotBO"></path><path class="rope-in" id="rKnotBI"></path>  <!-- backup rope's knot -->
       <path class="rope-out" id="rKnotWO"></path><path class="rope-in" id="rKnotWI"></path>  <!-- working rope's knot -->
     </svg>
+    <!-- The two anchors the ropes hang from: bolt hanger, locking carabiner, knot. Cut from the
+         owner's own reference photo, one asset used twice, and staggered in height the way that
+         reference has them. They are BOLTED TO THE BUILDING, so unlike everything else in this
+         strip they never move: no sway, no lean, no scroll. JS only sizes and places them
+         (see sizeRopes), and each rope starts at the bottom edge of its own anchor. -->
+    <img class="anchor" id="anchorBack" src="images/anchor.png" alt="" draggable="false" />
+    <img class="anchor" id="anchorWork" src="images/anchor.png" alt="" draggable="false" />
     <img id="climber" src="images/climber.png?v=12" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
       <!-- A LOCAL copy of the weave: Chrome won't apply #ropeBack's pattern to a path in this
@@ -1381,6 +1396,15 @@
         // look diagrammatic rather than real.
         ropeEndGapBackup: 32,
         ropeEndGapWork: 58,
+        // The anchors. `anchorRopeX` is where the rope runs across the anchor image (0..1 of its
+        // width) — that is what gets lined up with the rope, not the image's centre. The two sit at
+        // different heights, as they do in the reference, and each rope starts at its own anchor's
+        // bottom edge, which is exactly where the knot lets the rope go.
+        anchorW: 0.145,              // width, as a fraction of the strip
+        anchorAspect: 399 / 112,     // the asset's own height/width
+        anchorRopeX: 0.419,
+        anchorTopBackup: 64,         // px below the top of the window — clear of the header bar
+        anchorTopWork: 92,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
         camY: 0.15,                  // where the backup rope passes through his device, down the
                                      // figure — the rope bends there, fixed above, free below
@@ -1392,10 +1416,24 @@
         hangY: 0.34                  // where on the figure the rope carries him (his descender)
       };
       var wrapEl = document.getElementById("ropeClimber");
+      var anchorBack = document.getElementById("anchorBack");
+      var anchorWork = document.getElementById("anchorWork");
+      var ceilBack = -24, ceilWork = -24;    // where each rope begins: its anchor's lower edge
       function sizeRopes() {
         if (!hasRopes) return;
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box);
+        // Place the anchors, and take the rope ceilings from where their knots end.
+        var aw = vw * A.anchorW, ah = aw * A.anchorAspect;
+        function put(el, ropeFx, topPx) {
+          if (!el) return topPx + ah;
+          el.style.width = aw.toFixed(1) + "px";
+          el.style.left = (ropeFx * vw - A.anchorRopeX * aw).toFixed(1) + "px";
+          el.style.top = topPx + "px";
+          return topPx + ah - 1;                       // 1px overlap so no seam shows at the knot
+        }
+        ceilBack = put(anchorBack, A.backupX, A.anchorTopBackup);
+        ceilWork = put(anchorWork, A.workTopX, A.anchorTopWork);
         // The rope is 23px wide in the 826px-wide source crop — keep the drawn rope the
         // same thickness at any width, so it continues the artwork without stepping.
         if (wrapEl) {
@@ -1452,10 +1490,8 @@
             " L " + (ax2 + nx * E).toFixed(1) + " " + (ay2 + ny * E).toFixed(1) +
             " L " + (ax1 + nx * E).toFixed(1) + " " + (ay1 + ny * E).toFixed(1) + " Z");
         }
-        /* Both ropes start ABOVE the viewport now that the header logo is gone — they used to
-           begin at the logo's lower edge, because above that line the rope and its bolt were
-           already part of the artwork. With no logo they simply run off the top of the screen. */
-        var ceil = -24;
+        /* Each rope begins at its own anchor's knot (ceilBack / ceilWork, set in sizeRopes) — the
+           anchors are the top of the whole arrangement, so nothing is drawn above them. */
         /* The rope ends are anchored to the BOTTOM OF THE PAGE, not to the window: their end sits
            this far above the end of the document, so while you scroll through home / about /
            services / gallery / contact the ropes simply run off the bottom of the screen and read
@@ -1521,25 +1557,31 @@
           var len = Math.max(1, ey - hy);
           return { x: hx + sinR * len * 0.45, y: hy + cosR * len * 0.45 };
         }
+        /* A rope does not stretch. The free end below a device trails behind it when he swings,
+           but it stays the SAME DISTANCE from that device — so the sideways lag has to be paid
+           for in height: the end rises by exactly as much as the lag takes out of the drop.
+           Letting it lag sideways at a fixed height, as it did before, made the rope read as
+           rubber. `lag` is how far the end trails; `rest` is the length it hangs at rest. */
+        function freeEnd(hx, hy, restY, lag) {
+          var rest = Math.max(1, restY - hy);
+          var l = Math.max(-rest * 0.85, Math.min(rest * 0.85, lag));
+          return { x: hx + l, y: hy + Math.sqrt(rest * rest - l * l) };
+        }
         function hangQ(c, ex, ey) {                   // the curve only — prefix it with its own M
           return " Q " + c.x.toFixed(1) + " " + c.y.toFixed(1) + " " + ex.toFixed(1) + " " + ey.toFixed(1);
         }
         // BACKUP rope, behind: fixed at the top, bending at his cam, loose end below him
         var cam = bodyXY(A.backupX, A.camY), camX = cam.x, camYpx = cam.y;
-        var backBotX = A.backupX * Wn + swayFree;
-        var backCtl = ctrlFor(camX, camYpx, endB);
+        var backEnd = freeEnd(camX, camYpx, endB, swayFree - sway);
+        var backCtl = ctrlFor(camX, camYpx, backEnd.y);
         setSeg(rBackO, rBackI,
-          "M " + px(A.backupX) + " " + ceil +
+          "M " + px(A.backupX) + " " + ceilBack.toFixed(1) +
           " L " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
-          hangQ(backCtl, backBotX, endB));
-        setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backBotX, endB, endB - A.knotRise, trueEndB));
-        // The main rope's tail hangs free below him too, on its own spring — so both ends move,
-        // but never quite in step. (The taut brake strand between his two hands stays rigid: it
-        // is anchored to his body at both ends and carries his weight.)
-        var workBotX = A.workGroundX * Wn + tail2Sway;
+          hangQ(backCtl, backEnd.x, backEnd.y));
+        setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise, trueEndB));
         // WORKING rope, IN FRONT: off-screen top → descender (grows as he descends).
         // Front layer so it crosses over the absorber and rests on the descender.
-        setSeg(rWupO, rWupI, "M " + px(A.workTopX) + " " + ceil + " L " + pt(A.desc.x, A.desc.y));
+        setSeg(rWupO, rWupI, "M " + px(A.workTopX) + " " + ceilWork.toFixed(1) + " L " + pt(A.desc.x, A.desc.y));
         // ...cut along the descender's outline (see applyCut / A.cutWork), keeping the side the
         // rope comes FROM — a point well above the figure.
         var above = art(246, -400);
@@ -1548,12 +1590,15 @@
         // two layers, and dies under the descender.
         setSeg(rWtipO, rWtipI, "M " + pt(A.desc.x, (A.cutWork.y2 / 686) - 0.01) + " L " + pt(A.desc.x, A.descTipY));
         // WORKING rope, behind: brake hand → its knot (shrinks as he descends). It leaves the
-        // fist along his body, so the hand keeps its grip through the whole swing.
+        // fist along his body, so the hand keeps its grip through the whole swing, and its free
+        // end trails on its own spring — a slightly different one from the backup rope's, so the
+        // two tails never move as one welded piece.
         var hand = bodyXY(A.brake.x, A.brake.y), handX = hand.x, handY = hand.y;
-        var workCtl = ctrlFor(handX, handY, endW);
+        var workEnd = freeEnd(handX, handY, endW, tail2Sway - sway);
+        var workCtl = ctrlFor(handX, handY, workEnd.y);
         setSeg(rWloO, rWloI,
-          "M " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workBotX, endW));
-        setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workBotX, endW, endW - A.knotRise, trueEndW));
+          "M " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workEnd.x, workEnd.y));
+        setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workEnd.x, workEnd.y, workEnd.y - A.knotRise, trueEndW));
         // WORKING rope brake strand, in front: gripping hand → brake hand, trimmed at both
         // ends so the hands appear to hold it instead of the rope lying across them.
         var pa = bodyXY(A.descOut.x, A.descOut.y), ax = pa.x, ay = pa.y;
@@ -1572,7 +1617,9 @@
       var lastScrollY = window.scrollY || 0, idleTimer = null, running = false;
 
       function trackBounds() {
-        var top0 = (header ? header.offsetHeight : 64) + 6;               // start just below the header
+        // He starts below the LOWER anchor, not just below the header: he hangs from those knots,
+        // so he can never be level with them.
+        var top0 = Math.max((header ? header.offsetHeight : 64) + 6, ceilWork + 10);
         var bottom = window.innerHeight - climber.offsetHeight - cssPx("--climber-bottom-gap", 10);
         return { top0: top0, bottom: Math.max(top0, bottom) };
       }
@@ -1707,6 +1754,70 @@
       climber.addEventListener("pointerup", endDrag);
       climber.addEventListener("pointercancel", endDrag);
       climber.addEventListener("dragstart", function (e) { e.preventDefault(); });   // stop the browser's native image drag stealing the first grab
+
+      /* ---- Click the ROPES to page up/down, exactly like clicking a scrollbar's track above or
+             below its thumb. Above him the page goes up, below him it goes down, and holding the
+             button keeps paging until he reaches the pointer.
+
+             It is done by testing the click against where the ropes are actually drawn, NOT by
+             laying an invisible hit strip over the page: the strip is fixed over the left column,
+             so it would swallow every click on whatever text or button happens to sit under it.
+             Anything landing on a link, button or field is handed straight back. ---- */
+      var TRACK_TOL = 9;                                    // how close to a rope counts as "on" it
+      var trackTimer = null, trackY = 0, trackDir = 0;
+      function onRope(e) {
+        if (dragging) return false;
+        if (document.body.classList.contains("menu-open")) return false;   // the ropes are hidden then
+        var el = e.target;
+        if (el && el.closest && el.closest('a,button,input,select,textarea,label,summary,[role="button"],#climber,#svcModal,#svcSearch')) return false;
+        var r = wrapEl.getBoundingClientRect();
+        var Wn = climber.offsetWidth || cssPx("--worker-width", 97);
+        var Hn = climber.offsetHeight || Wn * 1.225;
+        var top = currentY - currentRise;
+        var x = e.clientX - r.left, y = e.clientY;
+        if (Math.abs(x - (A.backupX * Wn + currentSway * 0.5)) < TRACK_TOL) return true;         // backup rope
+        if (y < top + A.desc.y * Hn && Math.abs(x - (A.workTopX * Wn)) < TRACK_TOL) return true; // working rope above him
+        if (y > top + A.brake.y * Hn && Math.abs(x - (A.workGroundX * Wn)) < TRACK_TOL) return true;  // its tail below him
+        return false;
+      }
+      function trackDirAt(clientY) {                        // above him = up, below him = down
+        var Hn = climber.offsetHeight || 119, top = currentY - currentRise;
+        if (clientY < top) return -1;
+        if (clientY > top + Hn) return 1;
+        return 0;                                           // on him: his own drag handles it
+      }
+      function pageBy(dir) {
+        var step = Math.max(140, window.innerHeight - 80);   // a screenful, minus a little overlap
+        window.scrollBy({ top: dir * step, left: 0, behavior: reduce ? "auto" : "smooth" });
+      }
+      function stopTrack() { if (trackTimer) { clearInterval(trackTimer); trackTimer = null; } }
+      document.addEventListener("pointerdown", function (e) {
+        // Mouse only: on a touch screen a tap near the ropes is almost always the start of a
+        // swipe, and stealing it would break scrolling down the left edge of the page.
+        if (e.pointerType && e.pointerType !== "mouse") return;
+        if (e.button !== 0 || !onRope(e)) return;
+        trackDir = trackDirAt(e.clientY);
+        if (!trackDir) return;
+        trackY = e.clientY;
+        e.preventDefault();
+        pageBy(trackDir);
+        stopTrack();
+        trackTimer = setInterval(function () {              // held down: keep paging, but stop as
+          if (trackDirAt(trackY) !== trackDir) { stopTrack(); return; }   // soon as he reaches you
+          pageBy(trackDir);
+        }, 420);
+      }, true);
+      window.addEventListener("pointerup", stopTrack);
+      window.addEventListener("pointercancel", stopTrack);
+      window.addEventListener("blur", stopTrack);
+      // Cursor hint, so the ropes read as clickable at all. Only touches the body class when the
+      // answer changes, so this stays cheap on a move handler.
+      var onRopeNow = false;
+      document.addEventListener("pointermove", function (e) {
+        if (e.pointerType !== "mouse") return;
+        var hit = onRope(e) && trackDirAt(e.clientY) !== 0;
+        if (hit !== onRopeNow) { onRopeNow = hit; document.body.classList.toggle("rope-track", hit); }
+      }, { passive: true });
 
       sizeRopes(); computeTarget(); currentY = targetY; draw();
     })();
