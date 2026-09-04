@@ -110,24 +110,37 @@
     html.dark .chip > span { border-color:#2a2b2c; background:#202123; color:#ececf2; }
     html.dark .chip input:checked + span { background:#f97316; border-color:#f97316; color:#fff; }
 
-    /* Rope-access gear doodles fill the margins AROUND the centered form, WhatsApp-wallpaper
-       style: one flat colour with a faint, endlessly repeating pattern of the kit we actually
-       use — anchors, ascenders, carabiners, rope, descenders, pulleys, helmet, lanyard, rope
-       clamp, harness. The 640px tile is drawn so shapes crossing an edge reappear on the
-       opposite one, which is what makes it repeat with no seam. Two bakes of the same tile:
-       dark ink for the light theme, light ink for the dark one. */
+    /* Gear + trade doodles fill the margins AROUND the centered form, WhatsApp-wallpaper style:
+       one flat colour with a faint, endlessly repeating pattern. The 768px tile is baked from
+       the owner's own icon set — the kit (helmet, carabiners, pulleys, ascenders, descenders,
+       rope, harness, lanyards, anchors, ice axe, headlamp) and the trades (facade work,
+       buildings, plant, mast, dish, turbines, AC unit, roller, drill, spanners, inspection,
+       cleaning). The solid-silhouette icons are traced to outlines first, so every doodle is in
+       one line style. Sizes are measured on the geometric mean of width and height (so a flat
+       icon like the headlamp is not left looking tiny next to a tall one) and then multiplied by
+       how big the thing IS IN REAL LIFE: a carabiner comes out smaller than the harness beside
+       it, an ice axe longer than a pulley, a pylon larger than either. The spread is compressed
+       to about 0.7–1.4x, since the literal 1:300 of carabiner to pylon would be unusable.
+       Positions are a free scatter with a minimum spacing, NOT a grid, and each
+       icon is used several times per tile — a grid made the same icon land in the same spot in
+       every repeat. Each doodle is tilted by at most ~11°: upright enough to read, loose enough
+       not to look machine-set (-v5 is the same layout fully spun, -v6 dead upright).
+       Shapes crossing an edge are
+       drawn again on the opposite one, which is what makes the tile repeat with no seam. Two
+       bakes of the same tile: dark ink for the light theme, light ink for the dark one.
+       (The older join-doodles-*.png / -v3 / -v4 sets are superseded and can be deleted.) */
     html:not(.dark) body {
       background-color: #f0f0ec;
-      background-image: url('images/join-doodles-light.png?v=2');
+      background-image: url('images/join-doodles-light-v8.png?v=9');
       background-repeat: repeat;
-      background-size: 320px 320px;
+      background-size: 384px 384px;
       background-attachment: fixed;
     }
     html.dark body {
       background-color: #121314;
-      background-image: url('images/join-doodles-dark.png?v=2');
+      background-image: url('images/join-doodles-dark-v8.png?v=9');
       background-repeat: repeat;
-      background-size: 320px 320px;
+      background-size: 384px 384px;
       background-attachment: fixed;
     }
 
@@ -191,7 +204,9 @@
   <!-- ============================ HERO ============================ -->
   <section class="bg-panel border-b border-line">
     <div class="max-w-3xl mx-auto px-5 py-14 sm:py-20 text-center">
-      <p class="text-lg font-600 text-accent" data-ka="ფლობთ პროფესიულ სერტიფიკატს?">Do you hold a professional certificate?</p>
+      <!-- The orange line is the hero's headline, so it is set well ABOVE the two grey lines
+           under it (1rem) rather than the half-step it used to be at (text-lg). -->
+      <p class="text-2xl sm:text-3xl font-600 text-accent" data-ka="ფლობთ პროფესიულ სერტიფიკატს?">Do you hold a professional certificate?</p>
       <p class="mt-4 text-mute leading-relaxed" data-ka="შეავსეთ განაცხადი და დაემატეთ ORITOKI-ის სპეციალისტების ბაზას.">Fill out the application and join the ORITOKI specialists database.</p>
       <p class="mt-2 text-mute leading-relaxed" data-ka="შესაბამისი პროექტის ან ვაკანსიის არსებობის შემთხვევაში დაგიკავშირდებით.">We'll contact you when a suitable project or vacancy is available.</p>
     </div>
@@ -674,3 +689,8 @@
   </script>
 </body>
 </html>
+
+
+
+
+

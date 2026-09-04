@@ -117,30 +117,22 @@
     body { font-family: 'Helvetica Neue', 'Noto Sans Georgian', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
     section[id] { scroll-margin-top: 6rem; }
 
-    /* Logo stays a fixed size — only the header background/shadow react to scroll */
+    /* Only the header background/shadow react to scroll */
     #header { transition: background-color .3s ease, box-shadow .3s ease; }
-    /* Sized/positioned so the emblem's ground line (the long horizontal band) sits
-       just above the header's bottom edge, and only the rope tips spill below.
-       (art top=y151, ground=y719 of the 1024px source.) */
     /* Rope-access technician as the custom scrollbar thumb — he rappels down as you scroll
        and climbs back up, with subtle cinematic easing / tilt / sway (JS-driven). Tunables: */
     :root {
-      /* This one width drives the logo, the technician and the rope spacing together.
-         The two rope stems are 0.092 of the width apart in the logo artwork, so the strip
-         must be the same width for them to stay parallel down to the climber — shrinking
-         the technician here would pull the ropes into a V under the logo. At 97px the
-         "or / tok" letters read at ~13px, which is the smallest that stays legible. */
-      --worker-width: 97px;         /* technician width (desktop); logo + ropes scale with it */
-      --climber-left: 52px;         /* distance from the LEFT viewport edge — moves the logo,
-                                       the technician and both ropes together */
-      --climber-bottom-gap: 10px;   /* space kept at the very bottom */
+      /* This one width drives the technician and the rope spacing together: the two rope
+         x-positions are fractions of it, so shrinking him pulls the ropes closer as well. */
+      --worker-width: 97px;         /* technician width (desktop); ropes scale with it */
+      --climber-left: 52px;         /* distance from the LEFT viewport edge — moves the
+                                       technician and both ropes together */
+      /* How high above the window's bottom edge the technician's boots stop, at the very end of
+         the page. It has to clear the HIGHER of the two rope ends and its stopper knot
+         (A.ropeEndGapWork + A.knotRise in the script), so the knots hang visibly below him rather than behind his
+         feet. Everywhere above the footer the ropes just run off the screen. */
+      --climber-bottom-gap: 78px;
     }
-    /* Brand lockup — pinned to the SAME left/width as #ropeClimber so the two rope stems
-       in the artwork continue seamlessly into the SVG ropes drawn below it. */
-    #brandRope { position: absolute; left: var(--climber-left); top: 5px; width: var(--worker-width); z-index: 2; display: block; }
-    #brandRope img { display: block; width: 100%; height: auto; }
-    /* The artwork is black line-art: invert it on dark backgrounds so it stays visible. */
-    html.dark #brandRope img, #header:not(.scrolled) #brandRope img { filter: invert(1); }
     /* z-40 keeps the ropes BEHIND the z-50 header, so they look anchored under the bar. */
     #ropeClimber { position: fixed; left: var(--climber-left); top: 0; height: 100vh; width: var(--worker-width); z-index: 40; pointer-events: none; transition: opacity .25s ease; }
     #ropeBack, #ropeFront { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
@@ -176,7 +168,6 @@
          (uses the side-cropped emblem-narrow.png; art top=y151, ground=y719/1024.) */
       #ropeClimber { left: 2px; width: 72px; }
       #ropeClimber #climber { width: 72px; }
-      #brandRope { left: 2px; width: 72px; top: 3px; }
       /* Keep the wordmark centred on the logo's horizontal line. */
       #brandText { transform: none; }
       /* The enlarged logo eats width, so tighten the toggle/burger and the
@@ -646,8 +637,16 @@
         </pattern>
       </defs>
       <path class="rope-out" id="rBackO"></path><path class="rope-in" id="rBackI"></path>  <!-- backup rope (straight, cam slides on it) -->
-      <path class="rope-out" id="rWupO"></path><path class="rope-in" id="rWupI"></path>    <!-- working rope: ceiling → descender -->
+      <!-- The last stretch of the working rope, kept in the BACK layer so its tip disappears
+           BEHIND the descender instead of lying on top of it. The front segment above stops
+           flush at the device's edge; this one carries the rope on under it. -->
+      <path class="rope-out" id="rWtipO"></path><path class="rope-in" id="rWtipI"></path>  <!-- working rope tip, behind the descender -->
       <path class="rope-out" id="rWloO"></path><path class="rope-in" id="rWloI"></path>    <!-- working rope: brake hand → ground -->
+      <!-- Stopper knot at the end of each rope. Both ropes stop well above the bottom of the
+           window rather than running off it, and each one finishes in a barrel knot with a
+           short tail below it — the way a rope is actually closed off. -->
+      <path class="rope-out" id="rKnotBO"></path><path class="rope-in" id="rKnotBI"></path>  <!-- backup rope's knot -->
+      <path class="rope-out" id="rKnotWO"></path><path class="rope-in" id="rKnotWI"></path>  <!-- working rope's knot -->
     </svg>
     <img id="climber" src="images/climber.png?v=12" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
@@ -659,8 +658,21 @@
           <rect width=".66" height=".66" fill="#eeeeee"/>
           <path d="M0 0V.66M0 0H.66" stroke="#151515" stroke-width=".24"/>
         </pattern>
+        <!-- Each rope that runs into one of his devices is CUT along that device's black
+             outline, so the outline reads as passing in front of the rope instead of the rope
+             ending on top of it. One clip per rope; JS re-cuts them as the climber slides
+             (see drawRopes). ropeCut = working rope at the descender, brakeCut = brake strand
+             at the glove. -->
+        <clipPath id="ropeCut"><path id="ropeCutP"></path></clipPath>
+        <clipPath id="brakeCut"><path id="brakeCutP"></path></clipPath>
       </defs>
-      <path class="rope-out" id="rBrkO"></path><path class="rope-in" id="rBrkI"></path>    <!-- working rope brake strand: descender → brake hand -->
+      <!-- The upper working rope lives in the FRONT layer on purpose: coming down it must pass
+           IN FRONT of the backup device's shock absorber and land ON TOP of the descender,
+           the way the original artwork has it. Drawn behind the figure it disappeared under
+           the absorber instead. Its x (0.44) clears the helmet and the gripping fist, so
+           being in front covers nothing it shouldn't. -->
+      <path class="rope-out" id="rWupO" clip-path="url(#ropeCut)"></path><path class="rope-in" id="rWupI" clip-path="url(#ropeCut)"></path>  <!-- working rope: ceiling → descender, over the absorber -->
+      <path class="rope-out" id="rBrkO" clip-path="url(#brakeCut)"></path><path class="rope-in" id="rBrkI" clip-path="url(#brakeCut)"></path>  <!-- working rope brake strand: descender → brake hand -->
     </svg>
   </div>
 
@@ -669,17 +681,10 @@
   <header id="header" class="fixed top-0 inset-x-0 z-50 h-16">
     <div id="headerInner" class="w-full h-full max-w-[96rem] mx-auto px-6 flex items-center gap-2 lg:gap-3">
 
-      <!-- Left group (brand). flex-1 grows so the nav is pushed to the right, next to the toggle. -->
-      <div class="flex-1 min-w-0 flex justify-start">
-      <!-- Brand = the top half of the rope artwork: the letters "or" / "tok" plus the two
-           bolt anchors that are the dots of the two i's. It is pinned to the same fixed
-           left/width as #ropeClimber below, so the two rope stems in this image continue
-           straight into the SVG ropes with no seam. Absolutely positioned, so the empty
-           flex-1 wrapper still balances the centred nav. -->
-      <a href="#home" id="brandRope" aria-label="Oritoki — home">
-        <img src="images/logo-rope.png?v=2" alt="Oritoki" draggable="false" />
-      </a>
-      </div>
+      <!-- Left group. The brand lockup that used to sit here (the rope wordmark) was removed;
+           the empty flex-1 wrapper stays so the centred nav keeps its balance. With no logo
+           the climber's ropes simply run off the top of the viewport (see drawRopes()). -->
+      <div class="flex-1 min-w-0 flex justify-start"></div>
 
       <!-- Navigation -->
       <!-- No `uppercase` class here on purpose: text-transform:uppercase makes Chrome render
@@ -1284,9 +1289,14 @@
       var svgBack = document.getElementById("ropeBack"), svgFront = document.getElementById("ropeFront");
       var rBackO = document.getElementById("rBackO"), rBackI = document.getElementById("rBackI");
       var rWupO = document.getElementById("rWupO"), rWupI = document.getElementById("rWupI");
+      var rWtipO = document.getElementById("rWtipO"), rWtipI = document.getElementById("rWtipI");
+      var cutP = document.getElementById("ropeCutP");    // cut along the descender's outline
+      var brkP = document.getElementById("brakeCutP");   // cut along the glove's outline
       var rWloO = document.getElementById("rWloO"), rWloI = document.getElementById("rWloI");
+      var rKnotBO = document.getElementById("rKnotBO"), rKnotBI = document.getElementById("rKnotBI");
+      var rKnotWO = document.getElementById("rKnotWO"), rKnotWI = document.getElementById("rKnotWI");
       var rBrkO = document.getElementById("rBrkO"), rBrkI = document.getElementById("rBrkI");
-      var hasRopes = !!(svgBack && svgFront && rBackO && rWupO && rWloO && rBrkO);
+      var hasRopes = !!(svgBack && svgFront && rBackO && rWupO && rWtipO && rWloO && rBrkO && rKnotBO && rKnotWO);
       /* climber.png is the technician ALONE — no ropes are drawn into it, so every rope here
          is free geometry. The two vertical x's are therefore set to the fractions of the two
          rope stems in the header logo (0.481 / 0.573), which is what makes them continue out
@@ -1295,14 +1305,38 @@
          points below are the original, tuned-to-this-artwork values. */
       var A = {
         backupX: 0.573,              // backup rope — straight vertical, through the cam device
-                                     // AND through the second i of the header logo
-        workTopX: 0.399,             // working rope meets the ceiling at the logo's first i;
-                                     // it drifts only 0.02 of the width down to the descender,
-                                     // i.e. ~2px at 97px — visually still a straight drop
-        desc:   { x: 0.42, y: 0.37 },// working rope comes down INTO the descender
-        // Sits between the two hands. Both ends measured off the owner's marked-up screenshot,
-        // normalised to the figure: the upper end sits IN the gripping hand, not above it.
-        descOut:{ x: 0.478, y: 0.324 },
+        // Both taken from the line the owner drew on the measuring grid (images/climber.png
+        // with 0.01 gridlines): the working rope clears the helmet on its RIGHT and drops
+        // PERFECTLY VERTICALLY into the gripping hand — it does not lean in towards the
+        // descender the way the old 0.399 → 0.42 pair made it. Keeping workTopX and desc.x
+        // equal is what holds it vertical, so change them together.
+        workTopX: 0.44,              // clears the helmet (its right edge is 0.412) and lands
+                                     // just left of the fist at 0.478
+        // The climber is ONE flat PNG, so a rope can only be wholly in front of it or wholly
+        // behind it — "the device's outline in front of the rope" is therefore done by CUTTING
+        // the visible rope along that outline (the clipPaths above). Both cuts are two points
+        // in climber.png's OWN pixels (560x686), which is how the owner measures them; only the
+        // LINE through them matters, since drawRopes extends it past the strip either way.
+        //
+        // Working rope at the descender: the owner read the outline off the artwork as y 219 at
+        // the rope's right edge, 224 at its middle, 229 at its left edge (the rope spans
+        // x 240.8..252, i.e. 0.44 of the width ± half a stroke).
+        cutWork:  { x1: 240.8, y1: 229, x2: 252, y2: 219 },
+        // Brake strand at the glove. The owner put the contour at 0.23 across / 0.53 down of
+        // the figure = pixel (128.8, 363.6), so the cut runs through that point, along the
+        // outline's own slope. (Walking the strand for "the first black pixel" lands ~7px
+        // earlier, on the outer lip of the same outline — and 15px before THAT is the harness
+        // strap, which the strand crosses over a gap of transparent pixels. Both are decoys.)
+        cutBrake: { x1: 124.05, y1: 360.35, x2: 133.55, y2: 366.85 },
+        desc:   { x: 0.44, y: 0.36 },// the path itself runs on past the cut; the clip hides it
+        descTipY: 0.40,              // the tip then runs on to here in the BACK layer, hidden
+                                     // by the device (the artwork is solid all the way down
+                                     // this column, so nothing of it shows)
+        // Where the brake strand LEAVES the descender, between the two hands — the owner's mark,
+        // 0.47 across / 0.33 down of the figure (pixel 263.2 / 226.4). This end keeps its ROUNDED
+        // head on purpose (unlike the glove end, which is cut along the outline): it reads as
+        // the rope's own end coming out of the device.
+        descOut:{ x: 0.47, y: 0.33 },
         // Two separate points, both taken from the owner's pixel-marked screenshot: the strand
         // stops where the rope enters the top of the glove, and the tail restarts where it
         // leaves the bottom of it. Keeping them independent is what lets the glove read as
@@ -1314,12 +1348,29 @@
         brakeIn:{ x: 0.226, y: 0.528 },// enters the fist — thumb side (owner's yellow mark)
         brake:  { x: 0.165, y: 0.585 },// leaves the fist — little-finger side (owner's rose mark)
         brakeTrimTop: 1,             // small pull-back at the gripping hand
-        brakeTrimBottom: 0.04,       // end the strand right at the fist's top-right edge so the
-                                     // glove's own dark outline frames the entry (fraction of length)
-        workGroundX: 0.165           // the tail hangs straight down from the exit point
+                                     // (the lower end needs no trim any more — cutBrake does it)
+        workGroundX: 0.165,          // the tail hangs straight down from the exit point
+        // The ropes are as long as the PAGE: their ends are pinned this far above the end of the
+        // document, so they run off the bottom of the screen the whole way down and only show
+        // their ends — each finished with a stopper knot and a short tail — once you reach the
+        // footer. The climber stops a little higher still (--climber-bottom-gap) so the knots
+        // always hang clear below his boots.
+        // Clear space between each rope's end and the end of the PAGE. The BACKUP rope hangs
+        // lower — knot and all — than the working one; two ropes cut to exactly the same length
+        // look diagrammatic rather than real.
+        ropeEndGapBackup: 32,
+        ropeEndGapWork: 58,
+        knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
+        camY: 0.15,                  // where the backup rope passes through his device, down the
+                                     // figure — the rope bends there, fixed above, free below
+        // He is a pendulum on the rope above him, so how far he can swing is set by that rope's
+        // length, not by a fixed number: sin(38°) of it, and never more than 45% of the window.
+        // Low on the page the rope is long, so he can be thrown clean off the left edge.
+        pullAngle: 0.62,             // sin(38°)
+        pullGain: 0.95,              // how closely he follows the cursor while dragged
+        hangY: 0.34                  // where on the figure the rope carries him (his descender)
       };
       var wrapEl = document.getElementById("ropeClimber");
-      var brandEl = document.getElementById("brandRope");   // ropes hang from its lower edge
       function sizeRopes() {
         if (!hasRopes) return;
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
@@ -1339,36 +1390,161 @@
         if (!hasRopes) return;
         var Wn = climber.offsetWidth || cssPx("--worker-width", 58);
         var Hn = climber.offsetHeight || Wn * 1.225;
-        var VH = window.innerHeight, top = currentY;
-        function pt(fx, fy) { return (fx * Wn).toFixed(1) + " " + (top + fy * Hn).toFixed(1); }
-        function px(fx) { return (fx * Wn).toFixed(1); }
-        /* Both ropes begin at the BOTTOM EDGE OF THE LOGO, not at the top of the viewport.
-           Above that line the rope (and its bolt) is already part of the logo artwork, and
-           the header is transparent until you scroll — so drawing from -24 made a second,
-           bolt-less rope appear above the wordmark. The 2px overlap hides the join. */
-        var ceil = -24;
-        if (brandEl) {
-          var lb = brandEl.getBoundingClientRect().bottom;
-          if (lb > 0) ceil = lb - 2;
+        var VH = window.innerHeight, top = currentY - currentRise;   // the swing lifts him
+        /* Everything anchored to his BODY has to go through the SAME transform the browser
+           applies to the artwork — the sway AND the lean, about the same pivot (transform-origin
+           is 50% 8% of the image). Translating alone was not enough: near the pivot, at the top
+           of the figure, a point barely moves when he leans — which is why the backup rope stayed
+           glued to its device — but the fist and the descender are far below it and drifted off
+           their ropes as soon as he swung. bodyXY() is that transform, and every attachment point
+           now goes through it. The two ropes' far ends are NOT body points: they hang from above
+           and are tied off below, which is what makes him swing ON the ropes. */
+        var sway = currentSway;
+        var leanRad = currentRot * Math.PI / 180;
+        var cosR = Math.cos(leanRad), sinR = Math.sin(leanRad);
+        var pivX = 0.5 * Wn, pivY = 0.08 * Hn;
+        function bodyXY(fx, fy) {
+          var lx = fx * Wn - pivX, ly = fy * Hn - pivY;
+          return { x: pivX + lx * cosR - ly * sinR + sway, y: top + pivY + lx * sinR + ly * cosR };
         }
-        // BACKUP rope, behind: logo bolt to ground (cam slides down it)
-        setSeg(rBackO, rBackI, "M " + px(A.backupX) + " " + ceil + " L " + px(A.backupX) + " " + (VH + 24));
-        // WORKING rope, behind: logo bolt → descender (grows as he descends)
+        function pt(fx, fy) { var p = bodyXY(fx, fy); return p.x.toFixed(1) + " " + p.y.toFixed(1); }
+        function px(fx) { return (fx * Wn).toFixed(1); }
+        // climber.png pixel → strip coordinate, through the same body transform. The cut lines are
+        // measured on the 560x686 artwork, which is the only place their exact position is legible.
+        function art(x, y) { return bodyXY(x / 560, y / 686); }
+        /* Cut a rope along a device's outline: fills `clip` with the half-plane on the side of
+           the line c (two artwork pixels) that contains (kx,ky) — the direction the rope comes
+           from. The line is extended far past the strip both ways, so only its angle and
+           position matter, not where the two measured points sit along it. */
+        function applyCut(clip, c, kx, ky) {
+          if (!clip) return;
+          var p1 = art(c.x1, c.y1), p2 = art(c.x2, c.y2);
+          var x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
+          var dx = x2 - x1, dy = y2 - y1, L = Math.sqrt(dx * dx + dy * dy) || 1;
+          var ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
+          if ((kx - x1) * nx + (ky - y1) * ny < 0) { nx = -nx; ny = -ny; }   // face the kept side
+          var E = 4000;
+          var ax1 = x1 - ux * E, ay1 = y1 - uy * E, ax2 = x2 + ux * E, ay2 = y2 + uy * E;
+          clip.setAttribute("d",
+            "M " + ax1.toFixed(1) + " " + ay1.toFixed(1) +
+            " L " + ax2.toFixed(1) + " " + ay2.toFixed(1) +
+            " L " + (ax2 + nx * E).toFixed(1) + " " + (ay2 + ny * E).toFixed(1) +
+            " L " + (ax1 + nx * E).toFixed(1) + " " + (ay1 + ny * E).toFixed(1) + " Z");
+        }
+        /* Both ropes start ABOVE the viewport now that the header logo is gone — they used to
+           begin at the logo's lower edge, because above that line the rope and its bolt were
+           already part of the artwork. With no logo they simply run off the top of the screen. */
+        var ceil = -24;
+        /* The rope ends are anchored to the BOTTOM OF THE PAGE, not to the window: their end sits
+           this far above the end of the document, so while you scroll through home / about /
+           services / gallery / contact the ropes simply run off the bottom of the screen and read
+           as long. Only in the footer do the ends — and their stopper knots — rise into view and
+           finish just above the bottom edge. */
+        var docH = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
+        var scrolled = window.scrollY || 0;
+        var offBottom = VH + 24;                       // far enough below to be out of sight
+        var trueEndB = (docH - A.ropeEndGapBackup) - scrolled;
+        var trueEndW = (docH - A.ropeEndGapWork) - scrolled;
+        var endB = Math.min(trueEndB, offBottom);
+        var endW = Math.min(trueEndW, offBottom);
+        /* The tops of the ropes are pinned (they hang from above the header and never move). Of
+           the two lower ends only the BACKUP rope's is loose — it swings wider than he does, and
+           the rope bends where it passes through his device: fixed above it, free below it. The
+           brake rope is rigid: it carries his weight, so it stays taut and still. */
+        var swayFree = tailSway;
+        var ropeW = Wn * 0.020;
+        /* The knot is PART OF THE ROPE, so it is not placed at a fixed spot near the end: the
+           curve is solved for the height the knot sits at, and the knot is then wrapped around
+           that point, along the rope's own direction there. Wrapped flat instead, it lagged
+           behind whenever he swung and the rope leaned. */
+        function knotD(cxp, cyp, theta) {
+          var dx = Math.cos(theta), dy = Math.sin(theta);            // down the rope
+          var ux = Math.cos(theta - Math.PI / 2), uy = Math.sin(theta - Math.PI / 2);   // across it
+          var ang = (theta * 180 / Math.PI - 90).toFixed(1);
+          var d = "";
+          for (var i = -1; i <= 1; i++) {
+            var rx = ropeW * (i === 0 ? 0.85 : 0.72);  // middle loop a touch fatter
+            var ry = ropeW * 0.36;
+            var ci = cxp + dx * i * ropeW * 0.62, cj = cyp + dy * i * ropeW * 0.62;
+            var x1 = ci - rx * ux, y1 = cj - rx * uy, x2 = ci + rx * ux, y2 = cj + rx * uy;
+            d += "M " + x1.toFixed(1) + " " + y1.toFixed(1) +
+                 " A " + rx.toFixed(1) + " " + ry.toFixed(1) + " " + ang + " 1 0 " + x2.toFixed(1) + " " + y2.toFixed(1) +
+                 " A " + rx.toFixed(1) + " " + ry.toFixed(1) + " " + ang + " 1 0 " + x1.toFixed(1) + " " + y1.toFixed(1) + " ";
+          }
+          return d;
+        }
+        /* Where on a quadratic rope the knot lands: solve its y for the knot's height, then take
+           the point AND the tangent there, so the knot rides the rope instead of hanging beside it. */
+        function knotOn(x0, y0, c, x1, y1, ky, trueEnd) {
+          if (trueEnd > offBottom) return "";          // rope still runs off-screen: no knot yet
+          var a = y0 - 2 * c.y + y1, b = 2 * (c.y - y0), q = y0 - ky, t;
+          if (Math.abs(a) < 1e-6) { t = b !== 0 ? -q / b : 1; }
+          else {
+            var disc = b * b - 4 * a * q; if (disc < 0) disc = 0;
+            var sq = Math.sqrt(disc), t1 = (-b + sq) / (2 * a), t2 = (-b - sq) / (2 * a);
+            t = (t1 >= 0 && t1 <= 1) ? t1 : t2;
+          }
+          if (!(t >= 0 && t <= 1)) t = 1;
+          var mt = 1 - t;
+          var kx = mt * mt * x0 + 2 * mt * t * c.x + t * t * x1;
+          var kyy = mt * mt * y0 + 2 * mt * t * c.y + t * t * y1;
+          var tx = 2 * mt * (c.x - x0) + 2 * t * (x1 - c.x);
+          var ty = 2 * mt * (c.y - y0) + 2 * t * (y1 - c.y);
+          return knotD(kx, kyy, Math.atan2(ty, tx));
+        }
+        /* Below his devices each rope LEAVES ALONG HIS BODY and only then falls back to vertical,
+           instead of running dead straight to its anchored end. That is drawn as a quadratic
+           curve whose control point sits along his lean — so when he swings, the rope stays
+           gripped in the hand and bends below it, rather than pivoting through the fist. */
+        function ctrlFor(hx, hy, ey) {                // control point: leaves along his lean
+          var len = Math.max(1, ey - hy);
+          return { x: hx + sinR * len * 0.45, y: hy + cosR * len * 0.45 };
+        }
+        function hangQ(c, ex, ey) {                   // the curve only — prefix it with its own M
+          return " Q " + c.x.toFixed(1) + " " + c.y.toFixed(1) + " " + ex.toFixed(1) + " " + ey.toFixed(1);
+        }
+        // BACKUP rope, behind: fixed at the top, bending at his cam, loose end below him
+        var cam = bodyXY(A.backupX, A.camY), camX = cam.x, camYpx = cam.y;
+        var backBotX = A.backupX * Wn + swayFree;
+        var backCtl = ctrlFor(camX, camYpx, endB);
+        setSeg(rBackO, rBackI,
+          "M " + px(A.backupX) + " " + ceil +
+          " L " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
+          hangQ(backCtl, backBotX, endB));
+        setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backBotX, endB, endB - A.knotRise, trueEndB));
+        // The main rope's tail hangs free below him too, on its own spring — so both ends move,
+        // but never quite in step. (The taut brake strand between his two hands stays rigid: it
+        // is anchored to his body at both ends and carries his weight.)
+        var workBotX = A.workGroundX * Wn + tail2Sway;
+        // WORKING rope, IN FRONT: off-screen top → descender (grows as he descends).
+        // Front layer so it crosses over the absorber and rests on the descender.
         setSeg(rWupO, rWupI, "M " + px(A.workTopX) + " " + ceil + " L " + pt(A.desc.x, A.desc.y));
-        // WORKING rope, behind: brake hand → ground (shrinks as he descends)
-        setSeg(rWloO, rWloI, "M " + pt(A.brake.x, A.brake.y) + " L " + px(A.workGroundX) + " " + (VH + 24));
+        // ...cut along the descender's outline (see applyCut / A.cutWork), keeping the side the
+        // rope comes FROM — a point well above the figure.
+        var above = art(246, -400);
+        applyCut(cutP, A.cutWork, above.x, above.y);
+        // ...and its TIP, behind the figure: starts above the cut so no seam shows between the
+        // two layers, and dies under the descender.
+        setSeg(rWtipO, rWtipI, "M " + pt(A.desc.x, (A.cutWork.y2 / 686) - 0.01) + " L " + pt(A.desc.x, A.descTipY));
+        // WORKING rope, behind: brake hand → its knot (shrinks as he descends). It leaves the
+        // fist along his body, so the hand keeps its grip through the whole swing.
+        var hand = bodyXY(A.brake.x, A.brake.y), handX = hand.x, handY = hand.y;
+        var workCtl = ctrlFor(handX, handY, endW);
+        setSeg(rWloO, rWloI,
+          "M " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workBotX, endW));
+        setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workBotX, endW, endW - A.knotRise, trueEndW));
         // WORKING rope brake strand, in front: gripping hand → brake hand, trimmed at both
         // ends so the hands appear to hold it instead of the rope lying across them.
-        var ax = A.descOut.x * Wn, ay = top + A.descOut.y * Hn;
-        var bx = A.brakeIn.x * Wn, by = top + A.brakeIn.y * Hn;
+        var pa = bodyXY(A.descOut.x, A.descOut.y), ax = pa.x, ay = pa.y;
+        var pb = bodyXY(A.brakeIn.x, A.brakeIn.y), bx = pb.x, by = pb.y;
         var vx = bx - ax, vy = by - ay, len = Math.sqrt(vx * vx + vy * vy) || 1;
-        // End the strand a little SHORT of the fist (brakeTrimBottom) so the glove's own dark
-        // outline frames the rope's entry — like the tail does at the bottom — instead of the
-        // rope lying on top of the glove and hiding that outline.
-        var ex = bx - vx * A.brakeTrimBottom, ey = by - vy * A.brakeTrimBottom;
+        // The strand now runs all the way INTO the fist and is cut along the glove's outline
+        // (A.cutBrake) instead of being stopped short of it with a rounded end — the same
+        // treatment the working rope gets at the descender. Keep the side it comes from.
         setSeg(rBrkO, rBrkI,
           "M " + (ax + (vx / len) * A.brakeTrimTop).toFixed(1) + " " + (ay + (vy / len) * A.brakeTrimTop).toFixed(1) +
-          " L " + ex.toFixed(1) + " " + ey.toFixed(1));
+          " L " + bx.toFixed(1) + " " + by.toFixed(1));
+        applyCut(brkP, A.cutBrake, ax, ay);
       }
 
       var targetY = 0, currentY = 0, targetRot = 0, currentRot = 0, targetSway = 0, currentSway = 0;
@@ -1385,16 +1561,59 @@
         var b = trackBounds();
         targetY = b.top0 + p * (b.bottom - b.top0);
       }
+      /* Pendulum geometry. The rope runs from off the top of the screen down to his descender,
+         so its length grows as he descends — which is why he can be swung much further out at
+         the bottom of the page than at the top. */
+      function pendLen() {
+        var Hn = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
+        return Math.max(90, currentY + A.hangY * Hn + 24);
+      }
+      function pendMax() { return Math.min(pendLen() * A.pullAngle, window.innerWidth * 0.45); }
+      /* Swinging out also lifts him: on a rope of fixed length, going sideways by s raises him by
+         L - sqrt(L² - s²). Without this he would slide along an invisible horizontal rail. */
+      function pendRise() {
+        var L = pendLen(), s = Math.min(Math.abs(currentSway), L * 0.985);
+        return L - Math.sqrt(L * L - s * s);
+      }
+      var currentRise = 0;
       function draw() {
-        climber.style.transform = "translate(-50%,0) translate3d(" + currentSway.toFixed(2) + "px," + currentY.toFixed(2) + "px,0) rotate(" + currentRot.toFixed(2) + "deg)";
+        currentRise = pendRise();
+        climber.style.transform = "translate(-50%,0) translate3d(" + currentSway.toFixed(2) + "px," + (currentY - currentRise).toFixed(2) + "px,0) rotate(" + currentRot.toFixed(2) + "deg)";
         drawRopes();
       }
+      /* The sway is a damped PENDULUM, not a lerp: a spring pulls it back towards its target and
+         the damping lets it swing past. That is what makes him keep swinging for a second or two
+         after you stop scrolling — including at the very bottom of the page — instead of just
+         gliding to a halt. Deliberately weak: about ±3px and ±1.3°, which reads as him hanging
+         in the air rather than as animation. The tilt is derived from the sway (transform-origin
+         sits near the top of the figure, so he pivots from where he hangs). */
+      var swayVel = 0, tailSway = 0, tailVel = 0, tail2Sway = 0, tail2Vel = 0;
       function loop() {
-        currentY    += (targetY    - currentY)    * 0.14;   // inertia: trail then catch up
-        currentRot  += (targetRot  - currentRot)  * 0.12;
-        currentSway += (targetSway - currentSway) * 0.12;
+        currentY += (targetY - currentY) * 0.14;            // inertia: trail then catch up
+        /* A real pendulum's rhythm comes from its length (ω² = g/L), not from a fixed constant —
+           so the stiffness is divided by the rope length. High on the page the rope is short and
+           he swings quickly; far down it is long and he swings slow and wide. */
+        var L = pendLen(), k = 2.0 / L;
+        if (!dragging) {                                    // while held, the cursor IS the sway
+          swayVel  += (targetSway - currentSway) * k;
+          swayVel  *= 0.975;                                // damping: settles in a few seconds
+          currentSway += swayVel;
+        }
+        /* Each loose rope tail below him hangs from his device, so it follows him — but on its own
+           softer spring, which makes it trail on the way out and overshoot on the way back. Two
+           springs, very slightly different, so the two ropes do not swing as one welded piece. */
+        tailVel += (currentSway - tailSway) * k * 0.85;
+        tailVel *= 0.972;
+        tailSway += tailVel;
+        tail2Vel += (currentSway - tail2Sway) * k * 1.1;
+        tail2Vel *= 0.966;
+        tail2Sway += tail2Vel;
+        // Lean = the pendulum's own angle, atan(offset / rope length).
+        currentRot = Math.atan2(currentSway, L) * 57.2957795;
         draw();
-        if (Math.abs(targetY - currentY) < 0.25 && Math.abs(targetRot - currentRot) < 0.04 && Math.abs(targetSway - currentSway) < 0.04) { running = false; return; }
+        if (!dragging && Math.abs(targetY - currentY) < 0.25 && Math.abs(targetSway - currentSway) < 0.04 &&
+            Math.abs(swayVel) < 0.04 && Math.abs(currentSway - tailSway) < 0.04 && Math.abs(tailVel) < 0.04 &&
+            Math.abs(currentSway - tail2Sway) < 0.04 && Math.abs(tail2Vel) < 0.04) { running = false; return; }
         requestAnimationFrame(loop);
       }
       function run() { if (!running) { running = true; requestAnimationFrame(loop); } }
@@ -1403,10 +1622,14 @@
         computeTarget();
         if (reduce) { currentY = targetY; currentRot = targetRot = currentSway = targetSway = 0; draw(); return; }
         var y = window.scrollY || 0, v = y - lastScrollY; lastScrollY = y;   // v > 0 = scrolling down
-        targetRot  = 0;                                                     // no tilt: keeps the rope strips aligned at the seams
-        targetSway = 0;                                                     // no sideways sway: keeps the thin rope strips from shimmering
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(function () { targetRot = 0; targetSway = 0; run(); }, 160);   // settle to neutral
+        // He trails the movement, the way a hanging body does — capped hard, since the whole
+        // effect is meant to be felt rather than noticed. Skipped while he is being held: there
+        // the cursor sets the sway, and the page scrolls under the same gesture.
+        if (!dragging) {
+          targetSway = Math.max(-3.2, Math.min(3.2, -v * 0.05));
+          clearTimeout(idleTimer);
+          idleTimer = setTimeout(function () { if (!dragging) { targetSway = 0; run(); } }, 140);   // then swing back and settle
+        }
         run();
       }
       window.addEventListener("scroll", onScroll, { passive: true });
@@ -1415,12 +1638,17 @@
       climber.addEventListener("load", function () { sizeRopes(); computeTarget(); currentY = targetY; draw(); });  // wait for the PNG so offsetHeight is real
       if (window.ResizeObserver) { try { new ResizeObserver(function () { computeTarget(); run(); }).observe(document.body); } catch (e) {} }
 
-      /* ---- Grab the technician and drag to scroll (he acts as a scrollbar thumb) ---- */
-      var dragging = false, dragStartClientY = 0, dragStartScroll = 0;
+      /* ---- Grab the technician: drag him UP/DOWN to scroll (he is the scrollbar thumb) and
+             SIDEWAYS to pull him off the vertical. Let go and gravity takes him back — the same
+             damped pendulum the scroll uses, just released from further out, so he swings
+             through the middle a few times before he settles. ---- */
+      var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0;
       function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
       climber.addEventListener("pointerdown", function (e) {
         dragging = true;
         dragStartClientY = e.clientY;
+        dragStartClientX = e.clientX;
+        dragStartSway = currentSway;
         dragStartScroll = window.scrollY || window.pageYOffset || 0;
         document.body.classList.add("climber-grabbing");
         document.documentElement.style.scrollBehavior = "auto";      // instant while dragging (page scrolls smooth otherwise)
@@ -1429,18 +1657,28 @@
       });
       climber.addEventListener("pointermove", function (e) {
         if (!dragging) return;
+        // sideways: he hangs off the vertical, capped so he cannot be dragged across the page
+        var dxp = e.clientX - dragStartClientX;
+        var lim = pendMax();
+        currentSway = Math.max(-lim, Math.min(lim, dragStartSway + dxp * A.pullGain));
+        targetSway = currentSway;                                    // no spring pull while held
+        swayVel = 0;
         var b = trackBounds(), range = b.bottom - b.top0, ms = maxScroll();
         if (range > 0 && ms > 0) {
           var dy = e.clientY - dragStartClientY;
           var y = Math.max(0, Math.min(ms, dragStartScroll + dy * (ms / range)));
           window.scrollTo(0, y);
-          computeTarget(); currentY = targetY; draw();               // stick to the cursor, no inertia lag while dragging
+          computeTarget(); currentY = targetY;                       // stick to the cursor, no inertia lag while dragging
         }
+        run();                                                       // keep the tail spring alive
+        draw();
         e.preventDefault();
       });
       function endDrag(e) {
         if (!dragging) return;
         dragging = false;
+        targetSway = 0; swayVel = 0;                                 // let go: gravity swings him back
+        run();
         document.body.classList.remove("climber-grabbing");
         document.documentElement.style.scrollBehavior = "";          // restore smooth scrolling
         if (e && e.pointerId != null && climber.releasePointerCapture) { try { climber.releasePointerCapture(e.pointerId); } catch (x) {} }
