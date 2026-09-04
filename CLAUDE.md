@@ -115,7 +115,12 @@ Verified against the files, not from memory — re-check before quoting:
    application form saves nothing. `supabase-setup.sql` is ready in the repo.
 3. **Google Analytics** — `js/analytics.js` still holds `G-XXXXXXXXXX` and stays inert until a real
    GA4 ID is pasted in.
-4. **No Open Graph / Twitter card tags and no `404.html`.** `robots.txt` and `sitemap.xml` exist and
-   already reference `https://oritoki.ge`.
-5. **~4 MB of unreferenced images** sit in `images/` (`hero-photo.png`, `logo-rope.png`,
-   `logo-climber.png`, `emblem-narrow.png`, `logo.svg`, plus working copies of `climber.png`).
+4. **`emblem.png` is 504 KB** and `join.html` shows it 36 px tall — worth shrinking.
+5. `404.html` exists and works as-is on Netlify / Cloudflare Pages. On Apache (cPanel) it needs
+   `ErrorDocument 404 /404.html` in an `.htaccess`.
+
+Done and not to be redone: Open Graph / Twitter tags and `<link rel="canonical">` on both pages
+(share image `images/og-image.jpg`, 1200×630 — regenerate from `hero-photo.jpg` if the hero
+changes), `404.html`, and the removal of ~4.4 MB of unreferenced images. `robots.txt` and
+`sitemap.xml` exist and already reference `https://oritoki.ge`; if the live site ends up on `www.`,
+both files **and the absolute URLs in the OG tags** need the domain updated.
