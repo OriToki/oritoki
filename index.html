@@ -1,14 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!--
   =====================================================================
-   ORITOKI (LTD Oritoki / áƒ¨áƒžáƒ¡ áƒáƒ áƒ˜áƒ—áƒáƒ™áƒ˜) â€” Industrial Rope Access
+   ORITOKI (LTD Oritoki / შპს ორითოკი) — Industrial Rope Access
    One-page landing (dark industrial theme, Tailwind CDN + vanilla JS)
   ---------------------------------------------------------------------
    HOW TO EDIT TEXT (bilingual):
    - The visible text in the tag is the ENGLISH version.
    - The Georgian version sits in the  data-ka="..."  attribute.
    - To change a wording, edit BOTH the English text AND its data-ka.
-   - The site loads in Georgian by default; the ENG/áƒ¥áƒáƒ  toggle swaps it.
+   - The site loads in Georgian by default; the ENG/ქარ toggle swaps it.
 
    HOW TO ADD GALLERY PHOTOS:
    - Drop the file into  images/gallery/  and add one line in  js/images.js
@@ -18,8 +18,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-ka="áƒáƒ áƒ˜áƒ—áƒáƒ™áƒ˜ â€” áƒ¡áƒáƒ›áƒ áƒ”áƒ¬áƒ•áƒ”áƒšáƒ áƒáƒšáƒžáƒ˜áƒœáƒ˜áƒ–áƒ›áƒ˜ áƒ“áƒ áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜">Oritoki â€” Industrial Rope Access &amp; Works at Height</title>
-  <meta name="description" content="Oritoki â€” high-rise maintenance and repair without scaffolding. IRATA rope-access standards: facade painting, window cleaning, inspection and B2B services." />
+  <title data-ka="ორითოკი — სამრეწველო ალპინიზმი და სასიმაღლო სამუშაოები">Oritoki — Industrial Rope Access &amp; Works at Height</title>
+  <meta name="description" content="Oritoki — high-rise maintenance and repair without scaffolding. IRATA rope-access standards: facade painting, window cleaning, inspection and B2B services." />
 
   <!-- What Facebook, WhatsApp, LinkedIn and X show when someone shares the link. These are read
        from the raw HTML by a crawler that never runs our JavaScript, so they cannot use the
@@ -31,18 +31,18 @@
   <meta property="og:locale" content="ka_GE" />
   <meta property="og:locale:alternate" content="en_US" />
   <meta property="og:url" content="https://oritoki.ge/" />
-  <meta property="og:title" content="áƒáƒ áƒ˜áƒ—áƒáƒ™áƒ˜ â€” áƒ¡áƒáƒ›áƒ áƒ”áƒ¬áƒ•áƒ”áƒšáƒ áƒáƒšáƒžáƒ˜áƒœáƒ˜áƒ–áƒ›áƒ˜ áƒ“áƒ áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜" />
-  <meta property="og:description" content="áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜ áƒ®áƒáƒ áƒáƒ©áƒáƒ”áƒ‘áƒ˜áƒ¡ áƒ’áƒáƒ áƒ”áƒ¨áƒ” â€” áƒ¤áƒáƒ¡áƒáƒ“áƒ”áƒ‘áƒ˜, áƒ›áƒ˜áƒœáƒ”áƒ‘áƒ˜áƒ¡ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ, áƒ¦áƒ”áƒ‘áƒ•áƒ, áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ. IRATA áƒ¡áƒ¢áƒáƒœáƒ“áƒáƒ áƒ¢áƒ”áƒ‘áƒ˜." />
+  <meta property="og:title" content="ორითოკი — სამრეწველო ალპინიზმი და სასიმაღლო სამუშაოები" />
+  <meta property="og:description" content="სასიმაღლო სამუშაოები ხარაჩოების გარეშე — ფასადები, მინების წმენდა, ღებვა, ინსპექტირება. IRATA სტანდარტები." />
   <meta property="og:image" content="https://oritoki.ge/images/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Rope-access technicians on a glass high-rise facade" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="áƒáƒ áƒ˜áƒ—áƒáƒ™áƒ˜ â€” áƒ¡áƒáƒ›áƒ áƒ”áƒ¬áƒ•áƒ”áƒšáƒ áƒáƒšáƒžáƒ˜áƒœáƒ˜áƒ–áƒ›áƒ˜ áƒ“áƒ áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜" />
-  <meta name="twitter:description" content="áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜ áƒ®áƒáƒ áƒáƒ©áƒáƒ”áƒ‘áƒ˜áƒ¡ áƒ’áƒáƒ áƒ”áƒ¨áƒ” â€” áƒ¤áƒáƒ¡áƒáƒ“áƒ”áƒ‘áƒ˜, áƒ›áƒ˜áƒœáƒ”áƒ‘áƒ˜áƒ¡ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ, áƒ¦áƒ”áƒ‘áƒ•áƒ, áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ." />
+  <meta name="twitter:title" content="ორითოკი — სამრეწველო ალპინიზმი და სასიმაღლო სამუშაოები" />
+  <meta name="twitter:description" content="სასიმაღლო სამუშაოები ხარაჩოების გარეშე — ფასადები, მინების წმენდა, ღებვა, ინსპექტირება." />
   <meta name="twitter:image" content="https://oritoki.ge/images/og-image.jpg" />
 
-  <!-- Google Analytics â€” set your Measurement ID in js/analytics.js -->
+  <!-- Google Analytics — set your Measurement ID in js/analytics.js -->
   <script src="js/analytics.js"></script>
 
   <!-- Google Search Console: in GSC pick the "HTML tag" verification method and
@@ -61,7 +61,7 @@
   <!-- Swiper (gallery carousel) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-  <!-- Tailwind (no build step â€” Play CDN) -->
+  <!-- Tailwind (no build step — Play CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -113,24 +113,24 @@
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png?v=5" />
 
   <style>
-    /* Local Helvetica Neue (has Georgian glyphs) â€” self-hosted from /fonts */
+    /* Local Helvetica Neue (has Georgian glyphs) — self-hosted from /fonts */
     @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Roman.otf')  format('opentype'); font-weight: 400;     font-style: normal; font-display: swap; }
     @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Medium.otf') format('opentype'); font-weight: 500 600; font-style: normal; font-display: swap; }
     @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Bold.otf')   format('opentype'); font-weight: 700;     font-style: normal; font-display: swap; }
     @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Black.otf')  format('opentype'); font-weight: 800 900; font-style: normal; font-display: swap; }
 
-    /* Theme tokens â€” light by default, overridden under html.dark. Channel format
+    /* Theme tokens — light by default, overridden under html.dark. Channel format
        (R G B) so Tailwind's /opacity modifiers keep working on these colours. */
     :root {
       --c-night: 255 255 255; --c-panel: 245 245 242; --c-deep: 232 232 226;
       --c-surface: 255 255 255; --c-line: 229 231 235; --c-light: 20 20 42; --c-mute: 82 82 91;
-      --c-heading: 20 20 42;   /* section headings â€” near-black ink (light mode) */
+      --c-heading: 20 20 42;   /* section headings — near-black ink (light mode) */
       color-scheme: light;
     }
     html.dark {
       --c-night: 30 31 32; --c-panel: 25 26 27; --c-deep: 48 49 51;
       --c-surface: 18 19 20; --c-line: 42 43 44; --c-light: 236 237 242; --c-mute: 158 158 160;
-      --c-heading: 255 255 255;   /* section headings â€” pure white on dark */
+      --c-heading: 255 255 255;   /* section headings — pure white on dark */
       color-scheme: dark;
     }
 
@@ -140,13 +140,13 @@
 
     /* Only the header background/shadow react to scroll */
     #header { transition: background-color .3s ease, box-shadow .3s ease; }
-    /* Rope-access technician as the custom scrollbar thumb â€” he rappels down as you scroll
+    /* Rope-access technician as the custom scrollbar thumb — he rappels down as you scroll
        and climbs back up, with subtle cinematic easing / tilt / sway (JS-driven). Tunables: */
     :root {
       /* This one width drives the technician and the rope spacing together: the two rope
          x-positions are fractions of it, so shrinking him pulls the ropes closer as well. */
       --worker-width: 97px;         /* technician width (desktop); ropes scale with it */
-      --climber-left: 52px;         /* distance from the LEFT viewport edge â€” moves the
+      --climber-left: 52px;         /* distance from the LEFT viewport edge — moves the
                                        technician and both ropes together */
       /* How high above the window's bottom edge the technician's boots stop, at the very end of
          the page. It has to clear the HIGHER of the two rope ends and its stopper knot
@@ -162,7 +162,7 @@
     /* Braided-rope look matching the reference: light core + dark outline. Solid strokes give one
        constant colour (no shimmer, now that horizontal sway is disabled). */
     /* Colours and widths are SAMPLED from the logo's rope at the size it actually renders.
-       The logo rope is 51px wide in the artwork â€” 10px black edge, a 31px white core filled
+       The logo rope is 51px wide in the artwork — 10px black edge, a 31px white core filled
        with a black diamond weave, 10px black edge. Scaled to ~3px on the page that resolves
        to exactly three pixels: rgb(101,100,101) / rgb(195,195,195) / rgb(94,94,94). Using
        near-black + near-white here instead is what made this rope read as a bright bar next
@@ -170,12 +170,12 @@
     .rope-out { fill: none; stroke: #616161; stroke-width: var(--rope-w, 3.06); stroke-linecap: round; stroke-linejoin: round; }
     .rope-in  { fill: none; stroke: url(#ropeWeave) #c3c3c3; stroke-width: var(--rope-core, 2.75); stroke-linecap: round; stroke-linejoin: round; }
     /* The brake strand lives in the second SVG (#ropeFront), which can't reach #ropeBack's
-       pattern â€” point it at its own local copy so it keeps the dark weave, like the tail. */
+       pattern — point it at its own local copy so it keeps the dark weave, like the tail. */
     #ropeFront .rope-in { stroke: url(#ropeWeaveF) #c3c3c3; }
     #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
     body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
     body.climber-grabbing #climber { cursor: grabbing; }
-    /* Set while the pointer is over a rope above or below him â€” the ropes act as the scrollbar's
+    /* Set while the pointer is over a rope above or below him — the ropes act as the scrollbar's
        track, so they should read as clickable. */
     body.rope-track { cursor: pointer; }
     /* The native scrollbar stays on the right (scroll box, thumb, arrows). The technician is a
@@ -221,23 +221,23 @@
     #header:not(.scrolled) #logoEmblem, html.dark #logoEmblem { filter: brightness(0) invert(1); }
     @media (min-width: 1280px) {
       /* Nav is clean text (no default pill); hover shows a faint neutral pill. The current
-         section is marked by orange text ONLY â€” no tinted pill behind it, in any bar state.
+         section is marked by orange text ONLY — no tinted pill behind it, in any bar state.
          Colours otherwise follow whatever bar sits beneath the nav. */
       #header #nav a { background: transparent; transition: background .18s ease, color .18s ease; }
-      /* over the hero photo â€” white */
+      /* over the hero photo — white */
       #header:not(.scrolled) #nav a { color: rgba(255,255,255,.85); }
       #header:not(.scrolled) #nav a:hover { background: rgba(255,255,255,.12); color: #ffffff; }
       #header:not(.scrolled) #nav a.active { background: transparent; color: #f97316; }
-      /* scrolled, light beige bar â€” dark text */
+      /* scrolled, light beige bar — dark text */
       #header.scrolled #nav a { color: #3b3b45; }
       #header.scrolled #nav a:hover { background: rgba(0,0,0,.06); color: #14142a; }
       #header.scrolled #nav a.active { background: transparent; color: #f97316; }
-      /* scrolled, dark bar â€” light text */
+      /* scrolled, dark bar — light text */
       html.dark #header.scrolled #nav a { color: rgba(255,255,255,.82); }
       html.dark #header.scrolled #nav a:hover { background: rgba(255,255,255,.10); color: #ffffff; }
       html.dark #header.scrolled #nav a.active { background: transparent; color: #f97316; }
       /* Catch-all: the drawer-style pill rules further down (#nav a.active) also carry a
-         box-shadow, which the background overrides above do not clear â€” on the desktop bar
+         box-shadow, which the background overrides above do not clear — on the desktop bar
          it reads as a faint halo. Kill both so the active item is pure orange text. */
       #header #nav a.active { background: transparent; box-shadow: none; }
     }
@@ -266,11 +266,11 @@
 
     /* Mobile only (< lg, where About is single-column): the heading (eyebrow + title)
        sits on a beige band with dark text, and only the body paragraphs get the
-       hero-style photo treatment â€” the same about.jpg as a full-bleed background
+       hero-style photo treatment — the same about.jpg as a full-bleed background
        with a dark scrim and white text. Desktop keeps the two-column card layout. */
     @media (max-width: 1023px) {
       #about {
-        background: #f5f5f2;               /* beige heading zone â€” same tone as the Services section */
+        background: #f5f5f2;               /* beige heading zone — same tone as the Services section */
         border-color: transparent;
         padding-top: 2rem;                 /* trimmed so the heading sits neatly in the band */
         padding-bottom: 0;                 /* let the photo band reach the section's bottom */
@@ -344,7 +344,7 @@
         transform: translateY(0) scaleY(1);
         transition: var(--dd-fade), var(--dd-slide), visibility 0s;
       }
-      /* The links have no motion of their own â€” they simply come in with the panel as it
+      /* The links have no motion of their own — they simply come in with the panel as it
          unfolds, which is how the desktop dropdown behaves. */
       #nav a {
         padding: .65rem 0; border-radius: 0; background: transparent; box-shadow: none;
@@ -352,12 +352,12 @@
       }
       /* Left-align every label in the drawer. On desktop each label is centred inside
          a fixed Georgian-width slot; in the vertical list that makes short English
-         labels (About, Join Us) sit shifted to the right â€” start-align fixes it. */
+         labels (About, Join Us) sit shifted to the right — start-align fixes it. */
       #nav .nav-link { justify-content: flex-start; }
       #nav .nav-label { justify-items: start; }
     }
     /* Phones: header is only 60px tall, so the drawer must open right below it
-       (this rule comes after the â‰¤1023px block so it wins over inset: 80px). */
+       (this rule comes after the ≤1023px block so it wins over inset: 80px). */
     @media (max-width: 640px) {
       #nav { top: 60px; }
     }
@@ -373,7 +373,7 @@
         /* sits at the TOP of the drawer, above "Home" */
       }
       html.dark #nav .nav-actions { border-bottom-color: rgba(255,255,255,.09); }
-      /* In the drawer, always use its own (solid-bg) colours â€” never the
+      /* In the drawer, always use its own (solid-bg) colours — never the
          transparent-hero white-on-image treatment the header applies at the top. */
       #header #nav .nav-actions #langToggle { border-color: rgb(var(--c-line)); }
       #header #nav .nav-actions #langToggle button { color: rgb(var(--c-light)); }
@@ -387,20 +387,20 @@
     /* ============== SHARED "DROP DOWN" MOTION ==============
        The desktop "What We Do" dropdown and the mobile burger drawer open with exactly the
        same effect: the panel unfolds from its top edge while its rows cascade in one by one.
-       Both read these tokens, so the two can never drift apart â€” change the motion here and
+       Both read these tokens, so the two can never drift apart — change the motion here and
        it changes in both places. */
     :root {
       --dd-fade:  opacity .28s ease;                          /* panel fade */
       --dd-slide: transform .34s cubic-bezier(.2,.85,.25,1);  /* panel unfold */
       --dd-lift:  -16px;   /* how far above its resting place the panel starts */
     }
-    /* "What We Do" hover dropdown â€” on desktop, hovering the button reveals the
+    /* "What We Do" hover dropdown — on desktop, hovering the button reveals the
        service names (non-clickable); the button itself still links to #services.
        Below xl (mobile drawer) the dropdown is hidden and it's a normal link. */
     .nav-dd { position: relative; display: inline-flex; }
     .nav-dd-caret { transition: transform .25s ease; }
     .nav-dd:hover .nav-dd-caret { transform: rotate(180deg); }
-    /* Dropdown items are links â€” override the aggressive #nav a pill/colour styling. */
+    /* Dropdown items are links — override the aggressive #nav a pill/colour styling. */
     #nav .nav-dd-item { display: flex !important; align-items: center; gap: .55rem; padding: .5rem .7rem !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important; border: 0 !important; font-size: 14px; font-weight: 500; text-transform: none; letter-spacing: normal; color: #14142a !important; white-space: nowrap; transition: background .06s linear, color .06s linear; }
     #nav .nav-dd-item:hover { background: #f5f5f2 !important; color: #f97316 !important; }
     .nav-dd-ic { flex: none; display: inline-flex; color: #f97316; }
@@ -434,7 +434,7 @@
         opacity: 1; visibility: visible; pointer-events: auto;
         transition: var(--dd-fade), visibility 0s;
       }
-      /* Card "unfolds" downward from the top â€” identical motion to the mobile drawer. */
+      /* Card "unfolds" downward from the top — identical motion to the mobile drawer. */
       .nav-dd-inner {
         background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px;
         box-shadow: 0 22px 44px -22px rgba(20,20,42,.4);
@@ -447,7 +447,7 @@
     }
     @media (max-width: 1279px) {
       .nav-dd-menu { display: none; }
-      .nav-dd-caret { display: none; }   /* no dropdown in the drawer â†’ no caret hint */
+      .nav-dd-caret { display: none; }   /* no dropdown in the drawer → no caret hint */
       #nav .nav-dd { display: block; }
       #nav .nav-dd > a { display: flex; width: 100%; }
     }
@@ -469,7 +469,7 @@
     #services article > h3 { margin-bottom: .1rem; }
     #services article::after { content: "\f067"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: .68rem; position: absolute; top: 1rem; right: 1rem; height: 1.7rem; width: 1.7rem; border-radius: 9999px; background: #f5f5f2; color: #9ca3af; display: flex; align-items: center; justify-content: center; transition: background .2s ease, color .2s ease; }
     #services article:hover::after { background: #f97316; color: #fff; }
-    /* Auto card numbers (01, 02, â€¦) top-left; stroke-icon sizing. Hover-lift is in the markup. */
+    /* Auto card numbers (01, 02, …) top-left; stroke-icon sizing. Hover-lift is in the markup. */
     #svcGrid { counter-reset: svc; }
     #services article { counter-increment: svc; }
     #services article::before {
@@ -487,7 +487,7 @@
     #svcBackdrop { position: absolute; inset: 0; background: rgba(11,12,13,.55); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); opacity: 0; transition: opacity .42s ease; }
     #svcModal.show #svcBackdrop { opacity: 1; }
     #svcModalCard { position: fixed; box-sizing: border-box; background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 40px 90px -30px rgba(20,20,42,.55); overflow: hidden; will-change: top, left, width, height; }
-    /* Photo background â€” applied only to the "Glass Facades" modal (svc-glass). */
+    /* Photo background — applied only to the "Glass Facades" modal (svc-glass). */
     #svcModalCard.svc-modal-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.18); }
     #svcModalCard.svc-modal-photo .svc-detail h3 { color: #ffffff; }
     #svcModalCard.svc-modal-photo .svc-detail li { color: rgba(255,255,255,.92); }
@@ -509,7 +509,7 @@
     /* The gate pivots on its rivet (16.31, 16 in the icon's viewBox). Closed sits at 3.4deg
        because the frame's gate side leans by that much, so "shut" means flush with the
        nose, not vertical. Closing is a short snap that must never overshoot past the
-       closed angle â€” a real gate is stopped by the nose. Opening swings wide and settles. */
+       closed angle — a real gate is stopped by the nose. Opening swings wide and settles. */
     .cb-icon { display: block; overflow: visible; }
     /* Rays burst outwards as the site goes dark, on the same curve as the gate swing. */
     .cb-rays {
@@ -535,14 +535,14 @@
     @media (prefers-reduced-motion: reduce) { .cb-icon .cb-gate { transition: none; } }
 
     /* ---- Toggle colour: fixed per theme, never recoloured on hover ----
-       Light mode is always the brand orange â€” over the hero photo, on the scrolled beige
+       Light mode is always the brand orange — over the hero photo, on the scrolled beige
        bar and in the mobile drawer alike. Dark mode is black over the hero photo, but
        flips to white once the header becomes a solid dark bar (see the rule further down),
        where black would be invisible. Hover only lifts the backdrop, never the colour. */
     /* A deliberately more golden orange than the brand accent (--accent #f97316), so the
        toggle reads as its own control rather than as another accent element. */
     :root { --cb-gold: #f59e0b; }
-    /* The carabiner stands on its own â€” no ring, no plate behind it. Hover just dims it.
+    /* The carabiner stands on its own — no ring, no plate behind it. Hover just dims it.
        One colour per theme, the same over the hero photo and on the scrolled bar.
        The search icon is treated as its pair, so they always match. */
     #themeToggle, #searchBtn { color: var(--cb-gold); }
@@ -613,7 +613,7 @@
     @media (max-width: 1023px) {
       html.dark #about { background: #202123; box-shadow: 0 -12px 28px rgba(0,0,0,.55); }
     }
-    /* Service cards â€” lift them slightly above the section for depth in the dark. */
+    /* Service cards — lift them slightly above the section for depth in the dark. */
     html.dark #services article { background-color: #202123; }
     html.dark #services article::after { background: #303133; color: #78787e; }
     html.dark #services article:hover::after { background: #f97316; color: #fff; }
@@ -639,8 +639,8 @@
 <body class="bg-surface font-body text-mute antialiased">
 
   <!-- Rope-access technician = custom scrollbar thumb. He rappels the WORKING rope
-       (down from the top, in front of his face â†’ into the descender â†’ out to the brake
-       hand â†’ behind him to the ground) beside a straight BACKUP rope. Ropes are drawn
+       (down from the top, in front of his face → into the descender → out to the brake
+       hand → behind him to the ground) beside a straight BACKUP rope. Ropes are drawn
        in two SVGs so the working line can pass in front of the face yet behind the body,
        and their geometry is updated in JS as he slides (see drawRopes()). -->
   <div id="ropeClimber" aria-hidden="true">
@@ -654,7 +654,7 @@
              near-white cord. In the source the weave repeats every ~11px across a 51px rope;
              at the size the logo renders that is ~0.66px, so the tile is sized in the same
              CSS-pixel space (userSpaceOnUse) and the browser resolves it exactly as it does
-             the logo's PNG â€” invisible on a 1x screen, visible weave on a retina one. -->
+             the logo's PNG — invisible on a 1x screen, visible weave on a retina one. -->
         <pattern id="ropeWeave" patternUnits="userSpaceOnUse" width=".66" height=".66" patternTransform="rotate(45)">
           <rect width=".66" height=".66" fill="#eeeeee"/>
           <path d="M0 0V.66M0 0H.66" stroke="#151515" stroke-width=".24"/>
@@ -665,10 +665,10 @@
            BEHIND the descender instead of lying on top of it. The front segment above stops
            flush at the device's edge; this one carries the rope on under it. -->
       <path class="rope-out" id="rWtipO"></path><path class="rope-in" id="rWtipI"></path>  <!-- working rope tip, behind the descender -->
-      <path class="rope-out" id="rWloO"></path><path class="rope-in" id="rWloI"></path>    <!-- working rope: brake hand â†’ ground -->
+      <path class="rope-out" id="rWloO"></path><path class="rope-in" id="rWloI"></path>    <!-- working rope: brake hand → ground -->
       <!-- Stopper knot at the end of each rope. Both ropes stop well above the bottom of the
            window rather than running off it, and each one finishes in a barrel knot with a
-           short tail below it â€” the way a rope is actually closed off. -->
+           short tail below it — the way a rope is actually closed off. -->
       <path class="rope-out" id="rKnotBO"></path><path class="rope-in" id="rKnotBI"></path>  <!-- backup rope's knot -->
       <path class="rope-out" id="rKnotWO"></path><path class="rope-in" id="rKnotWI"></path>  <!-- working rope's knot -->
     </svg>
@@ -695,8 +695,8 @@
            the way the original artwork has it. Drawn behind the figure it disappeared under
            the absorber instead. Its x (0.44) clears the helmet and the gripping fist, so
            being in front covers nothing it shouldn't. -->
-      <path class="rope-out" id="rWupO" clip-path="url(#ropeCut)"></path><path class="rope-in" id="rWupI" clip-path="url(#ropeCut)"></path>  <!-- working rope: ceiling â†’ descender, over the absorber -->
-      <path class="rope-out" id="rBrkO" clip-path="url(#brakeCut)"></path><path class="rope-in" id="rBrkI" clip-path="url(#brakeCut)"></path>  <!-- working rope brake strand: descender â†’ brake hand -->
+      <path class="rope-out" id="rWupO" clip-path="url(#ropeCut)"></path><path class="rope-in" id="rWupI" clip-path="url(#ropeCut)"></path>  <!-- working rope: ceiling → descender, over the absorber -->
+      <path class="rope-out" id="rBrkO" clip-path="url(#brakeCut)"></path><path class="rope-in" id="rBrkI" clip-path="url(#brakeCut)"></path>  <!-- working rope brake strand: descender → brake hand -->
     </svg>
   </div>
 
@@ -713,32 +713,32 @@
       <!-- Navigation -->
       <!-- No `uppercase` class here on purpose: text-transform:uppercase makes Chrome render
            Georgian Mtavruli back as Mkhedruli, so the labels are authored already-capitalised
-           (English in caps, Georgian in Mtavruli) â€” the same approach as the section h2s. -->
+           (English in caps, Georgian in Mtavruli) — the same approach as the section h2s. -->
       <nav id="nav" class="font-display text-[15px] font-600 tracking-wide text-light">
         <!-- Lang + theme controls: on mobile they sit here, ABOVE the nav links (JS fills this). -->
         <div id="navActions" class="nav-actions"></div>
-        <a href="#home"     class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="á²›á²—á²á²•á²á² á²˜">HOME</span></span><span aria-hidden="true" class="nav-ghost"><span>á²›á²—á²á²•á²á² á²˜</span></span></span></a>
-        <a href="#about"    class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="á²©á²•á²”á²œ á²¨á²”á²¡á²á²®á²”á²‘">ABOUT</span></span><span aria-hidden="true" class="nav-ghost"><span>á²©á²•á²”á²œ á²¨á²”á²¡á²á²®á²”á²‘</span></span></span></a>
+        <a href="#home"     class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲛᲗᲐᲕᲐᲠᲘ">HOME</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲛᲗᲐᲕᲐᲠᲘ</span></span></span></a>
+        <a href="#about"    class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ">ABOUT</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ</span></span></span></a>
         <div class="nav-dd">
-          <a href="#services" class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="á² á²á²¡ á²•á²á²™á²”á²—á²”á²‘á²—">WHAT WE DO</span><i class="fa-solid fa-chevron-down nav-dd-caret text-[10px]"></i></span><span aria-hidden="true" class="nav-ghost"><span>á² á²á²¡ á²•á²á²™á²”á²—á²”á²‘á²—</span><i class="fa-solid fa-chevron-down text-[10px]"></i></span></span></a>
+          <a href="#services" class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ">WHAT WE DO</span><i class="fa-solid fa-chevron-down nav-dd-caret text-[10px]"></i></span><span aria-hidden="true" class="nav-ghost"><span>ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ</span><i class="fa-solid fa-chevron-down text-[10px]"></i></span></span></a>
           <div class="nav-dd-menu" aria-hidden="true">
             <div class="nav-dd-inner">
-              <a href="#svc-glass" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></span><span data-ka="áƒ›áƒ˜áƒœáƒ˜áƒ¡ áƒ¤áƒáƒ¡áƒáƒ“áƒ”áƒ‘áƒ˜ áƒ“áƒ áƒ¤áƒáƒœáƒ¯áƒ áƒ”áƒ‘áƒ˜">Glass Facades &amp; Windows</span></a>
-              <a href="#svc-buildings" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span data-ka="áƒ¨áƒ”áƒœáƒáƒ‘áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒ•áƒšáƒ">Building Maintenance</span></a>
-              <a href="#svc-electrical" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span data-ka="áƒ”áƒšáƒ”áƒ¥áƒ¢áƒ áƒáƒáƒ‘áƒ áƒ“áƒ áƒ¢áƒ”áƒšáƒ”áƒ™áƒáƒ›áƒ£áƒœáƒ˜áƒ™áƒáƒªáƒ˜áƒ">Electrical &amp; Telecom</span></a>
-              <a href="#svc-signage" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><span data-ka="áƒ áƒ”áƒ™áƒšáƒáƒ›áƒ”áƒ‘áƒ˜">Advertising &amp; Signage</span></a>
-              <a href="#svc-painting" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></span><span data-ka="áƒ¦áƒ”áƒ‘áƒ•áƒ áƒ“áƒ áƒ“áƒáƒªáƒ•áƒ">Painting &amp; Protection</span></a>
-              <a href="#svc-construction" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></span><span data-ka="áƒ¡áƒáƒ›áƒ¨áƒ”áƒœáƒ”áƒ‘áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜ áƒ“áƒ áƒ˜áƒ–áƒáƒšáƒáƒªáƒ˜áƒ">Construction &amp; Insulation</span></a>
-              <a href="#svc-rock" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></span><span data-ka="áƒ™áƒšáƒ“áƒ”áƒ”áƒ‘áƒ˜, áƒ¤áƒ”áƒ áƒ“áƒáƒ‘áƒ”áƒ‘áƒ˜ áƒ“áƒ áƒ’áƒáƒ áƒ”áƒ›áƒ">Rock, Slope &amp; Environment</span></a>
-              <a href="#svc-industrial" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></span><span data-ka="áƒ˜áƒœáƒ“áƒ£áƒ¡áƒ¢áƒ áƒ˜áƒ£áƒšáƒ˜ áƒáƒ‘áƒ˜áƒ”áƒ¥áƒ¢áƒ”áƒ‘áƒ˜">Industrial Facilities</span></a>
-              <a href="#svc-inspection" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span data-ka="áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ">Inspection</span></a>
-              <a href="#svc-film" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></span><span data-ka="áƒ¡áƒªáƒ”áƒœáƒ áƒ“áƒ áƒ’áƒáƒ“áƒáƒ¦áƒ”áƒ‘áƒ”áƒ‘áƒ˜">Stage &amp; Filming</span></a>
-              <a href="#svc-emergency" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span data-ka="áƒ¡áƒžáƒ”áƒªáƒ˜áƒáƒšáƒ£áƒ áƒ˜ áƒ“áƒ áƒ¡áƒáƒ’áƒáƒœáƒ’áƒ”áƒ‘áƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜">Special &amp; Emergency Works</span></a>
+              <a href="#svc-glass" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></span><span data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</span></a>
+              <a href="#svc-buildings" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span data-ka="შენობების მოვლა">Building Maintenance</span></a>
+              <a href="#svc-electrical" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span data-ka="ელექტროობა და ტელეკომუნიკაცია">Electrical &amp; Telecom</span></a>
+              <a href="#svc-signage" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><span data-ka="რეკლამები">Advertising &amp; Signage</span></a>
+              <a href="#svc-painting" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></span><span data-ka="ღებვა და დაცვა">Painting &amp; Protection</span></a>
+              <a href="#svc-construction" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></span><span data-ka="სამშენებლო სამუშაოები და იზოლაცია">Construction &amp; Insulation</span></a>
+              <a href="#svc-rock" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></span><span data-ka="კლდეები, ფერდობები და გარემო">Rock, Slope &amp; Environment</span></a>
+              <a href="#svc-industrial" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></span><span data-ka="ინდუსტრიული ობიექტები">Industrial Facilities</span></a>
+              <a href="#svc-inspection" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span data-ka="ინსპექტირება">Inspection</span></a>
+              <a href="#svc-film" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></span><span data-ka="სცენა და გადაღებები">Stage &amp; Filming</span></a>
+              <a href="#svc-emergency" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</span></a>
             </div>
           </div>
         </div>
-        <a href="#gallery"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="á²’á²á²šá²”á² á²”á²">GALLERY</span></span><span aria-hidden="true" class="nav-ghost"><span>á²’á²á²šá²”á² á²”á²</span></span></span></a>
-        <a href="#contact"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="á²™á²á²œá²¢á²á²¥á²¢á²˜">CONTACT</span></span><span aria-hidden="true" class="nav-ghost"><span>á²™á²á²œá²¢á²á²¥á²¢á²˜</span></span></span></a>
+        <a href="#gallery"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲒᲐᲚᲔᲠᲔᲐ</span></span></span></a>
+        <a href="#contact"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲙᲝᲜᲢᲐᲥᲢᲘ">CONTACT</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲙᲝᲜᲢᲐᲥᲢᲘ</span></span></span></a>
       </nav>
 
       <!-- Right group (actions). On desktop it mirrors the brand (flex-1) so the nav
@@ -755,7 +755,7 @@
                room around the frame; 1 unit still = 1px, so the carabiner itself is
                unchanged in size and stays centred. -->
           <svg class="cb-icon" viewBox="-1.5 -4.5 27 33" width="27" height="33" fill="currentColor" aria-hidden="true" focusable="false">
-            <!-- Sun rays â€” dark mode only, hinting that the button switches to light. -->
+            <!-- Sun rays — dark mode only, hinting that the button switches to light. -->
             <g class="cb-rays" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
               <path d="M20.57 12h2"/>
               <path d="M18.05 20.91l1.42 1.77"/>
@@ -766,7 +766,7 @@
               <path d="M11.97-0.6v-2.5"/>
               <path d="M18.05 3.09 19.47 1.32"/>
             </g>
-            <!-- Frame: solid offset-D body traced off the owner's carabiner photo â€” widest in
+            <!-- Frame: solid offset-D body traced off the owner's carabiner photo — widest in
                  the upper third, and the gate side leans ~3.4 degrees inward going down. -->
             <path d="M17.85 7.3C17.88 6.9 17.9 6.6 17.88 6.4C17.85 5.9 17.75 5.2 17.5 4.6C17.1 3.4 15.9 2.05 14.7 2.02L12.7 2.02C11.2 2.05 9.6 2.6 8.5 3.8C6.9 5.3 6.25 6.9 6.12 8.8C6.03 10.6 6.05 12.6 6.3 14.6C6.6 16.8 7.4 19 8.5 20.3C9.7 21.5 10.9 22 11.9 22L14.1 22C14.35 22 14.6 21.9 14.9 21.7C16.4 21 17.15 19.2 17.27 17.56L15.21 17.56C15 18.75 14.35 19.9 13.35 20.4C12.65 20.7 11.85 20.25 11.15 19.4C10.2 18.25 9.45 17.15 9.1 15.8C8.85 14.6 8.8 13.2 8.85 11.8C8.9 10.2 8.85 8.2 9.35 6.7C9.85 5.3 11.1 4.3 12.6 4.32C14 4.4 15.45 5.3 15.75 6.6C15.82 6.9 15.85 7.1 15.85 7.3Z"/>
             <!-- Gate: nose piece, screwgate sleeve and hinge lug, swinging as one on the rivet. -->
@@ -779,7 +779,7 @@
         </button>
         <!-- Language toggle -->
         <div id="langToggle" class="flex items-center rounded-full border border-line overflow-hidden text-xs font-600 font-display">
-          <button type="button" data-lang="ka" class="px-3 py-1.5 transition">áƒ¥áƒáƒ </button>
+          <button type="button" data-lang="ka" class="px-3 py-1.5 transition">ქარ</button>
           <button type="button" data-lang="en" class="px-3 py-1.5 transition">ENG</button>
         </div>
         <button id="burger" type="button" aria-label="Menu" aria-expanded="false" class="xl:hidden text-light text-2xl leading-none w-9 h-9 flex items-center justify-center">
@@ -804,17 +804,17 @@
       <div id="heroContent" class="max-w-2xl">
         <!-- Headline: two lines, white + orange -->
         <h1 id="heroTitle" class="reveal hero-shadow font-display font-900 leading-[1.06] text-[26px] sm:text-4xl lg:text-5xl xl:text-6xl">
-          <span class="block text-white" data-ka="á²¡á²á²¡á²˜á²›á²á²¦á²šá² á²¡á²á²›á²£á²¨á²á²á²”á²‘á²˜á²¡">ROPE ACCESS</span>
-          <span class="block text-white" data-ka="á²¡á²žá²”á²ªá²˜á²á²šá²˜á²¡á²¢á²”á²‘á²˜">TECHNICIANS</span>
+          <span class="block text-white" data-ka="ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ">ROPE ACCESS</span>
+          <span class="block text-white" data-ka="ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘ">TECHNICIANS</span>
         </h1>
 
         <!-- Supporting description -->
-        <p class="reveal hero-shadow mt-5 max-w-xl text-sm sm:text-base text-white leading-relaxed" data-ka="áƒ•áƒáƒ®áƒáƒ áƒªáƒ˜áƒ”áƒšáƒ”áƒ‘áƒ— áƒ¡áƒáƒ›áƒ áƒ”áƒ¬áƒ•áƒ”áƒšáƒ áƒáƒšáƒžáƒ˜áƒœáƒ˜áƒ–áƒ›áƒ˜áƒ¡ áƒ›áƒáƒ›áƒ¡áƒáƒ®áƒ£áƒ áƒ”áƒ‘áƒáƒ¡ áƒáƒ‘áƒ˜áƒ”áƒ¥áƒ¢áƒ”áƒ‘áƒ–áƒ”, áƒ¡áƒáƒ“áƒáƒª áƒ¢áƒ áƒáƒ“áƒ˜áƒªáƒ˜áƒ£áƒšáƒ˜ áƒ›áƒ”áƒ—áƒáƒ“áƒ”áƒ‘áƒ˜áƒ— áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ¡ áƒ¨áƒ”áƒ¡áƒ áƒ£áƒšáƒ”áƒ‘áƒ áƒáƒ áƒáƒ”áƒ¤áƒ”áƒ¥áƒ¢áƒ£áƒ áƒ˜ áƒáƒœ áƒ¨áƒ”áƒ£áƒ«áƒšáƒ”áƒ‘áƒ”áƒšáƒ˜áƒ">We provide industrial rope-access services on structures where traditional methods make the work ineffective or impossible</p>
+        <p class="reveal hero-shadow mt-5 max-w-xl text-sm sm:text-base text-white leading-relaxed" data-ka="ვახორციელებთ სამრეწველო ალპინიზმის მომსახურებას ობიექტებზე, სადაც ტრადიციული მეთოდებით სამუშაოს შესრულება არაეფექტური ან შეუძლებელია">We provide industrial rope-access services on structures where traditional methods make the work ineffective or impossible</p>
 
         <!-- CTA (outline, white) -->
         <div class="reveal mt-8">
           <a href="#services" class="group inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 text-sm font-600 text-white hover:bg-accent/90 transition">
-            <span data-ka="áƒ áƒáƒ¡ áƒ•áƒáƒ™áƒ”áƒ—áƒ”áƒ‘áƒ—">What We Do</span>
+            <span data-ka="რას ვაკეთებთ">What We Do</span>
             <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
           </a>
         </div>
@@ -827,7 +827,7 @@
   </section>
 
   <!-- These sections are visually ordered with flex `order`
-       (About â†’ Projects â†’ Services) without changing DOM/anchor order.
+       (About → Projects → Services) without changing DOM/anchor order.
        The Why-Us section lives further down, right after the gallery. -->
   <div class="flex flex-col">
   <!-- ============================ ABOUT ============================ -->
@@ -835,33 +835,33 @@
     <div class="max-w-7xl mx-auto px-5 grid gap-8 lg:grid-cols-2 lg:gap-x-12 lg:gap-y-0 lg:items-stretch">
       <!-- Photo: after the text on mobile (order-2); right column on desktop.
            On mobile it is hidden and the same image is used as the section
-           background instead (hero-style) â€” see the #about mobile CSS. -->
+           background instead (hero-style) — see the #about mobile CSS. -->
       <div id="aboutPhoto" class="reveal relative order-2 lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2">
         <img src="images/about.jpg?v=3" alt="Oritoki rope-access technicians working on a glass high-rise" class="w-full h-full min-h-[520px] object-cover rounded-2xl border border-line" />
       </div>
       <!-- Text: first on mobile (order-1); left column on desktop -->
       <div class="reveal order-1 lg:order-none lg:col-start-1 lg:row-start-1">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="á²¡á²˜á²›á²á²¦á²šá²” á²©á²•á²”á²œá²˜ á²¡á²á²›á²£á²¨á²á² á²¡á²˜á²•á² á²ªá²”á², á²£á²¡á²á²¤á² á²—á²®á²á²”á²‘á² á²žá² á²˜á²á² á²˜á²¢á²”á²¢á²˜">HEIGHT IS OUR WORKSPACE, SAFETY OUR PRIORITY</h2>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲡᲘᲛᲐᲦᲚᲔ ᲩᲕᲔᲜᲘ ᲡᲐᲛᲣᲨᲐᲝ ᲡᲘᲕᲠᲪᲔᲐ, ᲣᲡᲐᲤᲠᲗᲮᲝᲔᲑᲐ ᲞᲠᲘᲝᲠᲘᲢᲔᲢᲘ">HEIGHT IS OUR WORKSPACE, SAFETY OUR PRIORITY</h2>
         <div id="aboutBody">
-        <p class="mt-5 text-mute leading-relaxed" data-ka="áƒáƒ áƒ˜áƒ—áƒáƒ™áƒ˜ áƒáƒ áƒ˜áƒ¡ áƒ¡áƒáƒ›áƒ áƒ”áƒ¬áƒ•áƒ”áƒšáƒ áƒáƒšáƒžáƒ˜áƒœáƒ˜áƒ–áƒ›áƒ˜áƒ¡ áƒ™áƒáƒ›áƒžáƒáƒœáƒ˜áƒ, áƒ áƒáƒ›áƒ”áƒšáƒ˜áƒª áƒ£áƒ–áƒ áƒ£áƒœáƒ•áƒ”áƒšáƒ§áƒáƒ¤áƒ¡ áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜áƒ¡ áƒ£áƒ¡áƒáƒ¤áƒ áƒ—áƒ®áƒ, áƒ¡áƒ¬áƒ áƒáƒ¤ áƒ“áƒ áƒ”áƒ¤áƒ”áƒ¥áƒ¢áƒ£áƒ  áƒ¨áƒ”áƒ¡áƒ áƒ£áƒšáƒ”áƒ‘áƒáƒ¡ áƒ˜áƒ¥, áƒ¡áƒáƒ“áƒáƒª áƒ®áƒáƒ áƒáƒ©áƒáƒ”áƒ‘áƒ˜áƒ¡, áƒáƒ›áƒ¬áƒ”áƒ”áƒ‘áƒ˜áƒ¡ áƒáƒœ áƒ¡áƒ®áƒ•áƒ áƒ¢áƒ áƒáƒ“áƒ˜áƒªáƒ˜áƒ£áƒšáƒ˜ áƒ›áƒ”áƒ—áƒáƒ“áƒ”áƒ‘áƒ˜áƒ¡ áƒ’áƒáƒ›áƒáƒ§áƒ”áƒœáƒ”áƒ‘áƒ áƒ¨áƒ”áƒ£áƒ«áƒšáƒ”áƒ‘áƒ”áƒšáƒ˜áƒ áƒáƒœ áƒáƒ áƒáƒ”áƒ¤áƒ”áƒ¥áƒ¢áƒ£áƒ áƒ˜áƒ.">
+        <p class="mt-5 text-mute leading-relaxed" data-ka="ორითოკი არის სამრეწველო ალპინიზმის კომპანია, რომელიც უზრუნველყოფს სასიმაღლო სამუშაოების უსაფრთხო, სწრაფ და ეფექტურ შესრულებას იქ, სადაც ხარაჩოების, ამწეების ან სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელია ან არაეფექტურია.">
           Oritoki is an industrial rope-access company that delivers safe, fast and
           effective works at height where the use of scaffolding, cranes or other
           traditional methods is impossible or ineffective.
         </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="áƒ©áƒ•áƒ”áƒœáƒ˜ áƒ’áƒ£áƒœáƒ“áƒ˜ áƒáƒ”áƒ áƒ—áƒ˜áƒáƒœáƒ”áƒ‘áƒ¡ áƒ›áƒ áƒáƒ•áƒáƒšáƒ¬áƒšáƒ˜áƒáƒœáƒ˜ áƒžáƒ áƒáƒ¥áƒ¢áƒ˜áƒ™áƒ£áƒšáƒ˜ áƒ’áƒáƒ›áƒáƒªáƒ“áƒ˜áƒšáƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒ¥áƒáƒœáƒ” áƒ›áƒ—áƒáƒ›áƒ¡áƒ•áƒšáƒ”áƒšáƒ”áƒ‘áƒ¡, áƒ›áƒ”áƒ™áƒšáƒ“áƒ”áƒ£áƒ áƒ”áƒ‘áƒ¡áƒ áƒ“áƒ áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜áƒ¡ áƒ¡áƒ”áƒ áƒ¢áƒ˜áƒ¤áƒ˜áƒªáƒ˜áƒ áƒ”áƒ‘áƒ£áƒš áƒ¡áƒžáƒ”áƒªáƒ˜áƒáƒšáƒ˜áƒ¡áƒ¢áƒ”áƒ‘áƒ¡.">
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი გუნდი აერთიანებს მრავალწლიანი პრაქტიკული გამოცდილების მქონე მთამსვლელებს, მეკლდეურებსა და სასიმაღლო სამუშაოების სერტიფიცირებულ სპეციალისტებს.">
           Our team brings together mountaineers, rock climbers and certified works-at-height
           specialists with many years of hands-on experience.
         </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="áƒáƒ› áƒ¡áƒ¤áƒ”áƒ áƒáƒ¨áƒ˜ áƒ£áƒ™áƒ•áƒ” 18 áƒ¬áƒ”áƒšáƒ–áƒ” áƒ›áƒ”áƒ¢áƒ˜áƒ áƒ•áƒáƒžáƒ”áƒ áƒ˜áƒ áƒ”áƒ‘áƒ—. áƒ¬áƒšáƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ«áƒ˜áƒšáƒ–áƒ” áƒ“áƒáƒ’áƒ áƒáƒ•áƒ˜áƒšáƒ˜ áƒ¢áƒ”áƒ¥áƒœáƒ˜áƒ™áƒ£áƒ áƒ˜ áƒªáƒáƒ“áƒœáƒ áƒ“áƒ áƒ¡áƒáƒ”áƒ áƒ—áƒáƒ¨áƒáƒ áƒ˜áƒ¡áƒ áƒ’áƒáƒ›áƒáƒªáƒ“áƒ˜áƒšáƒ”áƒ‘áƒ áƒ’áƒ•áƒáƒ«áƒšáƒ”áƒ•áƒ¡ áƒ¡áƒáƒ¨áƒ£áƒáƒšáƒ”áƒ‘áƒáƒ¡, áƒ áƒáƒ› áƒ£áƒ›áƒáƒ¦áƒšáƒ”áƒ¡áƒ˜ áƒ¡áƒ˜áƒ–áƒ£áƒ¡áƒ¢áƒ˜áƒ—áƒ áƒ“áƒ áƒ£áƒ¡áƒáƒ¤áƒ áƒ—áƒ®áƒáƒ”áƒ‘áƒ˜áƒ— áƒ¨áƒ”áƒ•áƒáƒ¡áƒ áƒ£áƒšáƒáƒ— áƒœáƒ”áƒ‘áƒ˜áƒ¡áƒ›áƒ˜áƒ”áƒ áƒ˜ áƒ¡áƒ˜áƒ áƒ—áƒ£áƒšáƒ˜áƒ¡ áƒžáƒ áƒáƒ”áƒ¥áƒ¢áƒ˜.">
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ამ სფეროში უკვე 18 წელზე მეტია ვოპერირებთ. წლების მანძილზე დაგროვილი ტექნიკური ცოდნა და საერთაშორისო გამოცდილება გვაძლევს საშუალებას, რომ უმაღლესი სიზუსტითა და უსაფრთხოებით შევასრულოთ ნებისმიერი სირთულის პროექტი.">
           We have been operating in this field for over 18 years. The technical knowledge and
           international experience accumulated over the years allow us to carry out projects of
           any complexity with the highest precision and safety.
         </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="áƒ©áƒ•áƒ”áƒœáƒ˜ áƒ¡áƒáƒ¥áƒ›áƒ˜áƒáƒœáƒáƒ‘áƒ áƒ”áƒ¤áƒ£áƒ«áƒœáƒ”áƒ‘áƒ IRATA, SPRAT, IFMGA Rope Access áƒ¡áƒáƒ”áƒ áƒ—áƒáƒ¨áƒáƒ áƒ˜áƒ¡áƒ áƒ¡áƒ¢áƒáƒœáƒ“áƒáƒ áƒ¢áƒ”áƒ‘áƒ¡, áƒ áƒáƒª áƒ£áƒ–áƒ áƒ£áƒœáƒ•áƒ”áƒšáƒ§áƒáƒ¤áƒ¡ áƒ£áƒ¡áƒáƒ¤áƒ áƒ—áƒ®áƒáƒ”áƒ‘áƒ˜áƒ¡, áƒ®áƒáƒ áƒ˜áƒ¡áƒ®áƒ˜áƒ¡áƒ áƒ“áƒ áƒžáƒ áƒáƒ¤áƒ”áƒ¡áƒ˜áƒáƒœáƒáƒšáƒ˜áƒ–áƒ›áƒ˜áƒ¡ áƒ£áƒ›áƒáƒ¦áƒšáƒ”áƒ¡ áƒ“áƒáƒœáƒ”áƒ¡.">
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი საქმიანობა ეფუძნება IRATA, SPRAT, IFMGA Rope Access საერთაშორისო სტანდარტებს, რაც უზრუნველყოფს უსაფრთხოების, ხარისხისა და პროფესიონალიზმის უმაღლეს დონეს.">
           Our work is based on the IRATA, SPRAT and IFMGA international rope-access
           standards, ensuring the highest level of safety, quality and professionalism.
         </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="áƒ©áƒ•áƒ”áƒœáƒ—áƒ•áƒ˜áƒ¡ áƒ›áƒ—áƒáƒ•áƒáƒ áƒ˜ áƒ¦áƒ˜áƒ áƒ”áƒ‘áƒ£áƒšáƒ”áƒ‘áƒ”áƒ‘áƒ˜áƒ áƒ£áƒ¡áƒáƒ¤áƒ áƒ—áƒ®áƒáƒ”áƒ‘áƒ, áƒžáƒáƒ¡áƒ£áƒ®áƒ˜áƒ¡áƒ›áƒ’áƒ”áƒ‘áƒšáƒáƒ‘áƒ, áƒ¡áƒ˜áƒ–áƒ£áƒ¡áƒ¢áƒ” áƒ“áƒ áƒ›áƒáƒ›áƒ®áƒ›áƒáƒ áƒ”áƒ‘áƒšáƒ˜áƒ¡ áƒœáƒ“áƒáƒ‘áƒ. áƒ—áƒ˜áƒ—áƒáƒ”áƒ£áƒš áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ¡ áƒ•áƒáƒ¡áƒ áƒ£áƒšáƒ”áƒ‘áƒ— áƒ—áƒáƒœáƒáƒ›áƒ”áƒ“áƒ áƒáƒ•áƒ” áƒáƒ¦áƒ­áƒ£áƒ áƒ•áƒ˜áƒšáƒáƒ‘áƒ˜áƒ—, áƒ¡áƒáƒ”áƒ áƒ—áƒáƒ¨áƒáƒ áƒ˜áƒ¡áƒ áƒ¡áƒ¢áƒáƒœáƒ“áƒáƒ áƒ¢áƒ”áƒ‘áƒ˜áƒ¡ áƒ“áƒáƒªáƒ•áƒ˜áƒ— áƒ“áƒ áƒ¨áƒ”áƒ“áƒ”áƒ’áƒ–áƒ” áƒžáƒáƒ¡áƒ£áƒ®áƒ˜áƒ¡áƒ›áƒ’áƒ”áƒ‘áƒšáƒáƒ‘áƒ˜áƒ—.">
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენთვის მთავარი ღირებულებებია უსაფრთხოება, პასუხისმგებლობა, სიზუსტე და მომხმარებლის ნდობა. თითოეულ სამუშაოს ვასრულებთ თანამედროვე აღჭურვილობით, საერთაშორისო სტანდარტების დაცვით და შედეგზე პასუხისმგებლობით.">
           Our core values are safety, responsibility, precision and client trust. We carry
           out every job with modern equipment, in compliance with international
           standards, and with accountability for the result.
@@ -875,145 +875,145 @@
   <section id="services" class="order-3 py-20 bg-surface border-y border-line">
     <div class="max-w-7xl mx-auto px-5">
       <div class="reveal max-w-3xl">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="á² á²á²¡ á²•á²á²™á²”á²—á²”á²‘á²—">WHAT WE DO</h2>      </div>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ">WHAT WE DO</h2>      </div>
 
       <!-- All service categories (glass first, styled like the rest) -->
       <div id="svcGrid" class="mt-10 grid gap-4 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
         <article id="svc-glass" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ›áƒ˜áƒœáƒ˜áƒ¡ áƒ¤áƒáƒ¡áƒáƒ“áƒ”áƒ‘áƒ˜ áƒ“áƒ áƒ¤áƒáƒœáƒ¯áƒ áƒ”áƒ‘áƒ˜">Glass Facades &amp; Windows</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ›áƒáƒ¦áƒáƒšáƒ¡áƒáƒ áƒ—áƒ£áƒšáƒ˜áƒáƒœáƒ˜ áƒ¨áƒ”áƒœáƒáƒ‘áƒ”áƒ‘áƒ˜áƒ¡ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ, áƒ°áƒ”áƒ áƒ›áƒ”áƒ¢áƒ˜áƒ–áƒáƒªáƒ˜áƒ áƒ“áƒ áƒ›áƒáƒ•áƒšáƒ.">High-rise building cleaning, sealing and maintenance.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="მაღალსართულიანი შენობების წმენდა, ჰერმეტიზაცია და მოვლა.">High-rise building cleaning, sealing and maintenance.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ›áƒ˜áƒœáƒ˜áƒ¡ áƒ¤áƒáƒ¡áƒáƒ“áƒ”áƒ‘áƒ˜áƒ¡ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ">Glass facade cleaning</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¤áƒáƒœáƒ¯áƒ áƒ”áƒ‘áƒ˜áƒ¡ áƒ’áƒáƒ áƒ”áƒ“áƒáƒœ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ">Exterior window cleaning</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ›áƒ˜áƒœáƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜ áƒ“áƒ áƒ“áƒ”áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Glass installation &amp; removal</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ“áƒáƒ–áƒ˜áƒáƒœáƒ”áƒ‘áƒ£áƒšáƒ˜ áƒ›áƒ˜áƒœáƒ˜áƒ¡ áƒ¨áƒ”áƒªáƒ•áƒšáƒ">Replacement of damaged glass</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¤áƒáƒ¡áƒáƒ“áƒ˜áƒ¡ áƒ¡áƒ˜áƒšáƒ˜áƒ™áƒáƒœáƒ˜áƒ¡ áƒ¨áƒ”áƒªáƒ•áƒšáƒ áƒ“áƒ áƒ°áƒ”áƒ áƒ›áƒ”áƒ¢áƒ˜áƒ–áƒáƒªáƒ˜áƒ">Facade silicone replacement &amp; sealing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ›áƒ˜áƒœáƒ˜áƒ¡ áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Glass structures installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის ფასადების წმენდა">Glass facade cleaning</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფანჯრების გარედან წმენდა">Exterior window cleaning</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის მონტაჟი და დემონტაჟი">Glass installation &amp; removal</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დაზიანებული მინის შეცვლა">Replacement of damaged glass</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის სილიკონის შეცვლა და ჰერმეტიზაცია">Facade silicone replacement &amp; sealing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის კონსტრუქციების მონტაჟი">Glass structures installation</span></li>
           </ul>
         </article>
         <article id="svc-buildings" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ¨áƒ”áƒœáƒáƒ‘áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒ•áƒšáƒ">Building Maintenance</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ¢áƒ”áƒ¥áƒœáƒ˜áƒ™áƒ£áƒ áƒ˜ áƒ›áƒáƒ›áƒ¡áƒáƒ®áƒ£áƒ áƒ”áƒ‘áƒ, áƒ áƒ”áƒ›áƒáƒœáƒ¢áƒ˜ áƒ“áƒ áƒžáƒ áƒ”áƒ•áƒ”áƒœáƒªáƒ˜áƒ£áƒšáƒ˜ áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ.">Technical maintenance, repairs and preventive inspection.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="შენობების მოვლა">Building Maintenance</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ტექნიკური მომსახურება, რემონტი და პრევენციული ინსპექტირება.">Technical maintenance, repairs and preventive inspection.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¤áƒáƒ¡áƒáƒ“áƒ”áƒ‘áƒ˜áƒ¡ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ áƒ“áƒ áƒ áƒ”áƒªáƒ®áƒ•áƒ">Facade cleaning &amp; washing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¤áƒáƒ¡áƒáƒ“áƒ˜áƒ¡ áƒ”áƒšáƒ”áƒ›áƒ”áƒœáƒ¢áƒ”áƒ‘áƒ˜áƒ¡ áƒ¨áƒ”áƒ™áƒ”áƒ—áƒ”áƒ‘áƒ">Facade element repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¨áƒ”áƒœáƒáƒ‘áƒ”áƒ‘áƒ˜áƒ¡ áƒ¢áƒ”áƒ¥áƒœáƒ˜áƒ™áƒ£áƒ áƒ˜ áƒ›áƒáƒ›áƒ¡áƒáƒ®áƒ£áƒ áƒ”áƒ‘áƒ">Building technical maintenance</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¬áƒ•áƒ˜áƒ›áƒ˜áƒ¡ áƒ¬áƒ§áƒšáƒ˜áƒ¡ áƒ¡áƒ˜áƒ¡áƒ¢áƒ”áƒ›áƒ”áƒ‘áƒ˜áƒ¡ (áƒ¦áƒáƒ áƒ”áƒ‘áƒ˜, áƒ›áƒ˜áƒšáƒ”áƒ‘áƒ˜) áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜ áƒ“áƒ áƒ¨áƒ”áƒ™áƒ”áƒ—áƒ”áƒ‘áƒ">Rainwater systems (gutters, pipes) â€” install &amp; repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ•áƒ”áƒœáƒ¢áƒ˜áƒšáƒáƒªáƒ˜áƒ˜áƒ¡ áƒ¡áƒ˜áƒ¡áƒ¢áƒ”áƒ›áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜ áƒ“áƒ áƒ“áƒ”áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Ventilation systems â€” install &amp; dismantle</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადების წმენდა და რეცხვა">Facade cleaning &amp; washing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის ელემენტების შეკეთება">Facade element repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="შენობების ტექნიკური მომსახურება">Building technical maintenance</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="წვიმის წყლის სისტემების (ღარები, მილები) მონტაჟი და შეკეთება">Rainwater systems (gutters, pipes) — install &amp; repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ვენტილაციის სისტემების მონტაჟი და დემონტაჟი">Ventilation systems — install &amp; dismantle</span></li>
           </ul>
         </article>
 
         <article id="svc-electrical" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ”áƒšáƒ”áƒ¥áƒ¢áƒ áƒáƒáƒ‘áƒ áƒ“áƒ áƒ¢áƒ”áƒšáƒ”áƒ™áƒáƒ›áƒ£áƒœáƒ˜áƒ™áƒáƒªáƒ˜áƒ">Electrical &amp; Telecom</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ¡áƒáƒ™áƒáƒ‘áƒ”áƒšáƒ áƒ¡áƒ˜áƒ¡áƒ¢áƒ”áƒ›áƒ”áƒ‘áƒ˜áƒ¡, áƒ’áƒáƒœáƒáƒ—áƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒáƒœáƒ«áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜.">Cabling systems, lighting and mast installation.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ელექტროობა და ტელეკომუნიკაცია">Electrical &amp; Telecom</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკაბელო სისტემების, განათებისა და ანძების მონტაჟი.">Cabling systems, lighting and mast installation.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ’áƒáƒœáƒáƒ—áƒ”áƒ‘áƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒžáƒ áƒáƒŸáƒ”áƒ¥áƒ¢áƒáƒ áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜ áƒ“áƒ áƒ¨áƒ”áƒªáƒ•áƒšáƒ">Lighting &amp; floodlights â€” install &amp; replace</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒáƒœáƒ¢áƒ”áƒœáƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒ¡áƒáƒ¢áƒ”áƒšáƒ”áƒ™áƒáƒ›áƒ£áƒœáƒ˜áƒ™áƒáƒªáƒ˜áƒ áƒ›áƒáƒ¬áƒ§áƒáƒ‘áƒ˜áƒšáƒáƒ‘áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Antennas &amp; telecom equipment installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ”áƒšáƒ•áƒ˜áƒ¡áƒ“áƒáƒ›áƒªáƒáƒ•áƒ˜ áƒ¡áƒ˜áƒ¡áƒ¢áƒ”áƒ›áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Lightning-protection systems</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ£áƒ¡áƒáƒ¤áƒ áƒ—áƒ®áƒáƒ”áƒ‘áƒ˜áƒ¡ áƒ¡áƒ˜áƒ¡áƒ¢áƒ”áƒ›áƒ”áƒ‘áƒ˜áƒ¡, áƒ™áƒáƒ›áƒ”áƒ áƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒ¡áƒ”áƒœáƒ¡áƒáƒ áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Security systems, cameras &amp; sensors</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ™áƒáƒ‘áƒ”áƒšáƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒ¡áƒáƒ™áƒáƒ‘áƒ”áƒšáƒ áƒáƒ áƒ®áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Cables &amp; cable-tray installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ›áƒ–áƒ˜áƒ¡ áƒžáƒáƒœáƒ”áƒšáƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Solar panel installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ™áƒáƒœáƒ“áƒ˜áƒªáƒ˜áƒáƒœáƒ”áƒ áƒ˜áƒ¡ áƒ’áƒáƒ áƒ” áƒáƒ’áƒ áƒ”áƒ’áƒáƒ¢áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜ áƒ“áƒ áƒ¡áƒ”áƒ áƒ•áƒ˜áƒ¡áƒ˜">Air-conditioner outdoor unit installation &amp; servicing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="განათებებისა და პროჟექტორების მონტაჟი და შეცვლა">Lighting &amp; floodlights — install &amp; replace</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტენებისა და სატელეკომუნიკაციო მოწყობილობების მონტაჟი">Antennas &amp; telecom equipment installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ელვისდამცავი სისტემების მონტაჟი">Lightning-protection systems</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების, კამერებისა და სენსორების მონტაჟი">Security systems, cameras &amp; sensors</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კაბელებისა და საკაბელო არხების მონტაჟი">Cables &amp; cable-tray installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მზის პანელების მონტაჟი">Solar panel installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონდიციონერის გარე აგრეგატის მონტაჟი და სერვისი">Air-conditioner outdoor unit installation &amp; servicing</span></li>
           </ul>
         </article>
 
         <article id="svc-signage" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ áƒ”áƒ™áƒšáƒáƒ›áƒ”áƒ‘áƒ˜">Advertising &amp; Signage</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ‘áƒáƒœáƒ”áƒ áƒ”áƒ‘áƒ˜áƒ¡, áƒ‘áƒ˜áƒšáƒ‘áƒáƒ áƒ“áƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒ¡áƒáƒ áƒ”áƒ™áƒšáƒáƒ›áƒ áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ˜áƒœáƒ¡áƒ¢áƒáƒšáƒáƒªáƒ˜áƒ.">Installation of banners, billboards and advertising structures.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="რეკლამები">Advertising &amp; Signage</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების ინსტალაცია.">Installation of banners, billboards and advertising structures.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ‘áƒáƒœáƒ”áƒ áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜ áƒ“áƒ áƒ“áƒ”áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Banner install &amp; dismantle</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¡áƒáƒ áƒ”áƒ™áƒšáƒáƒ›áƒ áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Advertising-structure installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒáƒ‘áƒ áƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ LED áƒáƒ‘áƒ áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Signs &amp; LED signs installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ“áƒ áƒáƒ¨áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Flag installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბანერების მონტაჟი და დემონტაჟი">Banner install &amp; dismantle</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სარეკლამო კონსტრუქციების მონტაჟი">Advertising-structure installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="აბრებისა და LED აბრების მონტაჟი">Signs &amp; LED signs installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დროშების მონტაჟი">Flag installation</span></li>
           </ul>
         </article>
 
         <article id="svc-painting" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ¦áƒ”áƒ‘áƒ•áƒ áƒ“áƒ áƒ“áƒáƒªáƒ•áƒ">Painting &amp; Protection</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ¤áƒáƒ¡áƒáƒ“áƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒšáƒ˜áƒ—áƒáƒœáƒ˜áƒ¡ áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ“áƒáƒ›áƒ£áƒ¨áƒáƒ•áƒ”áƒ‘áƒ/áƒ¨áƒ”áƒ¦áƒ”áƒ‘áƒ•áƒ.">Treatment and painting of facades and metal structures.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ღებვა და დაცვა">Painting &amp; Protection</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა.">Treatment and painting of facades and metal structures.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ¦áƒ”áƒ‘áƒ•áƒ">Structure painting</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒáƒœáƒ¢áƒ˜áƒ™áƒáƒ áƒáƒ–áƒ˜áƒ£áƒšáƒ˜ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜">Anti-corrosion works</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ“áƒáƒ›áƒªáƒáƒ•áƒ˜ áƒ¡áƒáƒ¤áƒáƒ áƒ”áƒ‘áƒ˜áƒ¡ áƒ“áƒáƒ¢áƒáƒœáƒ">Protective coatings</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების ღებვა">Structure painting</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტიკოროზიული სამუშაოები">Anti-corrosion works</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დამცავი საფარების დატანა">Protective coatings</span></li>
           </ul>
         </article>
 
         <article id="svc-construction" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ¡áƒáƒ›áƒ¨áƒ”áƒœáƒ”áƒ‘áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜ áƒ“áƒ áƒ˜áƒ–áƒáƒšáƒáƒªáƒ˜áƒ">Construction &amp; Insulation</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ¡áƒáƒ›áƒáƒœáƒ¢áƒáƒŸáƒ, áƒ¡áƒáƒ˜áƒ–áƒáƒšáƒáƒªáƒ˜áƒ áƒ“áƒ áƒ¡áƒáƒ áƒ”áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ áƒ¡áƒ”áƒ áƒ•áƒ˜áƒ¡áƒ”áƒ‘áƒ˜.">Assembly, insulation and reconstruction services.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სამშენებლო სამუშაოები და იზოლაცია">Construction &amp; Insulation</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამონტაჟო, საიზოლაციო და სარეკონსტრუქციო სერვისები.">Assembly, insulation and reconstruction services.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ‘áƒ”áƒ¢áƒáƒœáƒ˜áƒ¡áƒ áƒ“áƒ áƒ‘áƒ–áƒáƒ áƒ”áƒ‘áƒ˜áƒ¡ áƒ¨áƒ”áƒ™áƒ”áƒ—áƒ”áƒ‘áƒ">Concrete &amp; crack repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¥áƒ•áƒ˜áƒ¡áƒ áƒ“áƒ áƒáƒ’áƒ£áƒ áƒ˜áƒ¡ áƒ¬áƒ§áƒáƒ‘áƒ˜áƒ¡ áƒáƒ¦áƒ“áƒ’áƒ”áƒœáƒ">Stone &amp; brickwork restoration</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¤áƒáƒ¡áƒáƒ“áƒ˜áƒ¡áƒ áƒ“áƒ áƒ˜áƒ¡áƒ¢áƒáƒ áƒ˜áƒ£áƒšáƒ˜ áƒ«áƒ”áƒ’áƒšáƒ”áƒ‘áƒ˜áƒ¡ áƒ áƒ”áƒ¡áƒ¢áƒáƒ•áƒ áƒáƒªáƒ˜áƒ">Facade &amp; historical monument restoration</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ—áƒ‘áƒ- áƒ“áƒ áƒ°áƒ˜áƒ“áƒ áƒáƒ˜áƒ–áƒáƒšáƒáƒªáƒ˜áƒ">Thermal insulation &amp; waterproofing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ›áƒ”áƒ¢áƒáƒšáƒ˜áƒ¡ áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜ áƒ“áƒ áƒ“áƒ”áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Metal structures â€” install &amp; dismantle</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¤áƒáƒ¡áƒáƒ“áƒ˜áƒ¡ áƒ“áƒáƒšáƒ£áƒ¥áƒ•áƒ">Facade sealing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბეტონისა და ბზარების შეკეთება">Concrete &amp; crack repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქვისა და აგურის წყობის აღდგენა">Stone &amp; brickwork restoration</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადისა და ისტორიული ძეგლების რესტავრაცია">Facade &amp; historical monument restoration</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო- და ჰიდროიზოლაცია">Thermal insulation &amp; waterproofing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მეტალის კონსტრუქციების მონტაჟი და დემონტაჟი">Metal structures — install &amp; dismantle</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის დალუქვა">Facade sealing</span></li>
           </ul>
         </article>
 
         <article id="svc-rock" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ™áƒšáƒ“áƒ”áƒ”áƒ‘áƒ˜, áƒ¤áƒ”áƒ áƒ“áƒáƒ‘áƒ”áƒ‘áƒ˜ áƒ“áƒ áƒ’áƒáƒ áƒ”áƒ›áƒ">Rock, Slope &amp; Environment</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ¤áƒ”áƒ áƒ“áƒáƒ‘áƒ”áƒ‘áƒ˜áƒ¡ áƒ’áƒáƒ›áƒáƒ’áƒ áƒ”áƒ‘áƒ, áƒ“áƒáƒ›áƒªáƒáƒ•áƒ˜ áƒ‘áƒáƒ“áƒ”áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜ áƒ“áƒ áƒ“áƒáƒ›áƒ£áƒ¨áƒáƒ•áƒ”áƒ‘áƒ.">Slope reinforcement, protective-mesh installation and treatment.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="კლდეები, ფერდობები და გარემო">Rock, Slope &amp; Environment</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფერდობების გამაგრება, დამცავი ბადეების მონტაჟი და დამუშავება.">Slope reinforcement, protective-mesh installation and treatment.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ™áƒšáƒ“áƒ˜áƒ¡ áƒ‘áƒáƒ“áƒ”áƒ”áƒ‘áƒ˜áƒ— áƒ’áƒáƒ›áƒáƒ’áƒ áƒ”áƒ‘áƒ áƒ“áƒ áƒ¡áƒ¢áƒáƒ‘áƒ˜áƒšáƒ˜áƒ–áƒáƒªáƒ˜áƒ">Rock-mesh reinforcement &amp; stabilization</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ™áƒšáƒ“áƒ˜áƒ“áƒáƒœ áƒ¥áƒ•áƒ”áƒ‘áƒ˜áƒ¡ áƒ©áƒáƒ›áƒáƒ¨áƒšáƒ">Rockfall removal</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ™áƒšáƒ“áƒ˜áƒ¡ áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ áƒ“áƒ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ">Rock inspection &amp; cleaning</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ®áƒ”áƒ”áƒ‘áƒ˜áƒ¡ áƒ’áƒáƒ¡áƒ®áƒ•áƒšáƒ áƒ“áƒ áƒ¡áƒáƒ®áƒ˜áƒ¤áƒáƒ—áƒ áƒ¢áƒáƒ¢áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒªáƒ˜áƒšáƒ”áƒ‘áƒ">Tree pruning &amp; hazardous-branch removal</span></li>          </ul>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდის ბადეებით გამაგრება და სტაბილიზაცია">Rock-mesh reinforcement &amp; stabilization</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდიდან ქვების ჩამოშლა">Rockfall removal</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდის ინსპექტირება და წმენდა">Rock inspection &amp; cleaning</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ხეების გასხვლა და სახიფათო ტოტების მოცილება">Tree pruning &amp; hazardous-branch removal</span></li>          </ul>
         </article>
 
         <article id="svc-industrial" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ˜áƒœáƒ“áƒ£áƒ¡áƒ¢áƒ áƒ˜áƒ£áƒšáƒ˜ áƒáƒ‘áƒ˜áƒ”áƒ¥áƒ¢áƒ”áƒ‘áƒ˜">Industrial Facilities</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ¥áƒáƒ áƒ®áƒœáƒ”áƒ‘áƒ˜áƒ¡, áƒ¥áƒ˜áƒ›áƒ¬áƒáƒ áƒ›áƒáƒ”áƒ‘áƒ˜áƒ¡ áƒ“áƒ áƒ¡áƒžáƒ”áƒªáƒ˜áƒáƒšáƒ£áƒ áƒ˜ áƒœáƒáƒ’áƒ”áƒ‘áƒáƒ‘áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒ›áƒ¡áƒáƒ®áƒ£áƒ áƒ”áƒ‘áƒ.">Servicing of plants, chemical facilities and special structures.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინდუსტრიული ობიექტები">Industrial Facilities</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ქარხნების, ქიმწარმოების და სპეციალური ნაგებობების მომსახურება.">Servicing of plants, chemical facilities and special structures.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ áƒ”áƒ–áƒ”áƒ áƒ•áƒ£áƒáƒ áƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒ¡áƒ˜áƒšáƒáƒ¡áƒ”áƒ‘áƒ˜áƒ¡ áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ áƒ“áƒ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ">Tank &amp; silo inspection &amp; cleaning</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ™áƒ•áƒáƒ›áƒšáƒ¡áƒáƒ“áƒ”áƒœáƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒ¡áƒáƒ™áƒ•áƒáƒ›áƒ£áƒ áƒ”áƒ‘áƒ˜áƒ¡ áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ áƒ“áƒ áƒ¨áƒ”áƒ™áƒ”áƒ—áƒ”áƒ‘áƒ">Chimney inspection &amp; repair</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¥áƒáƒ áƒ®áƒœáƒ”áƒ‘áƒ˜áƒ¡ áƒ¢áƒ”áƒ¥áƒœáƒ˜áƒ™áƒ£áƒ áƒ˜ áƒ›áƒáƒ›áƒ¡áƒáƒ®áƒ£áƒ áƒ”áƒ‘áƒ">Factory technical maintenance</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¥áƒáƒ áƒ˜áƒ¡ áƒ¢áƒ£áƒ áƒ‘áƒ˜áƒœáƒ”áƒ‘áƒ˜áƒ¡ áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ áƒ“áƒ áƒ¨áƒ”áƒ™áƒ”áƒ—áƒ”áƒ‘áƒ">Wind-turbine inspection &amp; repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ›áƒ˜áƒšáƒ¡áƒáƒ“áƒ”áƒœáƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Pipeline installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რეზერვუარებისა და სილოსების ინსპექტირება და წმენდა">Tank &amp; silo inspection &amp; cleaning</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კვამლსადენებისა და საკვამურების ინსპექტირება და შეკეთება">Chimney inspection &amp; repair</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქარხნების ტექნიკური მომსახურება">Factory technical maintenance</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქარის ტურბინების ინსპექტირება და შეკეთება">Wind-turbine inspection &amp; repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მილსადენების მონტაჟი">Pipeline installation</span></li>
           </ul>
         </article>
 
         <article id="svc-inspection" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ">Inspection</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ“áƒ˜áƒáƒ’áƒœáƒáƒ¡áƒ¢áƒ˜áƒ™áƒ, áƒ£áƒšáƒ¢áƒ áƒáƒ‘áƒ’áƒ”áƒ áƒ˜áƒ—áƒ˜ áƒ“áƒ áƒ•áƒ˜áƒ–áƒ£áƒáƒšáƒ£áƒ áƒ˜ áƒ¨áƒ”áƒ›áƒáƒ¬áƒ›áƒ”áƒ‘áƒ.">Structural diagnostics, ultrasonic and visual inspection.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინსპექტირება">Inspection</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება.">Structural diagnostics, ultrasonic and visual inspection.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ•áƒ˜áƒ–áƒ£áƒáƒšáƒ£áƒ áƒ˜ áƒ“áƒ áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ£áƒšáƒ˜ áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ">Visual &amp; structural inspection</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ£áƒ¡áƒáƒ¤áƒ áƒ—áƒ®áƒáƒ”áƒ‘áƒ˜áƒ¡ áƒ¡áƒ˜áƒ¡áƒ¢áƒ”áƒ›áƒ”áƒ‘áƒ˜áƒ¡ áƒ˜áƒœáƒ¡áƒžáƒ”áƒ¥áƒ¢áƒ˜áƒ áƒ”áƒ‘áƒ">Safety-system inspection</span></li>          </ul>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ვიზუალური და კონსტრუქციული ინსპექტირება">Visual &amp; structural inspection</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების ინსპექტირება">Safety-system inspection</span></li>          </ul>
         </article>
 
         <article id="svc-film" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ¡áƒªáƒ”áƒœáƒ áƒ“áƒ áƒ’áƒáƒ“áƒáƒ¦áƒ”áƒ‘áƒ”áƒ‘áƒ˜">Stage &amp; Filming</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ¡áƒáƒ™áƒ˜áƒœáƒ”áƒ›áƒáƒ¢áƒáƒ’áƒ áƒáƒ¤áƒ˜áƒ áƒ“áƒ áƒ¨áƒáƒ£-áƒ‘áƒ˜áƒ–áƒœáƒ”áƒ¡áƒ˜áƒ¡ áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ£áƒ¡áƒáƒ¤áƒ áƒ—áƒ®áƒáƒ”áƒ‘áƒ.">Safety for cinematographic and show-business structures.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სცენა და გადაღებები">Stage &amp; Filming</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკინემატოგრაფიო და შოუ-ბიზნესის კონსტრუქციების უსაფრთხოება.">Safety for cinematographic and show-business structures.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¤áƒ˜áƒšáƒ›áƒ”áƒ‘áƒ˜áƒ¡, áƒ¡áƒ”áƒ áƒ˜áƒáƒšáƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒ áƒ”áƒ™áƒšáƒáƒ›áƒ”áƒ‘áƒ˜áƒ¡ áƒ’áƒáƒ“áƒáƒ¦áƒ”áƒ‘áƒ˜áƒ¡ áƒ¢áƒ”áƒ¥áƒœáƒ˜áƒ™áƒ£áƒ áƒ˜ áƒ›áƒ®áƒáƒ áƒ“áƒáƒ­áƒ”áƒ áƒ">Technical support for film, series &amp; commercial shoots</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¡áƒªáƒ”áƒœáƒ£áƒ áƒ˜ áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡áƒ áƒ“áƒ áƒ’áƒáƒœáƒáƒ—áƒ”áƒ‘áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Stage-structure &amp; lighting installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="Rigging áƒ›áƒáƒ›áƒ¡áƒáƒ®áƒ£áƒ áƒ”áƒ‘áƒ">Rigging services</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ™áƒáƒœáƒ¡áƒ¢áƒ áƒ£áƒ¥áƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ’áƒáƒ“áƒáƒáƒ“áƒ’áƒ˜áƒšáƒ”áƒ‘áƒ áƒ“áƒ áƒ“áƒ”áƒ™áƒáƒ áƒáƒªáƒ˜áƒ”áƒ‘áƒ˜áƒ¡ áƒ›áƒáƒœáƒ¢áƒáƒŸáƒ˜">Moving structures &amp; decoration installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფილმების, სერიალებისა და რეკლამების გადაღების ტექნიკური მხარდაჭერა">Technical support for film, series &amp; commercial shoots</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სცენური კონსტრუქციებისა და განათებების მონტაჟი">Stage-structure &amp; lighting installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="Rigging მომსახურება">Rigging services</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების გადაადგილება და დეკორაციების მონტაჟი">Moving structures &amp; decoration installation</span></li>
           </ul>
         </article>
 
         <article id="svc-emergency" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="áƒ¡áƒžáƒ”áƒªáƒ˜áƒáƒšáƒ£áƒ áƒ˜ áƒ“áƒ áƒ¡áƒáƒ’áƒáƒœáƒ’áƒ”áƒ‘áƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜">Special &amp; Emergency Works</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="áƒ¡áƒáƒ›áƒ¨áƒ•áƒ”áƒšáƒ áƒáƒžáƒ”áƒ áƒáƒªáƒ˜áƒ”áƒ‘áƒ˜, áƒáƒ•áƒáƒ áƒ˜áƒ£áƒšáƒ˜ áƒáƒ¦áƒ›áƒáƒ¤áƒ®áƒ•áƒ áƒ áƒ“áƒ áƒ áƒ—áƒ£áƒšáƒ˜ áƒ¬áƒ•áƒ“áƒáƒ›áƒ.">Rescue operations, emergency response and difficult access.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამშველო ოპერაციები, ავარიული აღმოფხვრა და რთული წვდომა.">Rescue operations, emergency response and difficult access.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ áƒ—áƒ£áƒšáƒáƒ“ áƒ›áƒ˜áƒ¡áƒáƒ“áƒ’áƒáƒ› áƒáƒ“áƒ’áƒ˜áƒšáƒ”áƒ‘áƒ–áƒ” áƒ¬áƒ•áƒ“áƒáƒ›áƒ">Access to hard-to-reach locations</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒáƒ•áƒáƒ áƒ˜áƒ£áƒšáƒ˜ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ˜">Emergency works</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ¡áƒáƒ’áƒœáƒ”áƒ‘áƒ˜áƒ¡ áƒ£áƒ¡áƒáƒ¤áƒ áƒ—áƒ®áƒ áƒ©áƒáƒ›áƒáƒ®áƒ¡áƒœáƒ, áƒáƒ¬áƒ”áƒ•áƒ áƒ“áƒ áƒ©áƒáƒ›áƒáƒ¨áƒ•áƒ”áƒ‘áƒ">Safe removal, lifting &amp; lowering of objects</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ›áƒáƒ¨áƒ•áƒ”áƒšáƒ˜áƒ¡ áƒ“áƒáƒ®áƒ›áƒáƒ áƒ”áƒ‘áƒ">Rescue assistance</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="áƒ˜áƒœáƒ“áƒ˜áƒ•áƒ˜áƒ“áƒ£áƒáƒšáƒ£áƒ áƒ˜ áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ’áƒáƒ“áƒáƒ¬áƒ§áƒ•áƒ”áƒ¢áƒ˜áƒšáƒ”áƒ‘áƒ”áƒ‘áƒ˜">Custom works-at-height solutions</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რთულად მისადგომ ადგილებზე წვდომა">Access to hard-to-reach locations</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ავარიული სამუშაოები">Emergency works</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="საგნების უსაფრთხო ჩამოხსნა, აწევა და ჩამოშვება">Safe removal, lifting &amp; lowering of objects</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მაშველის დახმარება">Rescue assistance</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ინდივიდუალური სასიმაღლო გადაწყვეტილებები">Custom works-at-height solutions</span></li>
           </ul>
         </article>
       </div>
-      <p class="mt-10 text-left text-sm sm:text-base text-mute"><span data-ka="áƒ—áƒ¥áƒ•áƒ”áƒœáƒ˜ áƒáƒ›áƒáƒªáƒáƒœáƒ áƒ¡áƒ˜áƒáƒ¨áƒ˜ áƒ•áƒ”áƒ  áƒœáƒáƒ®áƒ”áƒ—? ">Donâ€™t see your task on the list? </span><a href="#contact" class="text-accent font-600 hover:underline" data-ka="áƒ“áƒáƒ’áƒ•áƒ˜áƒ™áƒáƒ•áƒ¨áƒ˜áƒ áƒ“áƒ˜áƒ—">Get in touch</a><span data-ka=" â€” áƒ•áƒáƒ¡áƒ áƒ£áƒšáƒ”áƒ‘áƒ— áƒ˜áƒœáƒ“áƒ˜áƒ•áƒ˜áƒ“áƒ£áƒáƒšáƒ£áƒ  áƒ“áƒ áƒáƒ áƒáƒ¡áƒ¢áƒáƒœáƒ“áƒáƒ áƒ¢áƒ£áƒš áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ”áƒ‘áƒ¡áƒáƒª."> â€” we also carry out custom and non-standard works.</span></p>
+      <p class="mt-10 text-left text-sm sm:text-base text-mute"><span data-ka="თქვენი ამოცანა სიაში ვერ ნახეთ? ">Don’t see your task on the list? </span><a href="#contact" class="text-accent font-600 hover:underline" data-ka="დაგვიკავშირდით">Get in touch</a><span data-ka=" — ვასრულებთ ინდივიდუალურ და არასტანდარტულ სამუშაოებსაც."> — we also carry out custom and non-standard works.</span></p>
     </div>
   </section>
 
@@ -1022,7 +1022,7 @@
   <section id="gallery" class="py-20 bg-panel border-y border-line">
     <div class="max-w-7xl mx-auto px-5">
       <div class="reveal max-w-2xl">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="á²’á²á²šá²”á² á²”á²">GALLERY</h2>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</h2>
       </div>
     </div>
 
@@ -1039,13 +1039,13 @@
   <section id="contact" class="py-20 bg-surface border-t border-line">
     <div class="max-w-7xl mx-auto px-5">
 
-      <!-- Contact info (minimal / editorial â€” no form) -->
+      <!-- Contact info (minimal / editorial — no form) -->
       <div class="reveal">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="á²›á²˜á²˜á²¦á²”á²— á²£á²¤á²á²¡á² á²™á²á²œá²¡á²£á²šá²¢á²á²ªá²˜á² á²“á² á²¨á²”á²¤á²á²¡á²”á²‘á²">GET A FREE CONSULTATION &amp; QUOTE</h2>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲛᲘᲘᲦᲔᲗ ᲣᲤᲐᲡᲝ ᲙᲝᲜᲡᲣᲚᲢᲐᲪᲘᲐ ᲓᲐ ᲨᲔᲤᲐᲡᲔᲑᲐ">GET A FREE CONSULTATION &amp; QUOTE</h2>
 
         <div class="mt-10 space-y-5">
           <div>
-            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="á²¢á²”á²šá²”á²¤á²á²œá²˜ / WhatsApp">Phone / WhatsApp</span>
+            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="ᲢᲔᲚᲔᲤᲝᲜᲘ / WhatsApp">Phone / WhatsApp</span>
             <div class="flex items-center gap-3">
               <i class="fa-solid fa-phone text-accent text-base leading-none"></i>
               <a data-si="tel" href="tel:+995571253530" class="text-lg text-mute hover:text-accent transition">+995 571 25 35 30</a>
@@ -1053,7 +1053,7 @@
             </div>
           </div>
           <div>
-            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="á²”á²š. á²¤á²á²¡á²¢á²">Email</span>
+            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="ᲔᲚ. ᲤᲝᲡᲢᲐ">Email</span>
             <div class="flex items-center gap-3">
               <i class="fa-solid fa-envelope text-accent text-base leading-none"></i>
               <a data-si="email" href="mailto:info@oritoki.ge" class="text-lg text-mute hover:text-accent transition">info@oritoki.ge</a>
@@ -1072,12 +1072,12 @@
     <div class="footer-grid max-w-7xl mx-auto px-5 py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1.3fr]">
       <div>
         <div class="text-sm text-mute leading-relaxed space-y-1.5">
-          <p data-ka="áƒ¨áƒžáƒ¡ áƒáƒ áƒ˜áƒ—áƒáƒ™áƒ˜">Oritoki LLC</p>
-          <p data-ka="áƒ¡áƒáƒ˜áƒ“áƒ”áƒœáƒ¢áƒ˜áƒ¤áƒ˜áƒ™áƒáƒªáƒ˜áƒ áƒ™áƒáƒ“áƒ˜: 402372918">Identification Code: 402372918</p>
-          <p data-si="address" data-ka="áƒ›áƒ˜áƒ¡áƒáƒ›áƒáƒ áƒ—áƒ˜: áƒ”. áƒœáƒ˜áƒœáƒáƒ¨áƒ•áƒ˜áƒšáƒ˜áƒ¡ áƒ¥. 13, áƒ‘. 23B, áƒ—áƒ‘áƒ˜áƒšáƒ˜áƒ¡áƒ˜, áƒ¡áƒáƒ¥áƒáƒ áƒ—áƒ•áƒ”áƒšáƒ">Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia</p>
-          <p><span data-ka="áƒ”áƒš. áƒ¤áƒáƒ¡áƒ¢áƒ:">Email:</span> <a data-si="email" href="mailto:info@oritoki.ge" class="hover:text-accent transition">info@oritoki.ge</a></p>
+          <p data-ka="შპს ორითოკი">Oritoki LLC</p>
+          <p data-ka="საიდენტიფიკაციო კოდი: 402372918">Identification Code: 402372918</p>
+          <p data-si="address" data-ka="მისამართი: ე. ნინოშვილის ქ. 13, ბ. 23B, თბილისი, საქართველო">Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia</p>
+          <p><span data-ka="ელ. ფოსტა:">Email:</span> <a data-si="email" href="mailto:info@oritoki.ge" class="hover:text-accent transition">info@oritoki.ge</a></p>
         </div>
-        <!-- Social icons â€” sit directly under the email -->
+        <!-- Social icons — sit directly under the email -->
         <div class="mt-4 flex gap-3">
           <a data-si="facebook" href="https://www.facebook.com/profile.php?id=61591512283062" target="_blank" rel="noopener" aria-label="Facebook" class="h-10 w-10 rounded-lg border border-line bg-surface flex items-center justify-center text-mute hover:text-[#1877F2] hover:border-[#1877F2] transition"><i class="fa-brands fa-facebook-f"></i></a>
           <a data-si="instagram" href="https://www.instagram.com/oritoki.ge/" target="_blank" rel="noopener" aria-label="Instagram" class="h-10 w-10 rounded-lg border border-line bg-surface flex items-center justify-center text-mute hover:text-[#E4405F] hover:border-[#E4405F] transition"><i class="fa-brands fa-instagram"></i></a>
@@ -1085,35 +1085,35 @@
         </div>
       </div>
       <div>
-        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="áƒœáƒáƒ•áƒ˜áƒ’áƒáƒªáƒ˜áƒ">Navigation</h4>
+        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="ნავიგაცია">Navigation</h4>
         <ul class="space-y-2 text-sm">
-          <li><a href="#home" class="hover:text-accent transition" data-ka="áƒ›áƒ—áƒáƒ•áƒáƒ áƒ˜">Home</a></li>
-          <li><a href="#about" class="hover:text-accent transition" data-ka="áƒ©áƒ•áƒ”áƒœ áƒ¨áƒ”áƒ¡áƒáƒ®áƒ”áƒ‘">About</a></li>
-          <li><a href="#services" class="hover:text-accent transition" data-ka="áƒ áƒáƒ¡ áƒ•áƒáƒ™áƒ”áƒ—áƒ”áƒ‘áƒ—">What We Do</a></li>
-          <li><a href="#gallery" class="hover:text-accent transition" data-ka="áƒ’áƒáƒšáƒ”áƒ áƒ”áƒ">Gallery</a></li>
-          <li><a href="join.html" class="hover:text-accent transition" data-ka="áƒ¨áƒ”áƒ›áƒáƒ’áƒ•áƒ˜áƒ”áƒ áƒ—áƒ“áƒ˜">Join Us</a></li>
-          <li><a href="#contact" class="hover:text-accent transition" data-ka="áƒ™áƒáƒœáƒ¢áƒáƒ¥áƒ¢áƒ˜">Contact</a></li>
+          <li><a href="#home" class="hover:text-accent transition" data-ka="მთავარი">Home</a></li>
+          <li><a href="#about" class="hover:text-accent transition" data-ka="ჩვენ შესახებ">About</a></li>
+          <li><a href="#services" class="hover:text-accent transition" data-ka="რას ვაკეთებთ">What We Do</a></li>
+          <li><a href="#gallery" class="hover:text-accent transition" data-ka="გალერეა">Gallery</a></li>
+          <li><a href="join.html" class="hover:text-accent transition" data-ka="შემოგვიერთდი">Join Us</a></li>
+          <li><a href="#contact" class="hover:text-accent transition" data-ka="კონტაქტი">Contact</a></li>
         </ul>
       </div>
       <div>
-        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="áƒžáƒ áƒáƒ¤áƒ”áƒ¡áƒ˜áƒ£áƒšáƒ˜ áƒ¡áƒ¢áƒáƒœáƒ“áƒáƒ áƒ¢áƒ”áƒ‘áƒ˜">Professional Standards</h4>
+        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="პროფესიული სტანდარტები">Professional Standards</h4>
         <div class="flex flex-wrap gap-2.5">
           <a href="https://irata.org/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>IRATA</a>
           <a href="https://sprat.org/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>SPRAT</a>
           <a href="https://ifmga.net/about-ifmga/committees/rope-access" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>IFMGA Rope Access</a>
         </div>
         <div class="mt-6">
-          <p class="text-sm text-accent" data-ka="áƒ®áƒáƒ áƒ— áƒ¡áƒáƒ¡áƒ˜áƒ›áƒáƒ¦áƒšáƒ áƒ¡áƒáƒ›áƒ£áƒ¨áƒáƒáƒ¡ áƒ¡áƒžáƒ”áƒªáƒ˜áƒáƒšáƒ˜áƒ¡áƒ¢áƒ˜?">Are you a rope-access technician?</p>
+          <p class="text-sm text-accent" data-ka="ხართ სასიმაღლო სამუშაოს სპეციალისტი?">Are you a rope-access technician?</p>
           <div class="mt-2 flex items-center gap-3">
             <i class="fa-solid fa-handshake-simple text-accent text-[1.05rem] leading-none shrink-0"></i>
-            <a href="join.html" class="inline-flex items-center gap-2 font-display font-700 text-lg text-accent uppercase tracking-wide hover:gap-3 transition-all"><span data-ka="á²¨á²”á²›á²á²’á²•á²˜á²”á² á²—á²“á²˜">Join Us</span><i class="fa-solid fa-arrow-right text-sm"></i></a>
+            <a href="join.html" class="inline-flex items-center gap-2 font-display font-700 text-lg text-accent uppercase tracking-wide hover:gap-3 transition-all"><span data-ka="ᲨᲔᲛᲝᲒᲕᲘᲔᲠᲗᲓᲘ">Join Us</span><i class="fa-solid fa-arrow-right text-sm"></i></a>
           </div>
         </div>
       </div>
     </div>
     <div class="border-t border-line">
       <div class="max-w-7xl mx-auto px-5 py-5 text-sm text-mute max-sm:text-center">
-        Â© <span id="year"></span> <span data-ka="áƒ¨áƒžáƒ¡ áƒáƒ áƒ˜áƒ—áƒáƒ™áƒ˜">Oritoki LTD</span>. <span data-ka="áƒ§áƒ•áƒ”áƒšáƒ áƒ£áƒ¤áƒšáƒ”áƒ‘áƒ áƒ“áƒáƒªáƒ£áƒšáƒ˜áƒ.">All rights reserved.</span>
+        © <span id="year"></span> <span data-ka="შპს ორითოკი">Oritoki LTD</span>. <span data-ka="ყველა უფლება დაცულია.">All rights reserved.</span>
       </div>
     </div>
   </footer>
@@ -1131,7 +1131,7 @@
       <div id="ssField">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
         <input id="ssInput" type="text" autocomplete="off" autocorrect="off" spellcheck="false"
-               placeholder="Search servicesâ€¦" data-ka-placeholder="áƒ›áƒáƒ«áƒ”áƒ‘áƒœáƒ” áƒ¡áƒ”áƒ áƒ•áƒ˜áƒ¡áƒ˜â€¦" />
+               placeholder="Search services…" data-ka-placeholder="მოძებნე სერვისი…" />
         <span id="ssHint">ESC</span>
       </div>
       <div id="ssResults"></div>
@@ -1142,7 +1142,7 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <!-- Photo list (edit this file to add gallery photos) -->
   <script src="js/images.js"></script>
-  <!-- Phone / e-mail / address / social links â€” the owner edits this one file. -->
+  <!-- Phone / e-mail / address / social links — the owner edits this one file. -->
   <script src="js/site-config.js"></script>
 
   <!-- =========================== PAGE SCRIPT =========================== -->
@@ -1199,7 +1199,7 @@
         var ka = el.dataset.ka;
         // Headings render in Georgian MTAVRULI (all-caps). Skip if the text is already
         // authored in Mtavruli (lets a heading mix in lowercase words on purpose).
-        if (lang === "ka" && el.closest("h1, h2, h3") && !/[á²-á²¿]/.test(ka)) ka = toMtavruli(ka);
+        if (lang === "ka" && el.closest("h1, h2, h3") && !/[Ა-Ჿ]/.test(ka)) ka = toMtavruli(ka);
         el.innerHTML = lang === "ka" ? ka : el.dataset.en;
       });
 
@@ -1239,7 +1239,7 @@
           el.setAttribute("data-ka", siteInfo.address.ka || "");
         } else if (siteInfo.social && key in siteInfo.social) {
           var url = siteInfo.social[key];
-          // An empty link in the config means "we don't have this account yet" â€” hide it.
+          // An empty link in the config means "we don't have this account yet" — hide it.
           if (url) el.href = url; else el.style.display = "none";
         }
       });
@@ -1263,7 +1263,7 @@
     }
     function applyTheme(theme, persist) {
       document.documentElement.classList.toggle("dark", theme === "dark");
-      // The carabiner icon itself is driven by CSS off html.dark â€” only the state flag
+      // The carabiner icon itself is driven by CSS off html.dark — only the state flag
       // and the tooltip need updating here.
       if (themeBtn) {
         themeBtn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
@@ -1278,7 +1278,7 @@
         applyTheme(currentTheme() === "dark" ? "light" : "dark", true);
       });
     }
-    // Follow the OS setting live â€” but only until the user makes an explicit choice.
+    // Follow the OS setting live — but only until the user makes an explicit choice.
     themeMq.addEventListener("change", function (e) {
       var saved = null;
       try { saved = localStorage.getItem(THEME_KEY); } catch (err) {}
@@ -1288,7 +1288,7 @@
     /* ---------- 4. Sticky header shadow on scroll ---------- */
     var header = document.getElementById("header");
 
-    /* Sticky-header state on scroll (transparent hero â†’ solid bar). */
+    /* Sticky-header state on scroll (transparent hero → solid bar). */
     function onHeaderScroll() {
       if (header) header.classList.toggle("scrolled", (window.scrollY || window.pageYOffset || 0) > 40);
     }
@@ -1305,10 +1305,10 @@
       var rootCS = getComputedStyle(document.documentElement);
       function cssPx(name, fallback) { var v = parseFloat(rootCS.getPropertyValue(name)); return isNaN(v) ? fallback : v; }
 
-      /* ----- Rope geometry â€” the FULL ropes are drawn here (clean.png has no ropes of its own).
+      /* ----- Rope geometry — the FULL ropes are drawn here (clean.png has no ropes of its own).
          Anchor points are fractions of the figure box (measured off clean.png):
-         backup rope is a straight vertical the cam slides on; the working rope runs ceiling â†’
-         descender â†’ (brake strand, in front) â†’ brake hand â†’ ground. The descender + hand hide
+         backup rope is a straight vertical the cam slides on; the working rope runs ceiling →
+         descender → (brake strand, in front) → brake hand → ground. The descender + hand hide
          where the segments meet. */
       var svgBack = document.getElementById("ropeBack"), svgFront = document.getElementById("ropeFront");
       var rBackO = document.getElementById("rBackO"), rBackI = document.getElementById("rBackI");
@@ -1321,42 +1321,42 @@
       var rKnotWO = document.getElementById("rKnotWO"), rKnotWI = document.getElementById("rKnotWI");
       var rBrkO = document.getElementById("rBrkO"), rBrkI = document.getElementById("rBrkI");
       var hasRopes = !!(svgBack && svgFront && rBackO && rWupO && rWtipO && rWloO && rBrkO && rKnotBO && rKnotWO);
-      /* climber.png is the technician ALONE â€” no ropes are drawn into it, so every rope here
+      /* climber.png is the technician ALONE — no ropes are drawn into it, so every rope here
          is free geometry. The two vertical x's are therefore set to the fractions of the two
          rope stems in the header logo (0.481 / 0.573), which is what makes them continue out
          of the two i's with no kink; both still pass correctly through his devices (the cam
          sits at ~0.575, so 0.573 threads it better than the old 0.56 did). The body-relative
          points below are the original, tuned-to-this-artwork values. */
       var A = {
-        backupX: 0.573,              // backup rope â€” straight vertical, through the cam device
+        backupX: 0.573,              // backup rope — straight vertical, through the cam device
         // Both taken from the line the owner drew on the measuring grid (images/climber.png
         // with 0.01 gridlines): the working rope clears the helmet on its RIGHT and drops
-        // PERFECTLY VERTICALLY into the gripping hand â€” it does not lean in towards the
-        // descender the way the old 0.399 â†’ 0.42 pair made it. Keeping workTopX and desc.x
+        // PERFECTLY VERTICALLY into the gripping hand — it does not lean in towards the
+        // descender the way the old 0.399 → 0.42 pair made it. Keeping workTopX and desc.x
         // equal is what holds it vertical, so change them together.
         workTopX: 0.44,              // clears the helmet (its right edge is 0.412) and lands
                                      // just left of the fist at 0.478
         // The climber is ONE flat PNG, so a rope can only be wholly in front of it or wholly
-        // behind it â€” "the device's outline in front of the rope" is therefore done by CUTTING
+        // behind it — "the device's outline in front of the rope" is therefore done by CUTTING
         // the visible rope along that outline (the clipPaths above). Both cuts are two points
         // in climber.png's OWN pixels (560x686), which is how the owner measures them; only the
         // LINE through them matters, since drawRopes extends it past the strip either way.
         //
         // Working rope at the descender: the owner read the outline off the artwork as y 219 at
         // the rope's right edge, 224 at its middle, 229 at its left edge (the rope spans
-        // x 240.8..252, i.e. 0.44 of the width Â± half a stroke).
+        // x 240.8..252, i.e. 0.44 of the width ± half a stroke).
         cutWork:  { x1: 240.8, y1: 229, x2: 252, y2: 219 },
         // Brake strand at the glove. The owner put the contour at 0.23 across / 0.53 down of
         // the figure = pixel (128.8, 363.6), so the cut runs through that point, along the
         // outline's own slope. (Walking the strand for "the first black pixel" lands ~7px
-        // earlier, on the outer lip of the same outline â€” and 15px before THAT is the harness
+        // earlier, on the outer lip of the same outline — and 15px before THAT is the harness
         // strap, which the strand crosses over a gap of transparent pixels. Both are decoys.)
         cutBrake: { x1: 124.05, y1: 360.35, x2: 133.55, y2: 366.85 },
         desc:   { x: 0.44, y: 0.36 },// the path itself runs on past the cut; the clip hides it
         descTipY: 0.40,              // the tip then runs on to here in the BACK layer, hidden
                                      // by the device (the artwork is solid all the way down
                                      // this column, so nothing of it shows)
-        // Where the brake strand LEAVES the descender, between the two hands â€” the owner's mark,
+        // Where the brake strand LEAVES the descender, between the two hands — the owner's mark,
         // 0.47 across / 0.33 down of the figure (pixel 263.2 / 226.4). This end keeps its ROUNDED
         // head on purpose (unlike the glove end, which is cut along the outline): it reads as
         // the rope's own end coming out of the device.
@@ -1369,28 +1369,28 @@
         // artwork): the rope enters the fist on the thumb side at the top-right and leaves it
         // on the little-finger side at the bottom, so the two segments read as ONE rope running
         // through the hand rather than two pieces parked either side of it.
-        brakeIn:{ x: 0.226, y: 0.528 },// enters the fist â€” thumb side (owner's yellow mark)
-        brake:  { x: 0.165, y: 0.585 },// leaves the fist â€” little-finger side (owner's rose mark)
+        brakeIn:{ x: 0.226, y: 0.528 },// enters the fist — thumb side (owner's yellow mark)
+        brake:  { x: 0.165, y: 0.585 },// leaves the fist — little-finger side (owner's rose mark)
         brakeTrimTop: 1,             // small pull-back at the gripping hand
-                                     // (the lower end needs no trim any more â€” cutBrake does it)
+                                     // (the lower end needs no trim any more — cutBrake does it)
         workGroundX: 0.165,          // the tail hangs straight down from the exit point
         // The ropes are as long as the PAGE: their ends are pinned this far above the end of the
         // document, so they run off the bottom of the screen the whole way down and only show
-        // their ends â€” each finished with a stopper knot and a short tail â€” once you reach the
+        // their ends — each finished with a stopper knot and a short tail — once you reach the
         // footer. The climber stops a little higher still (--climber-bottom-gap) so the knots
         // always hang clear below his boots.
         // Clear space between each rope's end and the end of the PAGE. The BACKUP rope hangs
-        // lower â€” knot and all â€” than the working one; two ropes cut to exactly the same length
+        // lower — knot and all — than the working one; two ropes cut to exactly the same length
         // look diagrammatic rather than real.
         ropeEndGapBackup: 32,
         ropeEndGapWork: 58,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
         camY: 0.15,                  // where the backup rope passes through his device, down the
-                                     // figure â€” the rope bends there, fixed above, free below
+                                     // figure — the rope bends there, fixed above, free below
         // He is a pendulum on the rope above him, so how far he can swing is set by that rope's
-        // length, not by a fixed number: sin(38Â°) of it, and never more than 45% of the window.
+        // length, not by a fixed number: sin(38°) of it, and never more than 45% of the window.
         // Low on the page the rope is long, so he can be thrown clean off the left edge.
-        pullAngle: 0.62,             // sin(38Â°)
+        pullAngle: 0.62,             // sin(38°)
         pullGain: 0.95,              // how closely he follows the cursor while dragged
         hangY: 0.34                  // where on the figure the rope carries him (his descender)
       };
@@ -1399,7 +1399,7 @@
         if (!hasRopes) return;
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box);
-        // The rope is 23px wide in the 826px-wide source crop â€” keep the drawn rope the
+        // The rope is 23px wide in the 826px-wide source crop — keep the drawn rope the
         // same thickness at any width, so it continues the artwork without stepping.
         if (wrapEl) {
           // Deliberately thinner than the logo's own rope (which measures 0.0387 of the strip):
@@ -1416,10 +1416,10 @@
         var Hn = climber.offsetHeight || Wn * 1.225;
         var VH = window.innerHeight, top = currentY - currentRise;   // the swing lifts him
         /* Everything anchored to his BODY has to go through the SAME transform the browser
-           applies to the artwork â€” the sway AND the lean, about the same pivot (transform-origin
+           applies to the artwork — the sway AND the lean, about the same pivot (transform-origin
            is 50% 8% of the image). Translating alone was not enough: near the pivot, at the top
-           of the figure, a point barely moves when he leans â€” which is why the backup rope stayed
-           glued to its device â€” but the fist and the descender are far below it and drifted off
+           of the figure, a point barely moves when he leans — which is why the backup rope stayed
+           glued to its device — but the fist and the descender are far below it and drifted off
            their ropes as soon as he swung. bodyXY() is that transform, and every attachment point
            now goes through it. The two ropes' far ends are NOT body points: they hang from above
            and are tied off below, which is what makes him swing ON the ropes. */
@@ -1433,11 +1433,11 @@
         }
         function pt(fx, fy) { var p = bodyXY(fx, fy); return p.x.toFixed(1) + " " + p.y.toFixed(1); }
         function px(fx) { return (fx * Wn).toFixed(1); }
-        // climber.png pixel â†’ strip coordinate, through the same body transform. The cut lines are
+        // climber.png pixel → strip coordinate, through the same body transform. The cut lines are
         // measured on the 560x686 artwork, which is the only place their exact position is legible.
         function art(x, y) { return bodyXY(x / 560, y / 686); }
         /* Cut a rope along a device's outline: fills `clip` with the half-plane on the side of
-           the line c (two artwork pixels) that contains (kx,ky) â€” the direction the rope comes
+           the line c (two artwork pixels) that contains (kx,ky) — the direction the rope comes
            from. The line is extended far past the strip both ways, so only its angle and
            position matter, not where the two measured points sit along it. */
         function applyCut(clip, c, kx, ky) {
@@ -1460,7 +1460,7 @@
         /* The rope ends are anchored to the BOTTOM OF THE PAGE, not to the window: their end sits
            this far above the end of the document, so while you scroll through home / about /
            services / gallery / contact the ropes simply run off the bottom of the screen and read
-           as long. Only in the footer do the ends â€” and their stopper knots â€” rise into view and
+           as long. Only in the footer do the ends — and their stopper knots — rise into view and
            finish just above the bottom edge. */
         var docH = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
         var scrolled = window.scrollY || 0;
@@ -1470,7 +1470,7 @@
         var endB = Math.min(trueEndB, offBottom);
         var endW = Math.min(trueEndW, offBottom);
         /* The tops of the ropes are pinned (they hang from above the header and never move). Of
-           the two lower ends only the BACKUP rope's is loose â€” it swings wider than he does, and
+           the two lower ends only the BACKUP rope's is loose — it swings wider than he does, and
            the rope bends where it passes through his device: fixed above it, free below it. The
            brake rope is rigid: it carries his weight, so it stays taut and still. */
         var swayFree = tailSway;
@@ -1516,14 +1516,14 @@
         }
         /* Below his devices each rope LEAVES ALONG HIS BODY and only then falls back to vertical,
            instead of running dead straight to its anchored end. That is drawn as a quadratic
-           curve whose control point sits along his lean â€” so when he swings, the rope stays
+           curve whose control point sits along his lean — so when he swings, the rope stays
            gripped in the hand and bends below it, rather than pivoting through the fist. */
         function ctrlFor(hx, hy, ey) {                // control point: leaves along his lean
           var len = Math.max(1, ey - hy);
           return { x: hx + sinR * len * 0.45, y: hy + cosR * len * 0.45 };
         }
         /* A rope does not stretch. The free end below a device trails behind it when he swings,
-           but it stays the SAME DISTANCE from that device â€” so the sideways lag has to be paid
+           but it stays the SAME DISTANCE from that device — so the sideways lag has to be paid
            for in height: the end rises by exactly as much as the lag takes out of the drop.
            Letting it lag sideways at a fixed height, as it did before, made the rope read as
            rubber. `lag` is how far the end trails; `rest` is the length it hangs at rest. */
@@ -1532,7 +1532,7 @@
           var l = Math.max(-rest * 0.85, Math.min(rest * 0.85, lag));
           return { x: hx + l, y: hy + Math.sqrt(rest * rest - l * l) };
         }
-        function hangQ(c, ex, ey) {                   // the curve only â€” prefix it with its own M
+        function hangQ(c, ex, ey) {                   // the curve only — prefix it with its own M
           return " Q " + c.x.toFixed(1) + " " + c.y.toFixed(1) + " " + ex.toFixed(1) + " " + ey.toFixed(1);
         }
         // BACKUP rope, behind: fixed at the top, bending at his cam, loose end below him
@@ -1544,19 +1544,19 @@
           " L " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
           hangQ(backCtl, backEnd.x, backEnd.y));
         setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise, trueEndB));
-        // WORKING rope, IN FRONT: off-screen top â†’ descender (grows as he descends).
+        // WORKING rope, IN FRONT: off-screen top → descender (grows as he descends).
         // Front layer so it crosses over the absorber and rests on the descender.
         setSeg(rWupO, rWupI, "M " + px(A.workTopX) + " " + ceil + " L " + pt(A.desc.x, A.desc.y));
         // ...cut along the descender's outline (see applyCut / A.cutWork), keeping the side the
-        // rope comes FROM â€” a point well above the figure.
+        // rope comes FROM — a point well above the figure.
         var above = art(246, -400);
         applyCut(cutP, A.cutWork, above.x, above.y);
         // ...and its TIP, behind the figure: starts above the cut so no seam shows between the
         // two layers, and dies under the descender.
         setSeg(rWtipO, rWtipI, "M " + pt(A.desc.x, (A.cutWork.y2 / 686) - 0.01) + " L " + pt(A.desc.x, A.descTipY));
-        // WORKING rope, behind: brake hand â†’ its knot (shrinks as he descends). It leaves the
+        // WORKING rope, behind: brake hand → its knot (shrinks as he descends). It leaves the
         // fist along his body, so the hand keeps its grip through the whole swing, and its free
-        // end trails on its own spring â€” a slightly different one from the backup rope's, so the
+        // end trails on its own spring — a slightly different one from the backup rope's, so the
         // two tails never move as one welded piece.
         var hand = bodyXY(A.brake.x, A.brake.y), handX = hand.x, handY = hand.y;
         var workEnd = freeEnd(handX, handY, endW, tail2Sway - sway);
@@ -1564,13 +1564,13 @@
         setSeg(rWloO, rWloI,
           "M " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workEnd.x, workEnd.y));
         setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workEnd.x, workEnd.y, workEnd.y - A.knotRise, trueEndW));
-        // WORKING rope brake strand, in front: gripping hand â†’ brake hand, trimmed at both
+        // WORKING rope brake strand, in front: gripping hand → brake hand, trimmed at both
         // ends so the hands appear to hold it instead of the rope lying across them.
         var pa = bodyXY(A.descOut.x, A.descOut.y), ax = pa.x, ay = pa.y;
         var pb = bodyXY(A.brakeIn.x, A.brakeIn.y), bx = pb.x, by = pb.y;
         var vx = bx - ax, vy = by - ay, len = Math.sqrt(vx * vx + vy * vy) || 1;
         // The strand now runs all the way INTO the fist and is cut along the glove's outline
-        // (A.cutBrake) instead of being stopped short of it with a rounded end â€” the same
+        // (A.cutBrake) instead of being stopped short of it with a rounded end — the same
         // treatment the working rope gets at the descender. Keep the side it comes from.
         setSeg(rBrkO, rBrkI,
           "M " + (ax + (vx / len) * A.brakeTrimTop).toFixed(1) + " " + (ay + (vy / len) * A.brakeTrimTop).toFixed(1) +
@@ -1593,7 +1593,7 @@
         targetY = b.top0 + p * (b.bottom - b.top0);
       }
       /* Pendulum geometry. The rope runs from off the top of the screen down to his descender,
-         so its length grows as he descends â€” which is why he can be swung much further out at
+         so its length grows as he descends — which is why he can be swung much further out at
          the bottom of the page than at the top. */
       function pendLen() {
         var Hn = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
@@ -1601,7 +1601,7 @@
       }
       function pendMax() { return Math.min(pendLen() * A.pullAngle, window.innerWidth * 0.45); }
       /* Swinging out also lifts him: on a rope of fixed length, going sideways by s raises him by
-         L - sqrt(LÂ² - sÂ²). Without this he would slide along an invisible horizontal rail. */
+         L - sqrt(L² - s²). Without this he would slide along an invisible horizontal rail. */
       function pendRise() {
         var L = pendLen(), s = Math.min(Math.abs(currentSway), L * 0.985);
         return L - Math.sqrt(L * L - s * s);
@@ -1614,14 +1614,14 @@
       }
       /* The sway is a damped PENDULUM, not a lerp: a spring pulls it back towards its target and
          the damping lets it swing past. That is what makes him keep swinging for a second or two
-         after you stop scrolling â€” including at the very bottom of the page â€” instead of just
-         gliding to a halt. Deliberately weak: about Â±3px and Â±1.3Â°, which reads as him hanging
+         after you stop scrolling — including at the very bottom of the page — instead of just
+         gliding to a halt. Deliberately weak: about ±3px and ±1.3°, which reads as him hanging
          in the air rather than as animation. The tilt is derived from the sway (transform-origin
          sits near the top of the figure, so he pivots from where he hangs). */
       var swayVel = 0, tailSway = 0, tailVel = 0, tail2Sway = 0, tail2Vel = 0;
       function loop() {
         currentY += (targetY - currentY) * 0.14;            // inertia: trail then catch up
-        /* A real pendulum's rhythm comes from its length (Ï‰Â² = g/L), not from a fixed constant â€”
+        /* A real pendulum's rhythm comes from its length (ω² = g/L), not from a fixed constant —
            so the stiffness is divided by the rope length. High on the page the rope is short and
            he swings quickly; far down it is long and he swings slow and wide. */
         var L = pendLen(), k = 2.0 / L;
@@ -1630,7 +1630,7 @@
           swayVel  *= 0.975;                                // damping: settles in a few seconds
           currentSway += swayVel;
         }
-        /* Each loose rope tail below him hangs from his device, so it follows him â€” but on its own
+        /* Each loose rope tail below him hangs from his device, so it follows him — but on its own
            softer spring, which makes it trail on the way out and overshoot on the way back. Two
            springs, very slightly different, so the two ropes do not swing as one welded piece. */
         tailVel += (currentSway - tailSway) * k * 0.85;
@@ -1653,7 +1653,7 @@
         computeTarget();
         if (reduce) { currentY = targetY; currentRot = targetRot = currentSway = targetSway = 0; draw(); return; }
         var y = window.scrollY || 0, v = y - lastScrollY; lastScrollY = y;   // v > 0 = scrolling down
-        // He trails the movement, the way a hanging body does â€” capped hard, since the whole
+        // He trails the movement, the way a hanging body does — capped hard, since the whole
         // effect is meant to be felt rather than noticed. Skipped while he is being held: there
         // the cursor sets the sway, and the page scrolls under the same gesture.
         if (!dragging) {
@@ -1670,7 +1670,7 @@
       if (window.ResizeObserver) { try { new ResizeObserver(function () { computeTarget(); run(); }).observe(document.body); } catch (e) {} }
 
       /* ---- Grab the technician: drag him UP/DOWN to scroll (he is the scrollbar thumb) and
-             SIDEWAYS to pull him off the vertical. Let go and gravity takes him back â€” the same
+             SIDEWAYS to pull him off the vertical. Let go and gravity takes him back — the same
              damped pendulum the scroll uses, just released from further out, so he swings
              through the middle a few times before he settles. ---- */
       var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0;
@@ -1819,7 +1819,7 @@
     var controlsMq = window.matchMedia("(max-width: 1279px)");
     function placeControls() {
       if (!headerActions || !navActions || !langToggleEl || !themeBtn || !burger) return;
-      // Theme first, language second â€” same order as in the markup.
+      // Theme first, language second — same order as in the markup.
       if (controlsMq.matches) {
         navActions.appendChild(themeBtn);
         navActions.appendChild(langToggleEl);
@@ -1957,7 +1957,7 @@
           if (!m.classList.contains("open")) return;
           mCard.style.overflowY = "auto";
           // Re-pin to the settled inner width. Enabling the scrollbar narrows the content
-          // box, so simply releasing the width here would re-wrap the text one last time â€”
+          // box, so simply releasing the width here would re-wrap the text one last time —
           // a visible blink right as the card finishes opening.
           var d = mCard.querySelector(".svc-detail");
           if (d) d.style.width = mCard.clientWidth + "px";
@@ -1998,7 +1998,7 @@
     /* ---------- 11. Service search (command-palette overlay) ----------
        The index is read straight out of the service cards, so adding or editing a
        service needs no change here. Matching is prefix-first: Georgian inflects with
-       suffixes (áƒ¤áƒáƒ¡áƒáƒ“áƒ˜ / áƒ¤áƒáƒ¡áƒáƒ“áƒ˜áƒ¡ / áƒ¤áƒáƒ¡áƒáƒ“áƒ”áƒ‘áƒ–áƒ”), so a prefix hit is what makes a search
+       suffixes (ფასადი / ფასადის / ფასადებზე), so a prefix hit is what makes a search
        for the base word find them all. Exact substring ranks highest, then prefix,
        then a small typo tolerance. */
     (function () {
@@ -2010,20 +2010,20 @@
       var back  = document.getElementById("ssBackdrop");
       if (!wrap || !panel || !input || !list || !btn || !back) return;
 
-      /* Words people search for that do not appear in the card text. Never displayed â€”
+      /* Words people search for that do not appear in the card text. Never displayed —
          they only widen what a card matches. */
       var EXTRA = {
-        "svc-glass":        "áƒ áƒ”áƒªáƒ®áƒ•áƒ áƒ“áƒáƒ¡áƒ£áƒ¤áƒ—áƒáƒ•áƒ”áƒ‘áƒ áƒ¬áƒ›áƒ”áƒœáƒ“áƒ áƒ¨áƒ£áƒ¨áƒ áƒ•áƒ˜áƒ¢áƒ áƒáƒŸáƒ˜ áƒªáƒ®áƒáƒ£áƒ áƒ˜ washing cleaning window glazing curtain wall highrise",
-        "svc-buildings":    "áƒ¡áƒáƒ®áƒšáƒ˜ áƒ™áƒáƒ áƒžáƒ£áƒ¡áƒ˜ áƒ¨áƒ”áƒœáƒáƒ‘áƒ áƒ áƒ”áƒ›áƒáƒœáƒ¢áƒ˜ áƒ›áƒáƒ•áƒšáƒ áƒ¤áƒáƒ¡áƒáƒ“áƒ˜ building repair upkeep facade housing",
-        "svc-electrical":   "áƒ¡áƒ˜áƒœáƒáƒ—áƒšáƒ” áƒ™áƒáƒ‘áƒ”áƒšáƒ˜ áƒáƒœáƒ¢áƒ”áƒœáƒ áƒ˜áƒœáƒ¢áƒ”áƒ áƒœáƒ”áƒ¢áƒ˜ áƒ’áƒáƒœáƒáƒ—áƒ”áƒ‘áƒ áƒ”áƒšáƒ”áƒ¥áƒ¢áƒ áƒ˜áƒ™áƒ light cable antenna internet lighting wiring",
-        "svc-signage":      "áƒ‘áƒáƒœáƒ”áƒ áƒ˜ áƒáƒ‘áƒ áƒ áƒ•áƒ˜áƒ¢áƒ áƒ˜áƒœáƒ áƒ‘áƒ˜áƒšáƒ‘áƒáƒ áƒ“áƒ˜ áƒšáƒáƒ’áƒ banner sign billboard logo branding advertising",
-        "svc-painting":     "áƒ¡áƒáƒ¦áƒ”áƒ‘áƒáƒ•áƒ˜ áƒ¤áƒ”áƒ áƒ˜ áƒáƒœáƒ¢áƒ˜áƒ™áƒáƒ áƒáƒ–áƒ˜áƒ£áƒšáƒ˜ áƒ’áƒ áƒ£áƒœáƒ¢áƒ˜ paint colour coating anticorrosion primer",
-        "svc-construction": "áƒ›áƒ¨áƒ”áƒœáƒ”áƒ‘áƒšáƒáƒ‘áƒ áƒ˜áƒ–áƒáƒšáƒáƒªáƒ˜áƒ áƒ‘áƒ”áƒ¢áƒáƒœáƒ˜ áƒáƒ’áƒ£áƒ áƒ˜ áƒ°áƒ˜áƒ“áƒ áƒáƒ˜áƒ–áƒáƒšáƒáƒªáƒ˜áƒ construction insulation concrete brick waterproofing",
-        "svc-rock":         "áƒ›áƒ—áƒ áƒ¤áƒ”áƒ áƒ“áƒáƒ‘áƒ˜ áƒ‘áƒáƒ“áƒ” áƒ¥áƒ•áƒ áƒ”áƒ áƒáƒ–áƒ˜áƒ mountain slope rockfall netting geotechnical erosion",
-        "svc-industrial":   "áƒ¥áƒáƒ áƒ®áƒáƒœáƒ áƒ›áƒ˜áƒšáƒ˜ áƒ áƒ”áƒ–áƒ”áƒ áƒ•áƒ£áƒáƒ áƒ˜ áƒ¡áƒáƒ™áƒ•áƒáƒ›áƒ£áƒ áƒ˜ áƒ‘áƒ£áƒœáƒ™áƒ”áƒ áƒ˜ factory chimney tank pipe silo plant",
-        "svc-inspection":   "áƒ¨áƒ”áƒ›áƒáƒ¬áƒ›áƒ”áƒ‘áƒ áƒ“áƒáƒ—áƒ•áƒáƒšáƒ˜áƒ”áƒ áƒ”áƒ‘áƒ áƒ”áƒ¥áƒ¡áƒžáƒ”áƒ áƒ¢áƒ˜áƒ–áƒ áƒáƒ£áƒ“áƒ˜áƒ¢áƒ˜ inspection survey audit check report",
-        "svc-film":         "áƒ™áƒ˜áƒœáƒ áƒ•áƒ˜áƒ“áƒ”áƒ áƒ™áƒáƒ›áƒ”áƒ áƒ áƒ™áƒáƒœáƒªáƒ”áƒ áƒ¢áƒ˜ áƒ“áƒ”áƒ™áƒáƒ áƒáƒªáƒ˜áƒ stage concert rigging camera film event",
-        "svc-emergency":    "áƒ¡áƒáƒ¡áƒ¬áƒ áƒáƒ¤áƒ áƒáƒ•áƒáƒ áƒ˜áƒ áƒ’áƒáƒ“áƒáƒ£áƒ“áƒ”áƒ‘áƒ”áƒšáƒ˜ áƒ¡áƒáƒ›áƒáƒ¨áƒ•áƒ”áƒšáƒ emergency rescue urgent accident"
+        "svc-glass":        "რეცხვა დასუფთავება წმენდა შუშა ვიტრაჟი ცხაური washing cleaning window glazing curtain wall highrise",
+        "svc-buildings":    "სახლი კორპუსი შენობა რემონტი მოვლა ფასადი building repair upkeep facade housing",
+        "svc-electrical":   "სინათლე კაბელი ანტენა ინტერნეტი განათება ელექტრიკა light cable antenna internet lighting wiring",
+        "svc-signage":      "ბანერი აბრა ვიტრინა ბილბორდი ლოგო banner sign billboard logo branding advertising",
+        "svc-painting":     "საღებავი ფერი ანტიკოროზიული გრუნტი paint colour coating anticorrosion primer",
+        "svc-construction": "მშენებლობა იზოლაცია ბეტონი აგური ჰიდროიზოლაცია construction insulation concrete brick waterproofing",
+        "svc-rock":         "მთა ფერდობი ბადე ქვა ეროზია mountain slope rockfall netting geotechnical erosion",
+        "svc-industrial":   "ქარხანა მილი რეზერვუარი საკვამური ბუნკერი factory chimney tank pipe silo plant",
+        "svc-inspection":   "შემოწმება დათვალიერება ექსპერტიზა აუდიტი inspection survey audit check report",
+        "svc-film":         "კინო ვიდეო კამერა კონცერტი დეკორაცია stage concert rigging camera film event",
+        "svc-emergency":    "სასწრაფო ავარია გადაუდებელი სამაშველო emergency rescue urgent accident"
       };
 
       /* ---- text helpers ---- */
@@ -2032,9 +2032,9 @@
       function norm(s) {
         return plain(s)
           // Headings render in Mtavruli; fold back so typed Mkhedruli still matches.
-          .replace(/[á²-á²º]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0x0BC0); })
+          .replace(/[Ა-Ჺ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0x0BC0); })
           .toLowerCase()
-          .replace(/[^0-9a-záƒ-áƒ¿]+/g, " ")
+          .replace(/[^0-9a-zა-ჿ]+/g, " ")
           .trim();
       }
       /* Levenshtein that bails out as soon as it passes the cap. */
@@ -2128,7 +2128,7 @@
         if (!results.length) {
           var none = document.createElement("div");
           none.className = "ss-empty";
-          none.textContent = document.documentElement.lang === "ka" ? "áƒ•áƒ”áƒ áƒáƒ¤áƒ”áƒ áƒ˜ áƒ›áƒáƒ˜áƒ«áƒ”áƒ‘áƒœáƒ" : "No matches";
+          none.textContent = document.documentElement.lang === "ka" ? "ვერაფერი მოიძებნა" : "No matches";
           list.appendChild(none);
           return;
         }
@@ -2207,4 +2207,3 @@
   </script>
 </body>
 </html>
-
