@@ -154,8 +154,31 @@
          feet. Everywhere above the footer the ropes just run off the screen. */
       --climber-bottom-gap: 78px;
     }
-    /* z-40 keeps the ropes BEHIND the z-50 header, so they look anchored under the bar. */
-    #ropeClimber { position: fixed; left: var(--climber-left); top: 0; height: 100vh; width: var(--worker-width); z-index: 40; pointer-events: none; transition: opacity .25s ease; }
+    /* Brand lockup. Its size and position are tied to the strip, not typed in: the asset is
+       78 display px wide where the strip is 97 (0.804), and its left rope stem sits at 0.705 of
+       its own width. Line those two facts up with the strip's working rope (0.44) and the left
+       offset falls out as 0.44 - 0.705x0.804 = -0.1268 of the strip. Touch none of these numbers
+       without re-baking the asset (tools/logo-wordmark.ps1). */
+    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1128);
+                 width: calc(var(--worker-width) * 0.771); z-index: 2; display: block; }
+    /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
+       its knot. The hanging piece turns about the hanger's clip point — 75.7% across the anchor's
+       width and 12 of the 866 rows down its own height — which is where the carabiner sits in
+       the hanger's hole. */
+    .anchor-bolt, .anchor-hang { position: absolute; z-index: 1; height: auto; pointer-events: none; }
+    .anchor-hang { transform-origin: 75.7% 1.39%; }
+    #brandRope img { display: block; width: 100%; height: auto; }
+    #brandRope .ink-white { display: none; }
+    /* White lettering over the hero photo and everywhere in dark mode; black on the light bar. */
+    #header:not(.scrolled) #brandRope .ink-black, html.dark #brandRope .ink-black { display: none; }
+    #header:not(.scrolled) #brandRope .ink-white, html.dark #brandRope .ink-white { display: block; }
+
+    /* ABOVE the z-50 header on purpose: the ropes run from off the top of the screen, and behind
+       the header their whole upper stretch vanished the moment the bar turned solid on scroll.
+       They pass over it instead. Safe to do here — the header's left end is empty since the logo
+       came out, and the nav sits centre/right, well clear of this 97px strip. Still below the
+       service modal (z-120) and the search panel (z-130), which must cover everything. */
+    #ropeClimber { position: fixed; left: var(--climber-left); top: 0; height: 100vh; width: var(--worker-width); z-index: 60; pointer-events: none; transition: opacity .25s ease; }
     #ropeBack, #ropeFront { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
     #ropeBack  { z-index: 1; }   /* rope parts that pass behind the body */
     #ropeFront { z-index: 3; }   /* the brake strand, in front of the lap */
@@ -183,26 +206,14 @@
     /* Hide him while the mobile menu is open (otherwise he shows over the drawer). */
     body.menu-open #ropeClimber { opacity: 0; visibility: hidden; }
     @media (prefers-reduced-motion: reduce) { #climber { transition: none !important; } }
-    /* Mobile: shrink the emblem so it fits the 80px header and leaves room for the
-       wordmark + language toggle (otherwise they overlap on narrow screens). */
+    /* Mobile: a narrower strip, set through the SAME two variables so the lockup, the ropes and
+       the technician all move together. --climber-left cannot go below about 0.13 of the strip's
+       width or the wordmark, which hangs that far to the LEFT of the ropes, runs off the screen. */
     @media (max-width: 640px) {
+      :root { --climber-left: 11px; --worker-width: 72px; }
       #header { height: 60px; }          /* shorter header bar on phones */
-      /* Sized so the emblem's ground line sits just above the 60px header's bottom
-         edge; only the rope tips spill below.
-         (uses the side-cropped emblem-narrow.png; art top=y151, ground=y719/1024.) */
-      #ropeClimber { left: 2px; width: 72px; }
-      #ropeClimber #climber { width: 72px; }
-      /* Keep the wordmark centred on the logo's horizontal line. */
-      #brandText { transform: none; }
-      /* The enlarged logo eats width, so tighten the toggle/burger and the
-         sub-line a touch to keep everything on one row next to the wordmark. */
       #langToggle button { padding: 4px 8px; }
       #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
-      #brandSub { font-size: 10px; letter-spacing: .06em; white-space: nowrap; }
-    }
-    /* Very narrow phones: drop the sub-line so the wordmark never collides with the toggle. */
-    @media (max-width: 372px) {
-      #brandSub { display: none; }
     }
     #header.scrolled { background-color: rgba(244,243,236,.96); border-bottom: 1px solid rgba(0,0,0,.06); box-shadow: 0 6px 22px -6px rgba(0,0,0,.12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 
@@ -210,15 +221,9 @@
        brand, controls and nav all flip to white. Once scrolled the header gains its solid
        bar (beige in light mode / dark in dark mode) and these controls revert to the token
        defaults, which are dark-on-beige and light-on-dark respectively. */
-    #header:not(.scrolled) #brandText > span:first-child { color: #ffffff; }
-    #header:not(.scrolled) #brandSub { color: #f97316; }
     #header:not(.scrolled) #langToggle { border-color: rgba(255,255,255,.30); background: rgba(255,255,255,.10); }
     #header:not(.scrolled) #langToggle button { color: rgba(255,255,255,.9); }
     #header:not(.scrolled) #burger { color: #ffffff; }
-    #logoEmblem { transition: filter .25s ease; }
-    /* White logo over the hero and everywhere in dark mode; its normal dark self on the
-       light beige bar once scrolled. */
-    #header:not(.scrolled) #logoEmblem, html.dark #logoEmblem { filter: brightness(0) invert(1); }
     @media (min-width: 1280px) {
       /* Nav is clean text (no default pill); hover shows a faint neutral pill. The current
          section is marked by orange text ONLY — no tinted pill behind it, in any bar state.
@@ -644,6 +649,12 @@
        in two SVGs so the working line can pass in front of the face yet behind the body,
        and their geometry is updated in JS as he slides (see drawRopes()). -->
   <div id="ropeClimber" aria-hidden="true">
+    <!-- The two anchors the ropes hang from, one per rope, in two pieces because they behave
+         differently: the BOLT HANGER is bolted to the building and never moves, while the
+         CARABINER, its knot and the rope below them turn with the rope — a carabiner swivels in
+         its hanger. Together with the lettering in the header they read as the two dotted i's of
+         ORITOKI. JS sizes and places all four (sizeRopes) and turns the two hanging pieces
+         (drawRopes); each rope then starts at its own knot, wherever the swing has left it. -->
     <!-- The technician (perfect.png) already contains BOTH ropes, the descender, the backup
          cam + lanyard, both hands and the slack loop. These four SVG lines only EXTEND the two
          ropes off the top/bottom of the image out to the page edges, so they run continuously
@@ -672,6 +683,10 @@
       <path class="rope-out" id="rKnotBO"></path><path class="rope-in" id="rKnotBI"></path>  <!-- backup rope's knot -->
       <path class="rope-out" id="rKnotWO"></path><path class="rope-in" id="rKnotWI"></path>  <!-- working rope's knot -->
     </svg>
+    <img class="anchor-bolt" id="boltWork" src="images/anchor-bolt.png" alt="" draggable="false" />
+    <img class="anchor-bolt" id="boltBack" src="images/anchor-bolt.png" alt="" draggable="false" />
+    <img class="anchor-hang" id="hangWork" src="images/anchor-hang.png" alt="" draggable="false" />
+    <img class="anchor-hang" id="hangBack" src="images/anchor-hang.png" alt="" draggable="false" />
     <img id="climber" src="images/climber.png?v=12" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
       <!-- A LOCAL copy of the weave: Chrome won't apply #ropeBack's pattern to a path in this
@@ -705,10 +720,21 @@
   <header id="header" class="fixed top-0 inset-x-0 z-50 h-16">
     <div id="headerInner" class="w-full h-full max-w-[96rem] mx-auto px-6 flex items-center gap-2 lg:gap-3">
 
-      <!-- Left group. The brand lockup that used to sit here (the rope wordmark) was removed;
-           the empty flex-1 wrapper stays so the centred nav keeps its balance. With no logo
-           the climber's ropes simply run off the top of the viewport (see drawRopes()). -->
-      <div class="flex-1 min-w-0 flex justify-start"></div>
+      <!-- Left group (brand). flex-1 grows so the nav is pushed to the right; the lockup itself is
+           absolutely positioned, so this wrapper stays empty and the centred nav keeps its balance. -->
+      <div class="flex-1 min-w-0 flex justify-start">
+      <!-- ORITOKI: "Or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
+           standing in for each dotted i, and the rope running on out of each knot. Those two rope
+           stems land exactly on the two fractions of the strip where the ropes below are drawn
+           (A.workTopX / A.backupX), which is what lets the SVG ropes continue out of the knots
+           with no seam; the width/left maths below is what holds that alignment at any size.
+           Two bakes: only the LETTERING changes with the theme — the anchors and rope keep their
+           own colours in both, since the rope has to match the SVG rope it turns into. -->
+      <a href="#home" id="brandRope" aria-label="Oritoki — home">
+        <img class="ink-black" src="images/logo-word-black.png" alt="Oritoki" draggable="false" />
+        <img class="ink-white" src="images/logo-word-white.png" alt="" aria-hidden="true" draggable="false" />
+      </a>
+      </div>
 
       <!-- Navigation -->
       <!-- No `uppercase` class here on purpose: text-transform:uppercase makes Chrome render
@@ -1328,6 +1354,10 @@
          sits at ~0.575, so 0.573 threads it better than the old 0.56 did). The body-relative
          points below are the original, tuned-to-this-artwork values. */
       var A = {
+        // Rope thickness, as a fraction of the strip's width — the one place it is set. Everything
+        // sized off the rope (its two strokes, the stopper knots) is derived from this, so the
+        // whole rig stays in proportion when it changes.
+        ropeW: 0.016,
         backupX: 0.573,              // backup rope — straight vertical, through the cam device
         // Both taken from the line the owner drew on the measuring grid (images/climber.png
         // with 0.01 gridlines): the working rope clears the helmet on its RIGHT and drops
@@ -1384,6 +1414,22 @@
         // look diagrammatic rather than real.
         ropeEndGapBackup: 32,
         ropeEndGapWork: 58,
+        /* The anchors. Everything here is a fraction of the ANCHOR'S WIDTH, measured on the
+           source drawing (284px across), so the whole assembly scales as one piece:
+             ropeX   where the rope runs across it — this is what lines up with the rope below
+             pivot   the hanger's clip point, which the carabiner turns about
+             hangTop where the hanging piece starts, relative to the bolt's top
+           anchorW itself is not free: at 0.1113 of the strip the anchor's own rope comes out at
+           exactly the width the page draws (1.55px), so knot and rope meet with no step. */
+        anchorW: 0.1113,             // of the strip's width
+        anchorRopeX: 0.419,
+        anchorPivotX: 0.757, anchorPivotY: 0.556,
+        anchorHangTop: 0.514,        // 146 of 284
+        anchorHangLen: 3.049,        // the hanging piece's height
+        anchorTopWork: 44,           // px below the top of the window - the "tok" i
+        anchorTopBack: 6,            // ...and the "Or" i, higher, as the lettering has them
+        anchorSwing: 0.06,           // spring that lets the carabiner lag the rope
+        anchorDamp: 0.90,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
         camY: 0.15,                  // where the backup rope passes through his device, down the
                                      // figure — the rope bends there, fixed above, free below
@@ -1395,16 +1441,31 @@
         hangY: 0.34                  // where on the figure the rope carries him (his descender)
       };
       var wrapEl = document.getElementById("ropeClimber");
+      var boltWork = document.getElementById("boltWork"), boltBack = document.getElementById("boltBack");
+      var hangWork = document.getElementById("hangWork"), hangBack = document.getElementById("hangBack");
+      var pivotWork = { px: 0, py: 0 }, pivotBack = { px: 0, py: 0 };   // the hangers' clip points
+      var angWork = 0, angBack = 0, angWorkV = 0, angBackV = 0;         // and how far each has swung
+      var ropeCeil = -24;                                              // the lower of the two knots
       function sizeRopes() {
         if (!hasRopes) return;
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box);
-        // The rope is 23px wide in the 826px-wide source crop — keep the drawn rope the
-        // same thickness at any width, so it continues the artwork without stepping.
+        // Place the four anchor pieces. Each anchor is hung so that the rope drawn across it lands
+        // on the rope fraction it belongs to; the hanging piece is slotted under its own hanger.
+        var aw = vw * A.anchorW;
+        function place(bolt, hang, ropeFx, topPx) {
+          var left = ropeFx * vw - A.anchorRopeX * aw;
+          if (bolt) { bolt.style.width = aw.toFixed(2) + "px"; bolt.style.left = left.toFixed(2) + "px"; bolt.style.top = topPx + "px"; }
+          if (hang) { hang.style.width = aw.toFixed(2) + "px"; hang.style.left = left.toFixed(2) + "px";
+                      hang.style.top = (topPx + A.anchorHangTop * aw).toFixed(2) + "px"; }
+          return { px: left + A.anchorPivotX * aw, py: topPx + A.anchorPivotY * aw };   // the clip point
+        }
+        pivotWork = place(boltWork, hangWork, A.workTopX, A.anchorTopWork);
+        pivotBack = place(boltBack, hangBack, A.backupX, A.anchorTopBack);
+        // Rope thickness scales with the strip, so it holds at any size. A.ropeW is the single
+        // source of truth for it — the knots are drawn from the same number (see drawRopes).
         if (wrapEl) {
-          // Deliberately thinner than the logo's own rope (which measures 0.0387 of the strip):
-          // at full match the drawn ropes read as heavy bars next to the figure.
-          var w = vw * 0.020;
+          var w = vw * A.ropeW;
           wrapEl.style.setProperty("--rope-w", w.toFixed(2));
           wrapEl.style.setProperty("--rope-core", (w * 0.733).toFixed(2));
         }
@@ -1455,8 +1516,30 @@
             " L " + (ax2 + nx * E).toFixed(1) + " " + (ay2 + ny * E).toFixed(1) +
             " L " + (ax1 + nx * E).toFixed(1) + " " + (ay1 + ny * E).toFixed(1) + " Z");
         }
-        /* Both ropes start above the viewport and simply run off the top of the screen. */
-        var ceil = -24;
+        /* Each rope begins at ITS OWN KNOT, and the knot moves: the carabiner turns in its hanger
+           to follow the rope, so the start point swings with it. The angle is worked out from the
+           pivot towards whatever the rope runs to (his descender, his cam), then let through a
+           spring so the hardware lags the rope instead of snapping to it. */
+        var aw = Wn * A.anchorW;
+        function swing(p, ang, tx, ty) {                   // -> the knot's exit, and the new angle
+          var want = Math.atan2(tx - p.px, Math.max(1, ty - p.py)) * 57.2957795;
+          want = Math.max(-38, Math.min(38, want));
+          var rad = ang * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad);
+          // the rope leaves the hanging piece at its bottom edge, on the rope's own line
+          var ex = (A.anchorRopeX - A.anchorPivotX) * aw, ey = (A.anchorHangLen - A.anchorPivotY) * aw;
+          return { want: want, x: p.px + ex * c - ey * s, y: p.py + ex * s + ey * c };
+        }
+        var desc = bodyXY(A.desc.x, A.desc.y);
+        var camB = bodyXY(A.backupX, A.camY);
+        var sw = swing(pivotWork, angWork, desc.x, desc.y);
+        var sb = swing(pivotBack, angBack, camB.x, camB.y);
+        angWorkV += (sw.want - angWork) * A.anchorSwing; angWorkV *= A.anchorDamp; angWork += angWorkV;
+        angBackV += (sb.want - angBack) * A.anchorSwing; angBackV *= A.anchorDamp; angBack += angBackV;
+        if (hangWork) { hangWork.style.transform = "rotate(" + angWork.toFixed(2) + "deg)"; }
+        if (hangBack) { hangBack.style.transform = "rotate(" + angBack.toFixed(2) + "deg)"; }
+        var knotW = swing(pivotWork, angWork, desc.x, desc.y);
+        var knotB = swing(pivotBack, angBack, camB.x, camB.y);
+        ropeCeil = Math.max(knotW.y, knotB.y);             // trackBounds keeps him below both
         /* The rope ends are anchored to the BOTTOM OF THE PAGE, not to the window: their end sits
            this far above the end of the document, so while you scroll through home / about /
            services / gallery / contact the ropes simply run off the bottom of the screen and read
@@ -1474,7 +1557,7 @@
            the rope bends where it passes through his device: fixed above it, free below it. The
            brake rope is rigid: it carries his weight, so it stays taut and still. */
         var swayFree = tailSway;
-        var ropeW = Wn * 0.020;
+        var ropeW = Wn * A.ropeW;
         /* The knot is PART OF THE ROPE, so it is not placed at a fixed spot near the end: the
            curve is solved for the height the knot sits at, and the knot is then wrapped around
            that point, along the rope's own direction there. Wrapped flat instead, it lagged
@@ -1540,17 +1623,19 @@
         var backEnd = freeEnd(camX, camYpx, endB, swayFree - sway);
         var backCtl = ctrlFor(camX, camYpx, backEnd.y);
         setSeg(rBackO, rBackI,
-          "M " + px(A.backupX) + " " + ceil +
+          "M " + knotB.x.toFixed(1) + " " + knotB.y.toFixed(1) +
           " L " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
           hangQ(backCtl, backEnd.x, backEnd.y));
         setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise, trueEndB));
         // WORKING rope, IN FRONT: off-screen top → descender (grows as he descends).
         // Front layer so it crosses over the absorber and rests on the descender.
-        setSeg(rWupO, rWupI, "M " + px(A.workTopX) + " " + ceil + " L " + pt(A.desc.x, A.desc.y));
-        // ...cut along the descender's outline (see applyCut / A.cutWork), keeping the side the
-        // rope comes FROM — a point well above the figure.
-        var above = art(246, -400);
-        applyCut(cutP, A.cutWork, above.x, above.y);
+        setSeg(rWupO, rWupI, "M " + knotW.x.toFixed(1) + " " + knotW.y.toFixed(1) + " L " + pt(A.desc.x, A.desc.y));
+        /* ...cut along the descender's outline (applyCut / A.cutWork), keeping the side the rope
+           actually comes FROM: its own fixed top. It used to be a point 400px above the FIGURE,
+           which rotates with him — swing him far enough and the cut line, extended, passes between
+           that point and the rope, so the clip kept the wrong half and the visible rope vanished.
+           Anchoring the test to the rope's own start makes that impossible by construction. */
+        applyCut(cutP, A.cutWork, knotW.x, knotW.y);
         // ...and its TIP, behind the figure: starts above the cut so no seam shows between the
         // two layers, and dies under the descender.
         setSeg(rWtipO, rWtipI, "M " + pt(A.desc.x, (A.cutWork.y2 / 686) - 0.01) + " L " + pt(A.desc.x, A.descTipY));
@@ -1582,7 +1667,9 @@
       var lastScrollY = window.scrollY || 0, idleTimer = null, running = false;
 
       function trackBounds() {
-        var top0 = (header ? header.offsetHeight : 64) + 6;               // start just below the header
+        // Below the header, and below the lockup's knots — he hangs from them, so he can never
+        // be level with them.
+        var top0 = Math.max((header ? header.offsetHeight : 64) + 6, ropeCeil + 10);
         var bottom = window.innerHeight - climber.offsetHeight - cssPx("--climber-bottom-gap", 10);
         return { top0: top0, bottom: Math.max(top0, bottom) };
       }
