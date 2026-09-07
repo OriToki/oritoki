@@ -16,7 +16,15 @@ param(
   [int]$X1 = 1014, [int]$Y1 = 540, [int]$X2 = 1298, [int]$Y2 = 1552,
   [int]$SplitY = 150,             # crop row where the hanger ends and the carabiner starts
   [int]$Overlap = 4,              # the two pieces share this many rows, so no hairline shows
-  [int]$HoleX = 150, [int]$HoleY = 350,   # a pixel inside the carabiner's opening
+  # One pixel inside each opening you can actually see through. Everything else that is enclosed
+  # and pale is METAL - the plate, the bolt head, the hanger's tongue, the carabiner's body - and
+  # keeps its white fill, exactly as climber.png does. Found by labelling every enclosed region on
+  # the source drawing and reading off which ones are holes; see tools/README.md.
+  [int[]]$Holes = @(150,350,   # the carabiner's opening
+                    102,92,    # the hanger's eye, above the carabiner's bar
+                    115,131,   # ...the sliver of it left under the plate's edge
+                    136,180,   # ...and the part of it under the tongue
+                    223,201),  # the gap at the gate
   [double]$Tile = 14.0, [double]$LineW = 5.0,
   [int]$OutW = 128,               # asset width in px (the pieces are shown ~11px wide)
   [string]$OutDir = "c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\images"
@@ -49,7 +57,7 @@ function FloodPale([int]$sx, [int]$sy, [bool[]]$mark) {
 $clearMask = New-Object bool[] $N
 for ($x = 0; $x -lt $w; $x++) { FloodPale $x 0 $clearMask; FloodPale $x ($h-1) $clearMask }
 for ($y = 0; $y -lt $h; $y++) { FloodPale 0 $y $clearMask; FloodPale ($w-1) $y $clearMask }
-FloodPale $HoleX $HoleY $clearMask
+for ($k = 0; $k -lt $Holes.Length; $k += 2) { FloodPale $Holes[$k] $Holes[$k+1] $clearMask }
 
 # repaint: rope fill -> weave, rope outline -> the drawn rope's edge grey, holes -> clear
 $done = New-Object System.Drawing.Bitmap($w, $h, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
