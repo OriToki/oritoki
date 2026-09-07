@@ -1522,8 +1522,11 @@
            spring so the hardware lags the rope instead of snapping to it. */
         var aw = Wn * A.anchorW;
         function swing(p, ang, tx, ty) {                   // -> the knot's exit, and the new angle
-          var want = Math.atan2(tx - p.px, Math.max(1, ty - p.py)) * 57.2957795;
-          want = Math.max(-38, Math.min(38, want));
+          /* Note the minus: a positive CSS rotation is clockwise, and rotating a point that hangs
+             BELOW the pivot clockwise moves it LEFT. Without it the carabiner leaned away from the
+             rope instead of towards it, and its knot travelled opposite to the rope's own end. */
+          var want = Math.atan2(-(tx - p.px), Math.max(1, ty - p.py)) * 57.2957795;
+          want = Math.max(-24, Math.min(24, want));
           var rad = ang * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad);
           // the rope leaves the hanging piece at its bottom edge, on the rope's own line
           var ex = (A.anchorRopeX - A.anchorPivotX) * aw, ey = (A.anchorHangLen - A.anchorPivotY) * aw;

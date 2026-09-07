@@ -79,10 +79,24 @@ for ($y = 0; $y -lt $h; $y++) { for ($x = 0; $x -lt $w; $x++) {
   } else { $done.SetPixel($x, $y, $crop.GetPixel($x, $y)) } } }
 $crop.Dispose()
 
-function SavePiece([int]$y0, [int]$y1, [string]$name) {
+# The hanger does not stop at the split: its tongue runs on diagonally through the carabiner, down
+# to about row 256. Left in the moving piece it tore away from the plate as the carabiner turned.
+# These two bounds follow that tongue down, so each piece can keep only what belongs to it.
+function TongueL([double]$y) { return 88 + 0.42 * ($y - 146) }
+function TongueR([double]$y) { return 132 + 0.30 * ($y - 146) }
+$TongueEnd = 258
+
+function SavePiece([int]$y0, [int]$y1, [string]$name, [bool]$isBolt) {
   $ph = $y1 - $y0
   $piece = New-Object System.Drawing.Bitmap($w, $ph, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-  for ($y = 0; $y -lt $ph; $y++) { for ($x = 0; $x -lt $w; $x++) { $piece.SetPixel($x, $y, $done.GetPixel($x, $y0 + $y)) } }
+  $clr = [System.Drawing.Color]::FromArgb(0,0,0,0)
+  for ($y = 0; $y -lt $ph; $y++) { for ($x = 0; $x -lt $w; $x++) {
+    $cy = $y0 + $y
+    $inTongue = ($cy -ge $SplitY -and $cy -le $TongueEnd -and $x -ge (TongueL $cy) -and $x -le (TongueR $cy))
+    # below the split the bolt piece keeps ONLY the tongue; the hanging piece keeps everything but
+    if ($isBolt -and $cy -ge $SplitY -and -not $inTongue) { $piece.SetPixel($x, $y, $clr) }
+    elseif (-not $isBolt -and $inTongue) { $piece.SetPixel($x, $y, $clr) }
+    else { $piece.SetPixel($x, $y, $done.GetPixel($x, $cy)) } } }
   $oh = [int]([math]::Round($ph * $OutW / $w))
   $out = New-Object System.Drawing.Bitmap($OutW, $oh, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
   $g2 = [System.Drawing.Graphics]::FromImage($out)
@@ -91,8 +105,8 @@ function SavePiece([int]$y0, [int]$y1, [string]$name) {
   $out.Save((Join-Path $OutDir $name), [System.Drawing.Imaging.ImageFormat]::Png); $out.Dispose()
   "  $name  ${OutW}x$oh   (crop rows $y0..$y1)"
 }
-SavePiece 0 ($SplitY + $Overlap) "anchor-bolt.png"
-SavePiece ($SplitY - $Overlap) $h  "anchor-hang.png"
+SavePiece 0 ($TongueEnd + 4) "anchor-bolt.png" $true
+SavePiece ($SplitY - $Overlap) $h "anchor-hang.png" $false
 $done.Dispose()
 
 # numbers index.html needs, as fractions so they survive any scale
