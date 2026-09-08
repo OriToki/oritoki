@@ -512,12 +512,23 @@
        clicked yourself needs no pointing at, and pulsing it every time made the section noisy. */
     #services article.svc-open { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
     #services article.svc-open::after { content: "\f068"; background: #f97316; color: #fff; }
+    /* The grid's ROW gap is carried by the cards' own margin instead of gap-4, so that a closing
+       panel can collapse to nothing at all. A gap belongs to the grid, not to the item: with
+       row-gap on, a panel animated to height 0 still left its two gaps standing — an empty 16px
+       band, and inside it the panel's own 1px borders, which is the orange line that hung there
+       for a moment after everything else had gone. Owning its margin, the panel takes its spacing
+       down with its height and finishes at exactly zero. */
+    #svcGrid { row-gap: 0; }
+    #svcGrid > article { margin-bottom: 1rem; }
     .svc-panel {
       grid-column: 1 / -1; overflow: hidden; cursor: zoom-out;
-      border-radius: 1rem; border: 1px solid #f97316; background: rgb(var(--c-surface));
+      border-radius: 1rem; border: 1px solid transparent; background: rgb(var(--c-surface));
       box-shadow: 0 14px 26px -12px rgba(249,115,22,.22);
-      height: 0; transition: height .42s cubic-bezier(.22,1,.36,1);
+      height: 0; margin-bottom: 0; opacity: 0;
+      transition: height .42s cubic-bezier(.22,1,.36,1), margin-bottom .42s cubic-bezier(.22,1,.36,1),
+                  opacity .26s ease, border-color .26s ease;
     }
+    .svc-panel.in { margin-bottom: 1rem; opacity: 1; border-color: #f97316; }
     .svc-panel-in {
       padding: 1.4rem 1.5rem 1.6rem;
       opacity: 0; transform: translateY(-10px);
@@ -2146,12 +2157,24 @@
         card.setAttribute("aria-expanded", "false");
         if (!el) return;
         if (instant === true) { if (el.parentNode) el.parentNode.removeChild(el); return; }
-        // Contents out first, box after: closing on the same curve it opened on, in reverse.
+        /* Everything leaves together — height, the row's worth of margin, the fill and the
+           border — so the panel is gone the moment it reaches zero. Removed on transitionend
+           rather than on a timer: a timer either cuts the animation short or, as it did here,
+           holds the emptied element in the layout for a beat after it has finished. */
         el.classList.remove("in");
         el.style.height = el.offsetHeight + "px";
         el.getBoundingClientRect();
         window.requestAnimationFrame(function () { el.style.height = "0px"; });
-        window.setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 460);
+        var gone = false;
+        function drop(e) {
+          if (e && e.propertyName && e.propertyName !== "height") return;
+          if (gone) return;
+          gone = true;
+          el.removeEventListener("transitionend", drop);
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }
+        el.addEventListener("transitionend", drop);
+        window.setTimeout(drop, 520);            // in case the transition never fires
       }
 
       cards.forEach(function (card) {
@@ -2169,6 +2192,14 @@
         });
       });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+      /* A click anywhere else closes it. This runs after the card's own handler, so opening a
+         second card is safe: by the time this fires, `current` is already the new card. */
+      document.addEventListener("click", function (e) {
+        if (!current) return;
+        if (current.contains(e.target)) return;
+        if (panel && panel.contains(e.target)) return;   // the panel closes itself
+        close();
+      });
       // The row an open card belongs to changes when the column count does.
       window.addEventListener("resize", function () {
         if (!current || !panel) return;
