@@ -668,9 +668,9 @@
              one family of diagonal bars, spaced about a rope-and-a-quarter apart, which is the
              same rhythm the knots read at. Sized from JS off A.ropeW (see sizeRopes) so it
              tracks the rope at any strip width. -->
-        <pattern id="ropeWeave" patternUnits="userSpaceOnUse" width="2.4" height="2.4" patternTransform="rotate(20)">
-          <rect width="2.4" height="2.4" fill="#eeeeee"/>
-          <path d="M0 1.2H2.4" stroke="#5f5f5f" stroke-width="1.0"/>
+        <pattern id="ropeWeave" patternUnits="userSpaceOnUse" width=".75" height=".75" patternTransform="rotate(20)">
+          <rect width=".75" height=".75" fill="#eeeeee"/>
+          <path d="M.375 0V.75M0 .375H.75" stroke="#151515" stroke-width=".19"/>
         </pattern>
       </defs>
       <path class="rope-out" id="rBackO"></path><path class="rope-in" id="rBackI"></path>  <!-- backup rope (straight, cam slides on it) -->
@@ -695,9 +695,9 @@
            second SVG (it falls back to the flat #c3c3c3, so the brake strand lost its dark weave
            while the tail kept it). Same tile, own id, referenced by #ropeFront .rope-in below. -->
       <defs>
-        <pattern id="ropeWeaveF" patternUnits="userSpaceOnUse" width="2.4" height="2.4" patternTransform="rotate(20)">
-          <rect width="2.4" height="2.4" fill="#eeeeee"/>
-          <path d="M0 1.2H2.4" stroke="#5f5f5f" stroke-width="1.0"/>
+        <pattern id="ropeWeaveF" patternUnits="userSpaceOnUse" width=".75" height=".75" patternTransform="rotate(20)">
+          <rect width=".75" height=".75" fill="#eeeeee"/>
+          <path d="M.375 0V.75M0 .375H.75" stroke="#151515" stroke-width=".19"/>
         </pattern>
         <!-- Each rope that runs into one of his devices is CUT along that device's black
              outline, so the outline reads as passing in front of the rope instead of the rope
@@ -1360,11 +1360,13 @@
         // sized off the rope (its two strokes, the stopper knots) is derived from this, so the
         // whole rig stays in proportion when it changes.
         ropeW: 0.016,
-        weaveT: 1.55,                // braid bars this many rope-widths apart...
-        weaveL: 0.42,                // ...each this much of that (the rest is the light core)
-        weaveAng: 8,                 // and lying this far off square — the lay of the rope. Near
-                                     // 45° a bar never covers a 1.5px rope across, so it greys
-                                     // out; shallow, each bar reads as one dark mark.
+        // The weave, taken from the anchor artwork so the rope and the knot it comes out of are
+        // the same cord. In that drawing the rope is 41px wide and the lattice repeats every
+        // 14px measured across the lines, which are 5px thick — so as fractions of the rope:
+        // tile 14*sqrt2/41, line 5/(14*sqrt2). Two families crossing at 45°, black on near-white.
+        weaveT: 0.483,               // tile, in rope widths
+        weaveL: 0.253,               // line thickness, as a fraction of the tile
+        weaveAng: 45,
         backupX: 0.573,              // backup rope — straight vertical, through the cam device
         // Both taken from the line the owner drew on the measuring grid (images/climber.png
         // with 0.01 gridlines): the working rope clears the helmet on its RIGHT and drops
@@ -1491,9 +1493,10 @@
             pat.setAttribute("patternTransform", "rotate(" + A.weaveAng + ")");
             var rect = pat.querySelector("rect"), bar = pat.querySelector("path");
             rect.setAttribute("width", t.toFixed(3)); rect.setAttribute("height", t.toFixed(3));
-            // ...drawn across the middle of the tile, not on its edge, or half of every bar
-            // falls outside the tile and is clipped away.
-            bar.setAttribute("d", "M0 " + (t / 2).toFixed(3) + "H" + t.toFixed(3));
+            // ...drawn across the MIDDLE of the tile, not along its edge: a line centred on the
+            // edge loses its outer half to the tile's clip and comes out at half thickness.
+            var h = (t / 2).toFixed(3);
+            bar.setAttribute("d", "M" + h + " 0V" + t.toFixed(3) + "M0 " + h + "H" + t.toFixed(3));
             bar.setAttribute("stroke-width", lw.toFixed(3));
           }
         }
