@@ -22,11 +22,12 @@ param(
   [double]$OrSize = 48,           # font size for "Or"  (display px)
   [double]$TokSize = 35,          # font size for "tok"
   [double]$LineGap = 2,           # from the bottom of "Or"'s ink to the top of "tok"'s
-  # Linework for the outlined version. The hardware's own pen is 3.5 asset px on a 128px asset
-  # shown 10.8 wide - 0.30 display px - which on letters this size would be a hairline nobody
-  # sees. What carries across is the RATIO: that pen is a fifth of the carabiner frame it draws,
-  # and a fifth of the O's 9px ring is 1.8. Held back to 1.5 so the letters stay letters.
-  [double]$Outline = 1.5,
+  # Linework for the outlined version: the hardware's own pen, literally. 3.5px on a 128px asset
+  # shown 10.8 wide is 0.295 display px. Scaling it up to keep the same weight RELATIVE to the
+  # letters was tried at 1.5 and read as a thick black outline next to hairline-drawn carabiners -
+  # the very mismatch it was meant to fix. At 0.3 the outline is a soft grey edge at 1x, which is
+  # exactly what the carabiner's outline is, and the letters still hold: they are 36px tall.
+  [double]$Outline = 0.3,
   [double]$AnchorTopR = 1,        # the "Or" anchor hangs from here  \ only sets the canvas
   [double]$AnchorTopL = 37,       # the "tok" one hangs lower        / height; the page places
                                   # them itself, from A.anchorTopBack / anchorTopWork
