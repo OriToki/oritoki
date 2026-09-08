@@ -498,30 +498,29 @@
     html.dark #services article::before { color: #8a8a90; }
     #services .svc-ico { color: #f97316; }
     #services .svc-ico svg { width: 2rem; height: 2rem; }
-    .svc-ic svg { width: 2.4rem; height: 2.4rem; }
     #services article:hover { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
-    #svcModal { position: fixed; inset: 0; z-index: 120; display: none; }
-    #svcModal.open { display: block; }
-    #svcBackdrop { position: absolute; inset: 0; background: rgba(11,12,13,.55); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); opacity: 0; transition: opacity .42s ease; }
-    #svcModal.show #svcBackdrop { opacity: 1; }
-    #svcModalCard { position: fixed; box-sizing: border-box; background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 40px 90px -30px rgba(20,20,42,.55); overflow: hidden; will-change: top, left, width, height; }
-    /* Photo background — applied only to the "Glass Facades" modal (svc-glass). */
-    #svcModalCard.svc-modal-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.18); }
-    #svcModalCard.svc-modal-photo .svc-detail h3 { color: #ffffff; }
-    #svcModalCard.svc-modal-photo .svc-detail li { color: rgba(255,255,255,.92); }
-    #svcModalCard.svc-modal-photo .svc-close { background: rgba(255,255,255,.18); color: #fff; }
-    #svcModalCard.svc-modal-photo .svc-close:hover { background: #f97316; color: #fff; }
-    .svc-close { position: absolute; top: 1rem; right: 1rem; height: 2.25rem; width: 2.25rem; border-radius: 9999px; background: #f5f5f2; color: #52525b; display: inline-flex; align-items: center; justify-content: center; z-index: 2; transition: background .2s, color .2s; }
-    .svc-close:hover { background: #f97316; color: #fff; }
-    .svc-detail { padding: 2.6rem; opacity: 0; transition: opacity .25s ease; }
-    #svcModal.show .svc-detail { opacity: 1; transition: opacity .35s ease .14s; }
-    .svc-ic { height: 4.25rem; width: 4.25rem; border-radius: 1.2rem; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; background: #f5f5f2; color: #f97316; border: 1px solid #e5e7eb; overflow: hidden; }
-    .svc-ic img { height: 100%; width: 100%; object-fit: contain; }
-    .svc-detail h3 { margin-top: 0; font-family: 'Helvetica Neue','Noto Sans Georgian',Arial,sans-serif; font-weight: 700; font-size: 2.5rem; line-height: 1.1; color: #14142a; text-transform: uppercase; }
-    .svc-detail ul { margin-top: 1.6rem; display: grid; gap: 1.7rem; }
-    @media (min-width: 540px) { .svc-detail ul.two-col { grid-template-columns: 1fr 1fr; gap: 1.7rem 2.4rem; } }
-    .svc-detail li { display: flex; align-items: flex-start; gap: .9rem; color: #3f3f46; font-size: 1.45rem; line-height: 1.45; }
-    .svc-detail li > span:first-child { margin-top: .6rem !important; height: .5rem !important; width: .5rem !important; }
+    /* ---------- Service details, opened IN the grid ----------
+       A card used to open a modal over the page. It opens a full-width panel in the grid instead:
+       nothing is covered, the cards below just move down, and the card's [+] badge becomes [-].
+       The panel is inserted after the LAST card of the clicked card's row, so it lands on a row of
+       its own — spanning the card itself 1/-1 would leave the rest of its row standing empty. */
+    #services article.svc-open { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
+    #services article.svc-open::after { content: "\f068"; background: #f97316; color: #fff; }
+    .svc-panel {
+      grid-column: 1 / -1; overflow: hidden; cursor: zoom-out;
+      border-radius: 1rem; border: 1px solid #f97316; background: rgb(var(--c-surface));
+      box-shadow: 0 14px 26px -12px rgba(249,115,22,.22);
+      height: 0; transition: height .34s cubic-bezier(.22,1,.36,1);
+    }
+    .svc-panel-in { padding: 1.4rem 1.5rem 1.6rem; }
+    .svc-panel h3 { font-family: 'Helvetica Neue','Noto Sans Georgian',Arial,sans-serif; font-weight: 700; font-size: 1.3rem; line-height: 1.2; color: rgb(var(--c-heading)); }
+    .svc-panel ul { margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .55rem 2rem; }
+    .svc-panel li { display: flex; align-items: flex-start; gap: .7rem; color: rgb(var(--c-mute)); font-size: .95rem; line-height: 1.5; margin-top: 0; }
+    .svc-panel li > span:first-child { margin-top: .55rem !important; height: .4rem !important; width: .4rem !important; }
+    /* Photo background on the flagship service, as its modal used to have. */
+    .svc-panel.svc-panel-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.22); }
+    .svc-panel.svc-panel-photo h3 { color: #ffffff; }
+    .svc-panel.svc-panel-photo li { color: rgba(255,255,255,.92); }
 
     /* ===================== CARABINER THEME TOGGLE ===================== */
     /* The gate pivots on its rivet (16.31, 16 in the icon's viewBox). Closed sits at 3.4deg
@@ -641,16 +640,11 @@
       55%  { border-color: #f97316; background-color: #2a1c0c; box-shadow: 0 0 0 5px rgba(249,115,22,.38), 0 20px 42px -22px rgba(249,115,22,.4); }
       100% { border-color: #2a2b2c; background-color: #202123; box-shadow: 0 0 0 16px rgba(249,115,22,0), 0 20px 42px -22px rgba(249,115,22,0); }
     }
-    /* Gallery + service-detail modal */
+    /* Gallery + the service detail panel */
     html.dark .gallery-card { background: #202123; border-color: #2a2b2c; }
-    html.dark #svcModalCard { background: #202123; border-color: #2a2b2c; box-shadow: 0 40px 90px -30px rgba(0,0,0,.8); }
-    /* Keep the photo background on the glass-facades modal in dark mode (the rule above would otherwise cover it). */
-    html.dark #svcModalCard.svc-modal-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.18); }
-    html.dark .svc-close { background: #303133; color: #a0a0a8; }
-    html.dark .svc-close:hover { background: #f97316; color: #fff; }
-    html.dark .svc-ic { background: #303133; border-color: #2a2b2c; }
-    html.dark .svc-detail h3 { color: #ececf2; }
-    html.dark .svc-detail li { color: #c6c6cc; }
+    html.dark .svc-panel { background: #202123; }
+    /* ...but not over the photo: the rule above would paint straight over it. */
+    html.dark .svc-panel.svc-panel-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; }
   </style>
 </head>
 
@@ -1166,12 +1160,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- ============================ SERVICE DETAIL MODAL ============================ -->
-  <div id="svcModal" aria-hidden="true">
-    <div id="svcBackdrop"></div>
-    <div id="svcModalCard" role="dialog" aria-modal="true"></div>
-  </div>
 
   <!-- ============================ SERVICE SEARCH ============================ -->
   <div id="svcSearch" aria-hidden="true">
@@ -1889,7 +1877,7 @@
         if (dragging) return false;
         if (document.body.classList.contains("menu-open")) return false;   // the ropes are hidden then
         var el = e.target;
-        if (el && el.closest && el.closest('a,button,input,select,textarea,label,summary,[role="button"],#climber,#svcModal,#svcSearch')) return false;
+        if (el && el.closest && el.closest('a,button,input,select,textarea,label,summary,[role="button"],#climber,#svcSearch')) return false;
         var r = wrapEl.getBoundingClientRect();
         var Wn = climber.offsetWidth || cssPx("--worker-width", 97);
         var Hn = climber.offsetHeight || Wn * 1.225;
@@ -2055,100 +2043,103 @@
       });
     });
 
-    /* ---------- 10. Service detail modal (iOS-style zoom-from-card) ---------- */
+    /* ---------- 10. Service details, opened in the grid ----------
+       The details used to open in a modal over the page. They open in the grid itself now: a
+       full-width panel slides down under the clicked card's ROW, so nothing is covered and the
+       cards below simply move. Clicking the card again, the panel, or Escape closes it, and
+       opening another card moves the panel to that one's row. */
     (function () {
-      var m = document.getElementById("svcModal");
-      var mCard = document.getElementById("svcModalCard");
-      var mBack = document.getElementById("svcBackdrop");
-      if (!m || !mCard || !mBack) return;
-      var openCard = null, animTimer = null;
+      var grid = document.getElementById("svcGrid");
+      if (!grid) return;
+      var cards = Array.prototype.slice.call(grid.querySelectorAll("article"));
+      if (!cards.length) return;
+      var current = null, panel = null, endTimer = null;
 
-      function buildDetail(card) {
-        var h3 = card.querySelector("h3");
-        var ul = card.querySelector("ul");
-        var twoCol = (ul && ul.children.length >= 5) ? "two-col" : "";
-        return '<button class="svc-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>'
-          + '<div class="svc-detail">'
-          + "<h3>" + (h3 ? h3.innerHTML : "") + "</h3>"
-          + '<ul class="' + twoCol + '">' + (ul ? ul.innerHTML : "") + "</ul></div>";
-      }
-
-      function openSvc(card) {
-        openCard = card;
-        var r = card.getBoundingClientRect();
-        mCard.innerHTML = buildDetail(card);
-        mCard.classList.toggle("svc-modal-photo", card.id === "svc-glass");
-        m.classList.add("open");
-        document.body.style.overflow = "hidden";
-        mCard.style.overflowY = "hidden";
-        mCard.style.transition = "none";
-        mCard.style.borderRadius = "1rem";
-        // measure the target height at the final width
-        var tw = Math.min(800, window.innerWidth - 40);
-        mCard.style.left = "0px"; mCard.style.top = "0px";
-        mCard.style.width = tw + "px"; mCard.style.height = "auto";
-        // Pin the content to its FINAL width before the card starts growing. The card
-        // animates width/height, so without this the text re-wraps on every frame and
-        // visibly reshuffles; pinned, it is laid out once and the growing card simply
-        // uncovers it (the card is overflow:hidden). Released once the card has settled.
-        var detail = mCard.querySelector(".svc-detail");
-        if (detail) detail.style.width = mCard.clientWidth + "px";
-        var th = mCard.offsetHeight;
-        var maxH = window.innerHeight - 40;
-        if (th > maxH) th = maxH;
-        var tl = (window.innerWidth - tw) / 2;
-        var tt = (window.innerHeight - th) / 2;
-        // start collapsed at the clicked card's rect
-        mCard.style.width = r.width + "px"; mCard.style.height = r.height + "px";
-        mCard.style.left = r.left + "px"; mCard.style.top = r.top + "px";
-        mCard.getBoundingClientRect(); // reflow
-        window.requestAnimationFrame(function () {
-          mCard.style.transition = "top .5s cubic-bezier(.22,1,.36,1), left .5s cubic-bezier(.22,1,.36,1), width .5s cubic-bezier(.22,1,.36,1), height .5s cubic-bezier(.22,1,.36,1), border-radius .5s ease";
-          mCard.style.left = tl + "px"; mCard.style.top = tt + "px";
-          mCard.style.width = tw + "px"; mCard.style.height = th + "px";
-          mCard.style.borderRadius = "1.5rem";
-          m.classList.add("show");
+      /* Which card ends the row this one is on. Read off the laid-out positions rather than a
+         column count, because the grid is auto-fill: the number of columns changes with the
+         viewport, and on a phone a "row" is one card. */
+      function rowEnd(card) {
+        var top = card.offsetTop, last = card;
+        cards.forEach(function (c) {
+          if (Math.abs(c.offsetTop - top) < 4 && c.offsetLeft > last.offsetLeft) last = c;
         });
-        clearTimeout(animTimer);
-        animTimer = window.setTimeout(function () {
-          if (!m.classList.contains("open")) return;
-          mCard.style.overflowY = "auto";
-          // Re-pin to the settled inner width. Enabling the scrollbar narrows the content
-          // box, so simply releasing the width here would re-wrap the text one last time —
-          // a visible blink right as the card finishes opening.
-          var d = mCard.querySelector(".svc-detail");
-          if (d) d.style.width = mCard.clientWidth + "px";
-        }, 560);
-        var cb = mCard.querySelector(".svc-close");
-        if (cb) cb.addEventListener("click", closeSvc);
+        return last;
       }
 
-      function closeSvc() {
-        if (!openCard) return;
-        var r = openCard.getBoundingClientRect();
-        mCard.style.overflowY = "hidden";
-        // Pin the content again so it does not re-wrap while the card shrinks back.
-        var detail = mCard.querySelector(".svc-detail");
-        if (detail) detail.style.width = detail.offsetWidth + "px";
-        mCard.style.transition = "top .42s cubic-bezier(.4,0,.2,1), left .42s cubic-bezier(.4,0,.2,1), width .42s cubic-bezier(.4,0,.2,1), height .42s cubic-bezier(.4,0,.2,1), border-radius .42s ease";
-        mCard.style.left = r.left + "px"; mCard.style.top = r.top + "px";
-        mCard.style.width = r.width + "px"; mCard.style.height = r.height + "px";
-        mCard.style.borderRadius = "1rem";
-        m.classList.remove("show");
-        clearTimeout(animTimer);
-        animTimer = window.setTimeout(function () {
-          m.classList.remove("open");
-          document.body.style.overflow = "";
-          mCard.innerHTML = "";
-          mCard.removeAttribute("style");
-          openCard = null;
-        }, 440);
+      function build(card) {
+        var h3 = card.querySelector("h3"), ul = card.querySelector("ul");
+        var el = document.createElement("div");
+        el.className = "svc-panel" + (card.id === "svc-glass" ? " svc-panel-photo" : "");
+        el.innerHTML = '<div class="svc-panel-in"><h3>' + (h3 ? h3.innerHTML : "") + "</h3>"
+          + "<ul>" + (ul ? ul.innerHTML : "") + "</ul></div>";
+        el.addEventListener("click", close);
+        return el;
       }
 
-      mBack.addEventListener("click", closeSvc);
-      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && m.classList.contains("open")) closeSvc(); });
-      document.querySelectorAll("#services article").forEach(function (card) {
-        card.addEventListener("click", function () { if (!m.classList.contains("open")) openSvc(card); });
+      /* Height has to be a number for the transition to run, so it is measured, animated to, and
+         then released to auto — otherwise the panel could not reflow when the window changes. */
+      function grow(el) {
+        var h = el.firstChild.offsetHeight;
+        el.style.height = h + "px";
+        clearTimeout(endTimer);
+        endTimer = window.setTimeout(function () { if (panel === el) el.style.height = "auto"; }, 360);
+      }
+
+      function open(card) {
+        if (current) close();
+        current = card;
+        card.classList.add("svc-open");
+        card.setAttribute("aria-expanded", "true");
+        panel = build(card);
+        var after = rowEnd(card);
+        grid.insertBefore(panel, after.nextSibling);
+        panel.getBoundingClientRect();          // reflow, so the height animates from 0
+        window.requestAnimationFrame(function () {
+          if (panel) grow(panel);
+          // Only scroll if the panel would open below the fold; scroll-margin-top keeps it
+          // clear of the fixed header.
+          window.setTimeout(function () {
+            if (!panel) return;
+            var r = panel.getBoundingClientRect();
+            if (r.bottom > window.innerHeight) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }, 380);
+        });
+      }
+
+      function close() {
+        if (!current) return;
+        var el = panel, card = current;
+        current = null; panel = null;
+        card.classList.remove("svc-open");
+        card.setAttribute("aria-expanded", "false");
+        if (!el) return;
+        el.style.height = el.offsetHeight + "px";
+        el.getBoundingClientRect();
+        window.requestAnimationFrame(function () { el.style.height = "0px"; });
+        window.setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 360);
+      }
+
+      cards.forEach(function (card) {
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-expanded", "false");
+        card.addEventListener("click", function () {
+          if (card === current) { close(); } else { open(card); }
+        });
+        card.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+            e.preventDefault();
+            if (card === current) { close(); } else { open(card); }
+          }
+        });
+      });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+      // The row an open card belongs to changes when the column count does.
+      window.addEventListener("resize", function () {
+        if (!current || !panel) return;
+        panel.style.height = "auto";
+        var after = rowEnd(current);
+        if (panel.previousSibling !== after) grid.insertBefore(panel, after.nextSibling);
       });
     })();
 
