@@ -166,7 +166,7 @@
        the hanger's eye: 41.5% across the anchor's width, and 22 of its 866 rows down — keep this
        in step with A.anchorPivotX / Y, which is the same point in the script's own units. */
     .anchor-bolt, .anchor-hang { position: absolute; z-index: 1; height: auto; pointer-events: none; }
-    .anchor-hang { transform-origin: 41.5% 2.54%; }
+    .anchor-hang { transform-origin: 41.5% 16.6%; }
     #brandRope img { display: block; width: 100%; height: auto; }
     #brandRope .ink-white { display: none; }
     /* White lettering over the hero photo and everywhere in dark mode; black on the light bar. */
@@ -1428,8 +1428,7 @@
         // other point drags the carabiner out from under its plate, and the two read as separate
         // pieces of hardware.
         anchorPivotX: 0.415, anchorPivotY: 0.592,
-        anchorHangTop: 0.514,        // 146 of 284
-        anchorHangLen: 3.049,        // the hanging piece's height
+        anchorHangLen: 3.563,        // 1012 of 284 — where the rope leaves the hanging piece
         anchorTopWork: 44,           // px below the top of the window - the "tok" i
         anchorTopBack: 6,            // ...and the "Or" i, higher, as the lettering has them
         anchorSwing: 0.06,           // spring that lets the carabiner lag the rope
@@ -1460,8 +1459,10 @@
         function place(bolt, hang, ropeFx, topPx) {
           var left = ropeFx * vw - A.anchorRopeX * aw;
           if (bolt) { bolt.style.width = aw.toFixed(2) + "px"; bolt.style.left = left.toFixed(2) + "px"; bolt.style.top = topPx + "px"; }
+          // Both pieces are full-size and overlay exactly, so they share a corner; only the
+          // hanging one is ever transformed.
           if (hang) { hang.style.width = aw.toFixed(2) + "px"; hang.style.left = left.toFixed(2) + "px";
-                      hang.style.top = (topPx + A.anchorHangTop * aw).toFixed(2) + "px"; }
+                      hang.style.top = topPx + "px"; }
           return { px: left + A.anchorPivotX * aw, py: topPx + A.anchorPivotY * aw };   // the clip point
         }
         pivotWork = place(boltWork, hangWork, A.workTopX, A.anchorTopWork);
