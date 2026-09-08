@@ -516,7 +516,7 @@
     #svcGrid > article { margin-bottom: 1rem; }
     .svc-ghost { margin-bottom: 1rem; }
     #services article.svc-open {
-      position: absolute; z-index: 120; overflow: hidden; transform: none;
+      position: absolute; z-index: 120; overflow: hidden; transform: none; will-change: transform;
       padding: 1.7rem 1.9rem 1.9rem; border-radius: 1.25rem;
       border-color: #f97316; box-shadow: 0 30px 60px -24px rgba(20,20,42,.6);
     }
@@ -2096,19 +2096,19 @@
       if (!cards.length) return;
       var current = null, ghost = null, back = null;
       var EASE = "cubic-bezier(.22,1,.36,1)", MOVE = ".42s " + EASE;
-
-      var MOVES = "left " + MOVE + ", top " + MOVE + ", width " + MOVE + ", height " + MOVE
-                + ", border-color .2s ease, box-shadow .3s ease, border-radius .3s ease";
+      var MOVES = "transform " + MOVE + ", border-color .2s ease, box-shadow .3s ease";
 
       /* If the opened card would not fit on screen, bring it in — moving the page WITH it rather
          than after it, so the two read as one movement. The final height is known before the
          growth starts, so where the card's bottom will land is known too. It scrolls only as far
          as it must, and never far enough to push the card's top under the fixed header; a card
-         too tall for the window at least starts at the top of it. */
-      function fit(card, h) {
+         too tall for the window at least starts at the top of it.
+         Measured off the placeholder, not the card: the card is mid-transform and its own box
+         would report where it is passing through rather than where it is going. */
+      function fit(gh, h) {
         var head = (document.getElementById("header") || {}).offsetHeight || 88;
         var gap = 16;
-        var top = card.getBoundingClientRect().top;
+        var top = gh.getBoundingClientRect().top;
         var by = 0;
         if (top < head + gap) by = top - head - gap;
         else if (top + h > window.innerHeight - gap) {
@@ -2166,16 +2166,22 @@
         card.style.left = left + "px"; card.style.top = from.top + "px";
         card.style.width = w + "px"; card.style.height = "auto";
         var h = card.offsetHeight;
-        card.style.left = from.left + "px";              // ...then back to the cell it came from
-        card.style.width = from.w + "px"; card.style.height = from.h + "px";
+        card.style.height = h + "px";
+
+        /* From here on the card is laid out ONCE, at the size it is opening to, and nothing but a
+           TRANSFORM moves it. Animating width and height instead re-flows the text on every
+           frame — the letters crawl over each other as the lines re-wrap, which is what looked
+           wrong. Scaled, the text is typeset once and the box carries it. */
+        var sx = from.w / w, sy = from.h / h;
+        card.style.transformOrigin = "0 0";
+        card.style.transform = "translate(" + (from.left - left) + "px,0) scale(" + sx.toFixed(4) + "," + sy.toFixed(4) + ")";
         card.getBoundingClientRect();                    // reflow, so the move animates from here
         window.requestAnimationFrame(function () {
           if (current !== card) return;
           card.style.transition = MOVES;
-          card.style.left = left + "px";
-          card.style.width = w + "px"; card.style.height = h + "px";
+          card.style.transform = "none";
           card.classList.add("svc-in");                  // fades the sub-services up
-          window.setTimeout(function () { if (current === card) fit(card, h); }, 110);
+          window.setTimeout(function () { if (current === card && ghost) fit(ghost, h); }, 110);
         });
       }
 
@@ -2193,23 +2199,24 @@
           card.classList.remove("svc-open");
           card.style.transition = ""; card.style.top = ""; card.style.left = "";
           card.style.width = ""; card.style.height = "";
+          card.style.transform = ""; card.style.transformOrigin = "";
           if (gh && gh.parentNode) gh.parentNode.removeChild(gh);
         }
         if (instant === true) { settle(); return; }
 
-        /* Back to its own cell on the same curve it came out on. The cell is asked of the
-           placeholder standing in it rather than remembered from opening time, so this stays
-           right even if something else on the page has moved since. */
-        card.style.transition = MOVES;
+        /* Back into its own cell the same way it came out — one transform, no re-flow. Where the
+           cell is is asked of the placeholder standing in it rather than remembered from opening
+           time, so this stays right even if something else on the page has moved since. */
         if (gh) {
-          card.style.left = gh.offsetLeft + "px";
-          card.style.top = gh.offsetTop + "px";
-          card.style.width = gh.offsetWidth + "px";
-          card.style.height = gh.offsetHeight + "px";
+          var w = card.offsetWidth, h = card.offsetHeight;   // layout size; transforms don't count
+          var dx = gh.offsetLeft - parseFloat(card.style.left || "0");
+          card.style.transition = MOVES;
+          card.style.transform = "translate(" + dx + "px,0) scale("
+            + (gh.offsetWidth / w).toFixed(4) + "," + (gh.offsetHeight / h).toFixed(4) + ")";
         }
         var done = false;
         function drop(e) {
-          if (e && e.propertyName && e.propertyName !== "height") return;
+          if (e && e.propertyName && e.propertyName !== "transform") return;
           if (done) return;
           done = true;
           card.removeEventListener("transitionend", drop);
