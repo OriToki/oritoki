@@ -136,7 +136,7 @@
 
     html { scroll-behavior: smooth; background-color: rgb(var(--c-surface)); }
     body { font-family: 'Helvetica Neue', 'Noto Sans Georgian', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
-    section[id] { scroll-margin-top: 6rem; }
+    section[id] { scroll-margin-top: 7.5rem; }
 
     /* Only the header background/shadow react to scroll */
     #header { transition: background-color .3s ease, box-shadow .3s ease; }
@@ -215,7 +215,7 @@
        the "t" runs off the screen — 72 x 0.2528 = 18.2, so 22 leaves 3.8px. */
     @media (max-width: 640px) {
       :root { --climber-left: 22px; --worker-width: 72px; }
-      #header { height: 60px; }          /* shorter header bar on phones */
+      #header { height: 68px; }          /* shorter bar on phones — the lockup's knots end at 63 */
       #langToggle button { padding: 4px 8px; }
       #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
     }
@@ -336,7 +336,7 @@
     .nav-ghost { visibility: hidden; pointer-events: none; }
     @media (max-width: 1279px) {
       #nav {
-        position: fixed; inset: 64px 0 auto 0;
+        position: fixed; inset: 88px 0 auto 0;   /* = the header's height */
         flex-direction: column; align-items: stretch; gap: .25rem;
         background: #ffffff; border: none; border-bottom: 1px solid #e5e7eb; border-radius: 0 0 18px 18px;
         padding: 1rem 1.25rem 1.5rem;
@@ -365,10 +365,10 @@
       #nav .nav-link { justify-content: flex-start; }
       #nav .nav-label { justify-items: start; }
     }
-    /* Phones: header is only 60px tall, so the drawer must open right below it
-       (this rule comes after the ≤1023px block so it wins over inset: 80px). */
+    /* Phones: the header is only 68px tall, so the drawer must open right below it
+       (this rule comes after the ≤1279px block so it wins over that inset). */
     @media (max-width: 640px) {
-      #nav { top: 60px; }
+      #nav { top: 68px; }
     }
 
     /* Language + theme controls relocated into the mobile drawer (JS moves the nodes).
@@ -415,7 +415,7 @@
     .nav-dd-ic { flex: none; display: inline-flex; color: #f97316; }
     .nav-dd-ic svg { width: 18px; height: 18px; }
     /* Offset for the fixed header when a dropdown link jumps to a specific service card. */
-    #services article { scroll-margin-top: 6rem; }
+    #services article { scroll-margin-top: 7.5rem; }
     /* Flash-highlight the target service card (added via JS on dropdown click). */
     @keyframes svcFlash {
       0%   { border-color: #f97316; background-color: #fff7ed; box-shadow: 0 0 0 0 rgba(249,115,22,.55), 0 20px 42px -22px rgba(249,115,22,.55); }
@@ -424,7 +424,7 @@
     }
     #services article.svc-flash { animation: svcFlash 2.4s ease-out; }
     /* Flash-highlight the "Join Us" strip in Contact when its nav link is clicked. */
-    #technicians { scroll-margin-top: 6rem; }
+    #technicians { scroll-margin-top: 7.5rem; }
     @keyframes joinFlash {
       0%   { border-color: #f97316; box-shadow: 0 0 0 0 rgba(249,115,22,.5); }
       15%  { border-color: #f97316; box-shadow: 0 0 0 5px rgba(249,115,22,.4); }
@@ -723,7 +723,11 @@
 
 
   <!-- ============================ HEADER / NAV ============================ -->
-  <header id="header" class="fixed top-0 inset-x-0 z-50 h-16">
+  <!-- 88px, not the 64 it was: the brand lockup is 4px from the top and its two anchors finish
+       their knots at 83.8, so the bar now holds the whole mark with the same 4px of air under it
+       as above, and only the ropes run out of the bottom edge. Change it and #nav's drawer offset
+       below has to follow. -->
+  <header id="header" class="fixed top-0 inset-x-0 z-50 h-[88px]">
     <div id="headerInner" class="w-full h-full max-w-[96rem] mx-auto px-6 flex items-center gap-2 lg:gap-3">
 
       <!-- Left group (brand). flex-1 grows so the nav is pushed to the right; the lockup itself is
@@ -746,7 +750,11 @@
       <!-- No `uppercase` class here on purpose: text-transform:uppercase makes Chrome render
            Georgian Mtavruli back as Mkhedruli, so the labels are authored already-capitalised
            (English in caps, Georgian in Mtavruli) — the same approach as the section h2s. -->
-      <nav id="nav" class="font-display text-[15px] font-600 tracking-wide text-light">
+      <!-- 16px: the nav was the only type on the site set BELOW the body copy (15 against 16),
+           which read thin in a bar this wide. Not more than 16 — the Georgian Mtavruli labels run
+           about a quarter wider than the English, and at 17 they crowd the 1280px breakpoint
+           where this row is still a row. -->
+      <nav id="nav" class="font-display text-[16px] font-600 tracking-wide text-light">
         <!-- Lang + theme controls: on mobile they sit here, ABOVE the nav links (JS fills this). -->
         <div id="navActions" class="nav-actions"></div>
         <a href="#home"     class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲛᲗᲐᲕᲐᲠᲘ">HOME</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲛᲗᲐᲕᲐᲠᲘ</span></span></span></a>
