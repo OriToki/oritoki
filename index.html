@@ -1441,12 +1441,16 @@
         // pieces of hardware.
         anchorPivotX: 0.415, anchorPivotY: 0.592,
         anchorHangLen: 3.563,        // 1012 of 284 — where the rope leaves the hanging piece
-        // Each anchor is the i of its own word, so these two follow the lettering: the wordmark
-        // sits at top 4px and logo-wordmark.ps1 prints where its ink starts (7.75 and 52.38), and
-        // the anchor hangs a set distance above that ink — 6.4px for the "Or" i, 15.1px for the
-        // smaller "tok" one. Re-bake the wordmark and these two move with it.
-        anchorTopWork: 41,           // px below the top of the window - the "tok" i
-        anchorTopBack: 5,            // ...and the "Or" i, higher, as the lettering has them
+        /* Each anchor is the i of its own word, so it stands on that word's BASELINE: the
+           carabiner is the i's stem, the bolt hanger above it the dot. The carabiner's bottom is
+           24.3px down the anchor asset at the size it is shown (2.25 of its own width — the waist
+           where the frame closes and the knot starts, measured off anchor-hang.png), so each of
+           these is that word's baseline minus 24.3. The wordmark sits at top 4px and
+           logo-wordmark.ps1 prints where its ink ends: 40.00 and 74.25, so 44.0 and 78.25 on the
+           page. Hung level with the cap heights instead, as they were, both anchors floated a
+           good 15px above their own letters. */
+        anchorTopWork: 54,           // px below the top of the window - the "tok" i
+        anchorTopBack: 21,           // ...and the "Or" i, higher, as the lettering has them
         anchorSwing: 0.06,           // spring that lets the carabiner lag the rope
         anchorDamp: 0.90,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
