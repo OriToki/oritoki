@@ -161,11 +161,15 @@
        without re-baking the asset (tools/logo-wordmark.ps1). */
     #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1128);
                  width: calc(var(--worker-width) * 0.771); z-index: 2; display: block; }
-    /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
-       its knot. The hanging piece turns about the point where the carabiner's bar passes through
-       the hanger's eye: 41.5% across the anchor's width, and 22 of its 866 rows down — keep this
+    /* Anchor pieces, BELOW both rope layers. Each rope starts at the bottom of its own hanging
+       piece, so it never covers the anchor it hangs from; what this decides is what happens when
+       he is dragged far enough sideways for one rope to cross the OTHER anchor. Painted above,
+       the hardware swallowed the rope mid-air — a rope vanishing behind a carabiner it has nothing
+       to do with. Below, it passes in front, which is what a rope hanging nearer the eye does.
+       The hanging piece turns about the point where the carabiner's bar passes through the
+       hanger's eye: 41.5% across the anchor's width, and 22 of its 866 rows down — keep this
        in step with A.anchorPivotX / Y, which is the same point in the script's own units. */
-    .anchor-bolt, .anchor-hang { position: absolute; z-index: 1; height: auto; pointer-events: none; }
+    .anchor-bolt, .anchor-hang { position: absolute; z-index: 0; height: auto; pointer-events: none; }
     .anchor-hang { transform-origin: 41.5% 16.6%; }
     #brandRope img { display: block; width: 100%; height: auto; }
     #brandRope .ink-white { display: none; }
