@@ -504,27 +504,32 @@
        nothing is covered, the cards below just move down, and the card's [+] badge becomes [-].
        The panel is inserted after the LAST card of the clicked card's row, so it lands on a row of
        its own — spanning the card itself 1/-1 would leave the rest of its row standing empty. */
-    /* The card lifts out of the flow, spreads across the full width of the row it is in and covers
-       the cards beside it; a placeholder holds its cell so nothing reflows, and the ROW's height
-       comes from that placeholder, so a tall card pushes the rows below it down rather than
-       covering them too. The grid's row gap is carried by the cards' own margin (row-gap: 0),
-       because the placeholder has to be able to grow and shrink with the card and a gap belongs
-       to the grid, not to the item.
+    /* An open card leaves the grid and becomes a centred rectangle: the card itself, grown from
+       where it sits to the middle of the screen, with its own sub-services inside it. No backdrop
+       behind it — the page stays visible and unblurred, and a click anywhere out there closes it.
+       A placeholder holds the card's cell while it is away, so the grid never reflows (the row gap
+       is carried by the cards' own margin so the placeholder can hold the exact height).
        No pulse on opening, on purpose. The pulse (svcFlash, further up) belongs to arriving from
        the header's dropdown, where the page jumps and the card has to be pointed at; a card you
        clicked yourself needs no pointing at. */
     #svcGrid { position: relative; row-gap: 0; }
     #svcGrid > article { margin-bottom: 1rem; }
-    .svc-ghost { margin-bottom: 1rem; transition: height .42s cubic-bezier(.22,1,.36,1); }
+    .svc-ghost { margin-bottom: 1rem; }
     #services article.svc-open {
-      position: absolute; z-index: 3; overflow: hidden; transform: none;
-      border-color: #f97316; box-shadow: 0 22px 44px -18px rgba(249,115,22,.35);
+      position: fixed; z-index: 120; overflow: auto; transform: none;
+      padding: 1.9rem 2.1rem 2.1rem; border-radius: 1.25rem;
+      border-color: #f97316; box-shadow: 0 40px 90px -30px rgba(20,20,42,.55);
     }
     #services article.svc-open::after { content: "\f068"; background: #f97316; color: #fff; }
-    /* The sub-services, hidden on a closed card, laid across the width the card has taken. */
+    /* The number and the icon are the closed card's furniture — a rectangle this size wants its
+       title first. */
+    #services article.svc-open::before, #services article.svc-open .svc-ico { display: none; }
+    #services article.svc-open > h3 { margin-top: 0; font-size: 1.6rem; line-height: 1.2; }
+    #services article.svc-open > p { margin-top: .7rem; font-size: 1rem; line-height: 1.55; }
+    /* The sub-services, hidden on a closed card. */
     #services article.svc-open > ul {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: .55rem 2rem; margin-top: 1rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: .6rem 2rem; margin-top: 1.4rem; font-size: 1rem;
       opacity: 0; transform: translateY(-8px);
       transition: opacity .26s ease, transform .34s cubic-bezier(.22,1,.36,1);
     }
@@ -534,7 +539,7 @@
     #services article.svc-open > ul > li { margin-top: 0; }
     /* Photo background on the flagship service, as its modal used to have. */
     #svc-glass.svc-open { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.22); }
-    #svc-glass.svc-open h3, #svc-glass.svc-open::before { color: #ffffff; }
+    #svc-glass.svc-open h3 { color: #ffffff; }
     #svc-glass.svc-open p, #svc-glass.svc-open li { color: rgba(255,255,255,.92); }
 
     /* ===================== CARABINER THEME TOGGLE ===================== */
@@ -2057,73 +2062,55 @@
       });
     });
 
-    /* ---------- 10. A service card opens over its own row ----------
-       The details used to open in a modal over the page. The card opens in place now: it spreads
-       across the full width of the row it is in, covering the cards beside it, and its own
-       sub-services appear inside it. Clicking the card again, clicking anywhere else, or Escape
-       closes it; the [-] badge in its top-right corner is the close affordance. */
+    /* ---------- 10. A service card opens into a centred rectangle ----------
+       Not a modal built from the card's contents, as it once was, and not a strip across its row:
+       the CARD itself grows from where it sits to a rectangle in the middle of the screen, with
+       its sub-services inside it. Nothing is dimmed or blurred behind it. Clicking the card
+       again, clicking anywhere else, or Escape closes it, back to its own place in the grid; the
+       [-] badge in its top-right corner is the close affordance. */
     (function () {
       var grid = document.getElementById("svcGrid");
       if (!grid) return;
       var cards = Array.prototype.slice.call(grid.querySelectorAll("article"));
       if (!cards.length) return;
-      var current = null, ghost = null, cell = null;
+      var current = null, ghost = null;
       var EASE = "cubic-bezier(.22,1,.36,1)", MOVE = ".42s " + EASE;
 
-      /* Move the page only as far as it has to, and along WITH the card rather than after it —
-         two movements one after the other read as a jump. The opened height is measured before
-         the growth starts, so where the card will end up is known too. It must never be left
-         under the fixed header, which is the limit on how far this will scroll down. */
-      function reveal(card, h) {
-        var head = (document.getElementById("header") || {}).offsetHeight || 88;
-        var gap = 16;
-        var top = card.getBoundingClientRect().top;
-        var by = 0;
-        if (top < head + gap) by = top - head - gap;                        // card is under the bar
-        else if (top + h > window.innerHeight - gap) {
-          by = Math.min(top + h - window.innerHeight + gap, top - head - gap);
-        }
-        if (Math.abs(by) > 4) {
-          if (window.scrollBy) window.scrollBy({ top: by, left: 0, behavior: "smooth" });
-          else window.scrollTo(0, window.pageYOffset + by);
-        }
-      }
+      var MOVES = "left " + MOVE + ", top " + MOVE + ", width " + MOVE + ", height " + MOVE
+                + ", border-color .2s ease, box-shadow .3s ease, border-radius .3s ease";
 
       function open(card) {
         if (current) close(true);
         current = card;
-        cell = { top: card.offsetTop, left: card.offsetLeft, w: card.offsetWidth, h: card.offsetHeight };
+        var from = card.getBoundingClientRect();        // where it sits on screen right now
 
-        /* A placeholder takes the card's cell the moment the card leaves the flow, so the cards
-           around it stay where they are. Its height is what makes the ROW grow, which is what
-           pushes the rows below down instead of letting the card cover them. */
+        /* A placeholder takes the card's cell the moment the card leaves the flow, so the grid
+           behind it does not move at all while it is open. */
         ghost = document.createElement("div");
         ghost.className = "svc-ghost";
-        ghost.style.height = cell.h + "px";
+        ghost.style.height = card.offsetHeight + "px";
         grid.insertBefore(ghost, card);
 
         card.classList.add("svc-open");
         card.setAttribute("aria-expanded", "true");
         card.style.transition = "none";
-        card.style.top = cell.top + "px";
-        card.style.left = "0px";
-        card.style.width = grid.clientWidth + "px";
-        card.style.height = "auto";
-        var full = card.offsetHeight;                  // how tall it is once open, at full width
-        card.style.left = cell.left + "px";            // ...then back to the cell it came from
-        card.style.width = cell.w + "px";
-        card.style.height = cell.h + "px";
-        card.getBoundingClientRect();                  // reflow, so the move animates from here
+        /* Measure the rectangle it opens into: a fixed width first, then whatever height the text
+           needs at that width, capped to the window. Measured before the move starts, so the move
+           has somewhere definite to go. */
+        var w = Math.min(800, window.innerWidth - 40);
+        card.style.left = "0px"; card.style.top = "0px";
+        card.style.width = w + "px"; card.style.height = "auto";
+        var h = Math.min(card.offsetHeight, window.innerHeight - 40);
+        var to = { left: (window.innerWidth - w) / 2, top: (window.innerHeight - h) / 2, w: w, h: h };
+        card.style.left = from.left + "px"; card.style.top = from.top + "px";
+        card.style.width = from.width + "px"; card.style.height = from.height + "px";
+        card.getBoundingClientRect();                   // reflow, so the move animates from here
         window.requestAnimationFrame(function () {
           if (current !== card) return;
-          card.style.transition = "left " + MOVE + ", width " + MOVE + ", height " + MOVE
-            + ", border-color .2s ease, box-shadow .3s ease";
-          card.style.left = "0px";
-          card.style.width = grid.clientWidth + "px";
-          card.style.height = full + "px";
-          card.classList.add("svc-in");                // fades the sub-services up
-          ghost.style.height = full + "px";            // ...and the row grows with it
-          window.setTimeout(function () { if (current === card) reveal(card, full); }, 110);
+          card.style.transition = MOVES;
+          card.style.left = to.left + "px"; card.style.top = to.top + "px";
+          card.style.width = to.w + "px"; card.style.height = to.h + "px";
+          card.classList.add("svc-in");                 // fades the sub-services up
         });
       }
 
@@ -2131,8 +2118,8 @@
          one measures its cell, or it measures against a layout that is still moving. */
       function close(instant) {
         if (!current) return;
-        var card = current, gh = ghost, box = cell;
-        current = null; ghost = null; cell = null;
+        var card = current, gh = ghost;
+        current = null; ghost = null;
         card.classList.remove("svc-in");
         card.setAttribute("aria-expanded", "false");
 
@@ -2144,13 +2131,15 @@
         }
         if (instant === true) { settle(); return; }
 
-        // Back to its own cell on the same curve it came out on, and the row closes with it.
-        card.style.transition = "left " + MOVE + ", width " + MOVE + ", height " + MOVE
-          + ", border-color .2s ease, box-shadow .3s ease";
-        card.style.left = box.left + "px";
-        card.style.width = box.w + "px";
-        card.style.height = box.h + "px";
-        if (gh) gh.style.height = box.h + "px";
+        /* Back to its own cell on the same curve it came out on. Where that cell is on screen is
+           asked of the placeholder, not remembered from opening time — the page may have been
+           scrolled since, and these are viewport coordinates. */
+        var back = gh ? gh.getBoundingClientRect() : card.getBoundingClientRect();
+        card.style.transition = MOVES;
+        card.style.left = back.left + "px";
+        card.style.top = back.top + "px";
+        card.style.width = back.width + "px";
+        card.style.height = back.height + "px";
         var done = false;
         function drop(e) {
           if (e && e.propertyName && e.propertyName !== "height") return;
