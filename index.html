@@ -127,9 +127,15 @@
       --c-heading: 20 20 42;   /* section headings — near-black ink (light mode) */
       color-scheme: light;
     }
+    /* The dark palette is built OUT OF the header's own colour, rgba(22,24,28,.97) — the blue-black
+       further down this file. It used to be neutral grey (18 19 20 / 25 26 27), which read as two
+       flat greys under a header that was visibly cooler than both. --c-surface IS that colour now,
+       and everything else is the same hue carried lighter, so the bar and the page it floats over
+       are one material. Keep the R<G<B spread if these are ever retuned; neutral is what looked
+       wrong. */
     html.dark {
-      --c-night: 30 31 32; --c-panel: 25 26 27; --c-deep: 48 49 51;
-      --c-surface: 18 19 20; --c-line: 42 43 44; --c-light: 236 237 242; --c-mute: 158 158 160;
+      --c-night: 34 37 43; --c-panel: 29 32 38; --c-deep: 52 56 64;
+      --c-surface: 22 24 28; --c-line: 45 48 55; --c-light: 236 237 242; --c-mute: 156 159 166;
       --c-heading: 255 255 255;   /* section headings — pure white on dark */
       color-scheme: dark;
     }
