@@ -525,7 +525,17 @@
        first, and the room. */
     #services article.svc-open::before, #services article.svc-open .svc-ico { display: none; }
     #services article.svc-open > h3 { margin-top: 0; font-size: 1.55rem; line-height: 1.22; }
-    #services article.svc-open > p { margin-top: .75rem; font-size: 1.05rem; line-height: 1.55; }
+    /* The summary line gets the same orange bullet the sub-services have, and lines up with them:
+       set without one it read as a list item that had lost its marker. Bullet and indent are the
+       list's own — 6px dot, 10px gap — so the two sit on the same left edge. */
+    #services article.svc-open > p {
+      position: relative; margin-top: .8rem; padding-left: 1rem;
+      font-size: 1.05rem; line-height: 1.55;
+    }
+    #services article.svc-open > p::before {
+      content: ""; position: absolute; left: 0; top: .58rem;
+      height: .375rem; width: .375rem; border-radius: 9999px; background: rgb(249 115 22 / .7);
+    }
     /* The sub-services, hidden on a closed card. */
     #services article.svc-open > ul {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
