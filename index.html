@@ -504,15 +504,29 @@
        nothing is covered, the cards below just move down, and the card's [+] badge becomes [-].
        The panel is inserted after the LAST card of the clicked card's row, so it lands on a row of
        its own — spanning the card itself 1/-1 would leave the rest of its row standing empty. */
-    #services article.svc-open { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
+    /* Opening is two movements on one curve: the box grows, and the contents fade up into it half
+       a beat later. Fading them together made the panel look like a shutter sliding off finished
+       text; delayed, it reads as the panel bringing them with it. A ring runs out from the card
+       and the panel at the same time, so the eye is told where the new thing is. */
+    #services article.svc-open { border-color: #f97316; animation: svcRing .75s ease-out; }
     #services article.svc-open::after { content: "\f068"; background: #f97316; color: #fff; }
+    @keyframes svcRing {
+      0%   { box-shadow: 0 0 0 0 rgba(249,115,22,.5), 0 14px 26px -12px rgba(249,115,22,.3); }
+      100% { box-shadow: 0 0 0 16px rgba(249,115,22,0), 0 14px 26px -12px rgba(249,115,22,.22); }
+    }
     .svc-panel {
       grid-column: 1 / -1; overflow: hidden; cursor: zoom-out;
       border-radius: 1rem; border: 1px solid #f97316; background: rgb(var(--c-surface));
       box-shadow: 0 14px 26px -12px rgba(249,115,22,.22);
-      height: 0; transition: height .34s cubic-bezier(.22,1,.36,1);
+      height: 0; transition: height .42s cubic-bezier(.22,1,.36,1);
     }
-    .svc-panel-in { padding: 1.4rem 1.5rem 1.6rem; }
+    .svc-panel.in { animation: svcRing .75s ease-out .06s; }
+    .svc-panel-in {
+      padding: 1.4rem 1.5rem 1.6rem;
+      opacity: 0; transform: translateY(-10px);
+      transition: opacity .26s ease, transform .34s cubic-bezier(.22,1,.36,1);
+    }
+    .svc-panel.in .svc-panel-in { opacity: 1; transform: none; transition-delay: .1s; }
     .svc-panel h3 { font-family: 'Helvetica Neue','Noto Sans Georgian',Arial,sans-serif; font-weight: 700; font-size: 1.3rem; line-height: 1.2; color: rgb(var(--c-heading)); }
     .svc-panel ul { margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .55rem 2rem; }
     .svc-panel li { display: flex; align-items: flex-start; gap: .7rem; color: rgb(var(--c-mute)); font-size: .95rem; line-height: 1.5; margin-top: 0; }
@@ -2072,7 +2086,8 @@
         el.className = "svc-panel" + (card.id === "svc-glass" ? " svc-panel-photo" : "");
         el.innerHTML = '<div class="svc-panel-in"><h3>' + (h3 ? h3.innerHTML : "") + "</h3>"
           + "<ul>" + (ul ? ul.innerHTML : "") + "</ul></div>";
-        el.addEventListener("click", close);
+        // wrapped, not passed straight in: the event object would land in close()'s argument
+        el.addEventListener("click", function () { close(); });
         return el;
       }
 
@@ -2082,11 +2097,32 @@
         var h = el.firstChild.offsetHeight;
         el.style.height = h + "px";
         clearTimeout(endTimer);
-        endTimer = window.setTimeout(function () { if (panel === el) el.style.height = "auto"; }, 360);
+        endTimer = window.setTimeout(function () { if (panel === el) el.style.height = "auto"; }, 460);
+        return h;
+      }
+
+      /* Move the page only as far as it has to, and along WITH the panel rather than after it —
+         two movements one after the other read as a jump. The height is known before the growth
+         starts, so where the panel will end up is known too. The card must never be left under
+         the fixed header, which is the limit on how far this will scroll down. */
+      function reveal(card, el, h) {
+        var head = (document.getElementById("header") || {}).offsetHeight || 88;
+        var gap = 16;
+        var cardTop = card.getBoundingClientRect().top;
+        var panelBottom = el.getBoundingClientRect().top + h;
+        var by = 0;
+        if (cardTop < head + gap) by = cardTop - head - gap;                       // card is under the bar
+        else if (panelBottom > window.innerHeight - gap) {
+          by = Math.min(panelBottom - window.innerHeight + gap, cardTop - head - gap);
+        }
+        if (Math.abs(by) > 4) {
+          if (window.scrollBy) window.scrollBy({ top: by, left: 0, behavior: "smooth" });
+          else window.scrollTo(0, window.pageYOffset + by);
+        }
       }
 
       function open(card) {
-        if (current) close();
+        if (current) close(true);
         current = card;
         card.classList.add("svc-open");
         card.setAttribute("aria-expanded", "true");
@@ -2095,28 +2131,30 @@
         grid.insertBefore(panel, after.nextSibling);
         panel.getBoundingClientRect();          // reflow, so the height animates from 0
         window.requestAnimationFrame(function () {
-          if (panel) grow(panel);
-          // Only scroll if the panel would open below the fold; scroll-margin-top keeps it
-          // clear of the fixed header.
-          window.setTimeout(function () {
-            if (!panel) return;
-            var r = panel.getBoundingClientRect();
-            if (r.bottom > window.innerHeight) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          }, 380);
+          if (!panel) return;
+          var el = panel;
+          var h = grow(el);
+          el.classList.add("in");               // fades the contents up, and runs the ring
+          window.setTimeout(function () { if (panel === el) reveal(card, el, h); }, 110);
         });
       }
 
-      function close() {
+      /* `instant` is for swapping cards: the old panel has to be gone from the layout before the
+         new one is measured, or the scroll below aims at a position that is still collapsing. */
+      function close(instant) {
         if (!current) return;
         var el = panel, card = current;
         current = null; panel = null;
         card.classList.remove("svc-open");
         card.setAttribute("aria-expanded", "false");
         if (!el) return;
+        if (instant === true) { if (el.parentNode) el.parentNode.removeChild(el); return; }
+        // Contents out first, box after: closing on the same curve it opened on, in reverse.
+        el.classList.remove("in");
         el.style.height = el.offsetHeight + "px";
         el.getBoundingClientRect();
         window.requestAnimationFrame(function () { el.style.height = "0px"; });
-        window.setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 360);
+        window.setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 460);
       }
 
       cards.forEach(function (card) {
