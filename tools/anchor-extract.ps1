@@ -21,11 +21,12 @@ param(
   # keeps its white fill, exactly as climber.png does. Found by labelling every enclosed region on
   # the source drawing and reading off which ones are holes; see tools/README.md.
   [int[]]$Holes = @(150,350,   # the carabiner's opening
-                    102,92,    # the hanger's eye, above the carabiner's bar
-                    115,131,   # ...the sliver of it left under the plate's edge
-                    136,180),  # ...and the part of it under the tongue
-  # NOT a hole, though it is enclosed and pale: the wedge at (223,201) is the metal of the
-  # carabiner's nose, where the gate closes onto it. Punched out, it left a bite in the frame.
+                    136,180),  # the hanger's eye, the part of it seen under the tongue
+  # Enclosed and pale, but NOT holes - all of these are metal, and punching them out took bites
+  # out of the hardware:
+  #   (102,92)  and (115,131)  the plate itself. The tongue crosses the plate and cuts its white
+  #                            fill into separate pieces; those pieces are still the plate.
+  #   (223,201)                the carabiner's nose, where the gate closes onto it.
   [double]$Tile = 14.0, [double]$LineW = 5.0,
   [int]$OutW = 128,               # asset width in px (the pieces are shown ~11px wide)
   [string]$OutDir = "c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\images"
