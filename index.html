@@ -504,11 +504,11 @@
        nothing is covered, the cards below just move down, and the card's [+] badge becomes [-].
        The panel is inserted after the LAST card of the clicked card's row, so it lands on a row of
        its own — spanning the card itself 1/-1 would leave the rest of its row standing empty. */
-    /* An open card leaves the grid and becomes a centred rectangle: the card itself, grown from
-       where it sits to the middle of the screen, with its own sub-services inside it. No backdrop
-       behind it — the page stays visible and unblurred, and a click anywhere out there closes it.
-       A placeholder holds the card's cell while it is away, so the grid never reflows (the row gap
-       is carried by the cards' own margin so the placeholder can hold the exact height).
+    /* An open card grows in place: it stays at its own corner of the grid and takes as much room
+       as its text needs, overlapping the cards beside and below it. Nothing is dimmed or blurred
+       behind it — a click out there closes it. A placeholder holds the card's cell while it is
+       out of the flow, so the grid underneath never reflows (the row gap is carried by the cards'
+       own margin so the placeholder can hold the exact height).
        No pulse on opening, on purpose. The pulse (svcFlash, further up) belongs to arriving from
        the header's dropdown, where the page jumps and the card has to be pointed at; a card you
        clicked yourself needs no pointing at. */
@@ -516,23 +516,24 @@
     #svcGrid > article { margin-bottom: 1rem; }
     .svc-ghost { margin-bottom: 1rem; }
     #services article.svc-open {
-      position: fixed; z-index: 120; overflow: auto; transform: none;
-      padding: 1.9rem 2.1rem 2.1rem; border-radius: 1.25rem;
-      border-color: #f97316; box-shadow: 0 40px 90px -30px rgba(20,20,42,.55);
+      position: absolute; z-index: 5; overflow: hidden; transform: none;
+      padding: 1.7rem 1.9rem 1.9rem; border-radius: 1.25rem;
+      border-color: #f97316; box-shadow: 0 30px 60px -24px rgba(20,20,42,.6);
     }
     #services article.svc-open::after { content: "\f068"; background: #f97316; color: #fff; }
-    /* The number and the icon are the closed card's furniture — a rectangle this size wants its
-       title first. */
+    /* The number and the icon are the closed card's furniture — an open card wants its title
+       first, and the room. */
     #services article.svc-open::before, #services article.svc-open .svc-ico { display: none; }
-    #services article.svc-open > h3 { margin-top: 0; font-size: 1.6rem; line-height: 1.2; }
-    #services article.svc-open > p { margin-top: .7rem; font-size: 1rem; line-height: 1.55; }
+    #services article.svc-open > h3 { margin-top: 0; font-size: 1.55rem; line-height: 1.22; }
+    #services article.svc-open > p { margin-top: .75rem; font-size: 1.05rem; line-height: 1.55; }
     /* The sub-services, hidden on a closed card. */
     #services article.svc-open > ul {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: .6rem 2rem; margin-top: 1.4rem; font-size: 1rem;
+      gap: .7rem 2rem; margin-top: 1.4rem; font-size: 1.05rem; line-height: 1.5;
       opacity: 0; transform: translateY(-8px);
       transition: opacity .26s ease, transform .34s cubic-bezier(.22,1,.36,1);
     }
+    #services article.svc-open > ul li > span:first-child { margin-top: .58rem !important; }
     /* svc-in, not "in": every card also carries .reveal, whose scroll-in state IS the class "in".
        Taking that off at close left the card at .reveal's opacity 0 — it vanished for good. */
     #services article.svc-open.svc-in > ul { opacity: 1; transform: none; transition-delay: .1s; }
@@ -2082,35 +2083,36 @@
       function open(card) {
         if (current) close(true);
         current = card;
-        var from = card.getBoundingClientRect();        // where it sits on screen right now
+        var from = { left: card.offsetLeft, top: card.offsetTop, w: card.offsetWidth, h: card.offsetHeight };
 
         /* A placeholder takes the card's cell the moment the card leaves the flow, so the grid
            behind it does not move at all while it is open. */
         ghost = document.createElement("div");
         ghost.className = "svc-ghost";
-        ghost.style.height = card.offsetHeight + "px";
+        ghost.style.height = from.h + "px";
         grid.insertBefore(ghost, card);
 
         card.classList.add("svc-open");
         card.setAttribute("aria-expanded", "true");
         card.style.transition = "none";
-        /* Measure the rectangle it opens into: a fixed width first, then whatever height the text
-           needs at that width, capped to the window. Measured before the move starts, so the move
-           has somewhere definite to go. */
-        var w = Math.min(800, window.innerWidth - 40);
-        card.style.left = "0px"; card.style.top = "0px";
+        /* It opens at its own corner and takes the room its text needs. Width first — a card's
+           worth of columns, never wider than the grid — then whatever height the text runs to at
+           that width. A card in the last column would open off the right edge, so the left is
+           pulled back just far enough to keep it inside. */
+        var w = Math.min(600, grid.clientWidth);
+        var left = Math.max(0, Math.min(from.left, grid.clientWidth - w));
+        card.style.left = left + "px"; card.style.top = from.top + "px";
         card.style.width = w + "px"; card.style.height = "auto";
-        var h = Math.min(card.offsetHeight, window.innerHeight - 40);
-        var to = { left: (window.innerWidth - w) / 2, top: (window.innerHeight - h) / 2, w: w, h: h };
-        card.style.left = from.left + "px"; card.style.top = from.top + "px";
-        card.style.width = from.width + "px"; card.style.height = from.height + "px";
-        card.getBoundingClientRect();                   // reflow, so the move animates from here
+        var h = card.offsetHeight;
+        card.style.left = from.left + "px";              // ...then back to the cell it came from
+        card.style.width = from.w + "px"; card.style.height = from.h + "px";
+        card.getBoundingClientRect();                    // reflow, so the move animates from here
         window.requestAnimationFrame(function () {
           if (current !== card) return;
           card.style.transition = MOVES;
-          card.style.left = to.left + "px"; card.style.top = to.top + "px";
-          card.style.width = to.w + "px"; card.style.height = to.h + "px";
-          card.classList.add("svc-in");                 // fades the sub-services up
+          card.style.left = left + "px";
+          card.style.width = w + "px"; card.style.height = h + "px";
+          card.classList.add("svc-in");                  // fades the sub-services up
         });
       }
 
@@ -2131,15 +2133,16 @@
         }
         if (instant === true) { settle(); return; }
 
-        /* Back to its own cell on the same curve it came out on. Where that cell is on screen is
-           asked of the placeholder, not remembered from opening time — the page may have been
-           scrolled since, and these are viewport coordinates. */
-        var back = gh ? gh.getBoundingClientRect() : card.getBoundingClientRect();
+        /* Back to its own cell on the same curve it came out on. The cell is asked of the
+           placeholder standing in it rather than remembered from opening time, so this stays
+           right even if something else on the page has moved since. */
         card.style.transition = MOVES;
-        card.style.left = back.left + "px";
-        card.style.top = back.top + "px";
-        card.style.width = back.width + "px";
-        card.style.height = back.height + "px";
+        if (gh) {
+          card.style.left = gh.offsetLeft + "px";
+          card.style.top = gh.offsetTop + "px";
+          card.style.width = gh.offsetWidth + "px";
+          card.style.height = gh.offsetHeight + "px";
+        }
         var done = false;
         function drop(e) {
           if (e && e.propertyName && e.propertyName !== "height") return;
