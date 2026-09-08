@@ -15,26 +15,27 @@ param(
   [double]$AnchorW = 10.8,        # display px - at this width the anchor's own rope is exactly
                                   # the 1.55px the page draws, so the two meet with no step
   [double]$AnchorRopeX = 0.419,   # where the rope sits across the anchor asset
-  [double]$OrSize = 46,           # font size for "Or"  (display px)
-  [double]$TokSize = 27,          # font size for "tok"
+  [double]$OrSize = 43,           # font size for "Or"  (display px)
+  [double]$TokSize = 30,          # font size for "tok"
   [double]$TokIndent = 6,         # "tok" sits in from the left, as in the reference
-  [double]$AnchorTopR = 2,        # the "Or" anchor hangs from here
-  [double]$AnchorTopL = 40,       # the "tok" one hangs lower
+  [double]$AnchorTopR = 1,        # the "Or" anchor hangs from here  \ only sets the canvas
+  [double]$AnchorTopL = 37,       # the "tok" one hangs lower        / height; the page places
+                                  # them itself, from A.anchorTopBack / anchorTopWork
   [double]$Pad = 2,
   # Only the LETTERING changes with the theme. The anchors and the rope keep their own colours in
   # both, exactly as climber.png does - a white carabiner with black linework reads on either
   # background, and the rope has to match the SVG ropes it continues into.
-  [string]$Ink = "black",
-  [string]$Out = "c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\images\logo-ink-black.png"
+  [string]$OutDir = "c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\images"
 )
 Add-Type -AssemblyName System.Drawing
 
-$anchor = New-Object System.Drawing.Bitmap("c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\images\anchor.png")
+# Only for the canvas height. The anchor used to be one images/anchor.png; it is two pieces now
+# (the hanger is fixed, the carabiner swings), and they are the same size, so either will do.
+$anchor = New-Object System.Drawing.Bitmap("c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\images\anchor-hang.png")
 $anchorH = $AnchorW * $anchor.Height / $anchor.Width
 
 # the anchors sit at the rope fractions; everything else is placed around them
 $gapR = $RopeR - $RopeL                                   # 0.133 of the strip
-$xRopeR = 0.0                                             # filled in below
 $fonts = New-Object System.Drawing.Text.PrivateFontCollection
 $fonts.AddFontFile("c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\fonts\HelveticaNeue-Black.otf")
 $fam = $fonts.Families[0]
@@ -52,37 +53,61 @@ $mg.Dispose(); $tmp.Dispose()
 $wOr = $szOr.Width / $Scale; $hOr = $szOr.Height / $Scale
 $wTok = $szTok.Width / $Scale; $hTok = $szTok.Height / $Scale
 
-# Lay out in DISPLAY px. Text starts at Pad; each anchor follows its own word, and the distance
-# between the two anchors is fixed by the ropes - so the gap after "tok" absorbs the difference.
-$xAnchorR = $Pad + $wOr + 3
+# Lay out in DISPLAY px, from the anchors outwards: each word ends 3px before its own anchor, and
+# the two anchors are a fixed 12.9px apart because the ropes are. So the words cannot both start
+# at the left edge - whichever one needs more room pushes the canvas out to the LEFT, and the CSS
+# offset (which is worked out from the rope stems this script prints) follows it.
+$xOr = 0.0
+$xAnchorR = $xOr + $wOr + 3
 $xAnchorL = $xAnchorR - $gapR * $StripW                  # 12.9px to the left of it
 $xTok = $xAnchorL - 3 - $wTok                            # "tok" ends just before its anchor
-if ($xTok -lt $Pad) { $xTok = $Pad }                     # never overlap the left edge
+$shift = $Pad - [math]::Min(0.0, [math]::Min($xOr, $xTok))
+$xOr += $shift; $xTok += $shift; $xAnchorR += $shift; $xAnchorL += $shift
 $Wd = $xAnchorR + $AnchorW + $Pad                        # display width of the whole lockup
 $Hd = [math]::Max($AnchorTopL + $anchorH, [math]::Max($AnchorTopR + $anchorH, $hOr + $hTok)) + $Pad
 
 $W = [int]([math]::Ceiling($Wd * $Scale)); $H = [int]([math]::Ceiling($Hd * $Scale))
-$bmp = New-Object System.Drawing.Bitmap($W, $H, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-$g = [System.Drawing.Graphics]::FromImage($bmp)
-$g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
-$g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
-$g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAlias
-if ($Ink -eq "white") { $inkCol = [System.Drawing.Color]::FromArgb(255, 255, 255, 255) }
-else                  { $inkCol = [System.Drawing.Color]::FromArgb(255, 17, 17, 17) }
-# NOT $ink: PowerShell is case-insensitive, and $Ink is already the [string] parameter above -
-# assigning a brush to it would silently turn the brush into a string.
-$inkBrush = New-Object System.Drawing.SolidBrush ($inkCol)
 
-# the words
-$g.DrawString("Or",  $fOr,  $inkBrush, [single]($Pad * $Scale), [single](0), $fmt)
-$g.DrawString("tok", $fTok, $inkBrush, [single]($xTok * $Scale), [single](($hOr - 2) * $Scale), $fmt)
+# Both inks in one run: the page shows the black one on the light bar and the white one over the
+# hero and in dark mode, and they have to be the SAME lettering in the same place.
+function Bake([string]$colour, [string]$file) {
+  $bmp = New-Object System.Drawing.Bitmap($W, $H, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $g = [System.Drawing.Graphics]::FromImage($bmp)
+  $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+  $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+  $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAlias
+  if ($colour -eq "white") { $col = [System.Drawing.Color]::FromArgb(255, 255, 255, 255) }
+  else                     { $col = [System.Drawing.Color]::FromArgb(255, 17, 17, 17) }
+  # NOT $ink: PowerShell is case-insensitive and would collide with a parameter named $Ink -
+  # assigning a brush to it would silently turn the brush into a string.
+  $inkBrush = New-Object System.Drawing.SolidBrush ($col)
+  $g.DrawString("Or",  $fOr,  $inkBrush, [single]($xOr * $Scale),  [single](0), $fmt)
+  $g.DrawString("tok", $fTok, $inkBrush, [single]($xTok * $Scale), [single](($hOr - 2) * $Scale), $fmt)
+  # The anchors are NOT baked in: the bolt hangs fixed and the carabiner swings with the rope, so
+  # they are separate elements in the page. This asset is the lettering only - the canvas keeps
+  # its full size so the same CSS box positions both.
+  $g.Dispose()
+  $path = Join-Path $OutDir $file
+  $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
+  $bmp.Dispose()
+  return $path
+}
+$blackPath = Bake "black" "logo-word-black.png"
+[void](Bake "white" "logo-word-white.png")
 
-# The anchors are NOT baked in any more: the bolt hangs fixed and the carabiner swings with the
-# rope, so they are separate elements in the page. This asset is the lettering only - the canvas
-# keeps its full size so the same CSS box positions both.
-$g.Dispose()
-
-$bmp.Save($Out, [System.Drawing.Imaging.ImageFormat]::Png)
-"saved: $Out   {0}x{1} px  (shows at {2:N1}x{3:N1})" -f $W, $H, $Wd, $Hd
-"  rope stems at {0:N3} and {1:N3} of the lockup's width" -f (($xAnchorL + $AnchorRopeX*$AnchorW)/$Wd), (($xAnchorR + $AnchorRopeX*$AnchorW)/$Wd)
-$bmp.Dispose(); $anchor.Dispose()
+"saved: logo-word-black.png / logo-word-white.png   {0}x{1} px  (shows at {2:N2} x {3:N2})" -f $W, $H, $Wd, $Hd
+"  rope stems at {0:N4} and {1:N4} of the lockup's width" -f (($xAnchorL + $AnchorRopeX*$AnchorW)/$Wd), (($xAnchorR + $AnchorRopeX*$AnchorW)/$Wd)
+# What index.html needs, computed rather than eyeballed. The lockup is placed so its two rope
+# stems land on the strip's two rope fractions; that fixes both its width and its left offset.
+$fL = ($xAnchorL + $AnchorRopeX*$AnchorW)/$Wd
+"index.html:"
+"  #brandRope width  = var(--worker-width) * {0:N4}" -f ($Wd / $StripW)
+"  #brandRope left   = var(--climber-left) - var(--worker-width) * {0:N4}" -f (($fL*$Wd - $RopeL*$StripW) / $StripW)
+# and where the lettering actually sits, so the anchors can be hung level with it
+$chk = New-Object System.Drawing.Bitmap($blackPath)
+$prev = $false
+for ($y = 0; $y -lt $chk.Height; $y++) {
+  $has = $false
+  for ($x = 0; $x -lt $chk.Width; $x += 2) { if ($chk.GetPixel($x, $y).A -gt 40) { $has = $true; break } }
+  if ($has -ne $prev) { "  ink {0} at y {1:N2} (display px)" -f $(if ($has) { "starts" } else { "ends  " }), ($y / $Scale); $prev = $has } }
+$chk.Dispose(); $anchor.Dispose()

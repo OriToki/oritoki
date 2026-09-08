@@ -155,12 +155,12 @@
       --climber-bottom-gap: 78px;
     }
     /* Brand lockup. Its size and position are tied to the strip, not typed in: the asset is
-       78 display px wide where the strip is 97 (0.804), and its left rope stem sits at 0.705 of
-       its own width. Line those two facts up with the strip's working rope (0.44) and the left
-       offset falls out as 0.44 - 0.705x0.804 = -0.1268 of the strip. Touch none of these numbers
-       without re-baking the asset (tools/logo-wordmark.ps1). */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1128);
-                 width: calc(var(--worker-width) * 0.771); z-index: 2; display: block; }
+       80.14 display px wide where the strip is 97 (0.8262), and its left rope stem sits at 0.7358
+       of its own width. Line those two facts up with the strip's working rope (0.44) and the left
+       offset falls out as 0.7358x0.8262 - 0.44 = 0.1679 of the strip. Touch neither number by
+       hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. */
+    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1679);
+                 width: calc(var(--worker-width) * 0.8262); z-index: 2; display: block; }
     /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
        its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
        backup rope would cross in front of the working rope's carabiner instead of disappearing
@@ -1441,8 +1441,12 @@
         // pieces of hardware.
         anchorPivotX: 0.415, anchorPivotY: 0.592,
         anchorHangLen: 3.563,        // 1012 of 284 — where the rope leaves the hanging piece
-        anchorTopWork: 44,           // px below the top of the window - the "tok" i
-        anchorTopBack: 6,            // ...and the "Or" i, higher, as the lettering has them
+        // Each anchor is the i of its own word, so these two follow the lettering: the wordmark
+        // sits at top 4px and logo-wordmark.ps1 prints where its ink starts (7.75 and 52.38), and
+        // the anchor hangs a set distance above that ink — 6.4px for the "Or" i, 15.1px for the
+        // smaller "tok" one. Re-bake the wordmark and these two move with it.
+        anchorTopWork: 41,           // px below the top of the window - the "tok" i
+        anchorTopBack: 5,            // ...and the "Or" i, higher, as the lettering has them
         anchorSwing: 0.06,           // spring that lets the carabiner lag the rope
         anchorDamp: 0.90,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
