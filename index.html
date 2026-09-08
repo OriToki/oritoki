@@ -2090,6 +2090,26 @@
       var MOVES = "left " + MOVE + ", top " + MOVE + ", width " + MOVE + ", height " + MOVE
                 + ", border-color .2s ease, box-shadow .3s ease, border-radius .3s ease";
 
+      /* If the opened card would not fit on screen, bring it in — moving the page WITH it rather
+         than after it, so the two read as one movement. The final height is known before the
+         growth starts, so where the card's bottom will land is known too. It scrolls only as far
+         as it must, and never far enough to push the card's top under the fixed header; a card
+         too tall for the window at least starts at the top of it. */
+      function fit(card, h) {
+        var head = (document.getElementById("header") || {}).offsetHeight || 88;
+        var gap = 16;
+        var top = card.getBoundingClientRect().top;
+        var by = 0;
+        if (top < head + gap) by = top - head - gap;
+        else if (top + h > window.innerHeight - gap) {
+          by = Math.min(top + h - window.innerHeight + gap, top - head - gap);
+        }
+        if (Math.abs(by) > 4) {
+          if (window.scrollBy) window.scrollBy({ top: by, left: 0, behavior: "smooth" });
+          else window.scrollTo(0, window.pageYOffset + by);
+        }
+      }
+
       function open(card) {
         if (current) close(true);
         current = card;
@@ -2123,6 +2143,7 @@
           card.style.left = left + "px";
           card.style.width = w + "px"; card.style.height = h + "px";
           card.classList.add("svc-in");                  // fades the sub-services up
+          window.setTimeout(function () { if (current === card) fit(card, h); }, 110);
         });
       }
 
