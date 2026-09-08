@@ -172,8 +172,11 @@
     .anchor-hang { transform-origin: 41.5% 16.6%; }
     #brandRope img { display: block; width: 100%; height: auto; }
     #brandRope .ink-white { display: none; }
-    /* White lettering over the hero photo and everywhere in dark mode; black on the light bar. */
-    #header:not(.scrolled) #brandRope .ink-black, html.dark #brandRope .ink-black { display: none; }
+    /* Plain white lettering over the hero photo and everywhere in dark mode — it needs no outline
+       on a dark ground, and an outline there would only muddy it. On the light bar the lettering
+       is white with black linework instead of solid black, so it is made of the same stuff as the
+       two carabiners beside it (tools/logo-wordmark.ps1 bakes both from one path). */
+    #header:not(.scrolled) #brandRope .ink-outline, html.dark #brandRope .ink-outline { display: none; }
     #header:not(.scrolled) #brandRope .ink-white, html.dark #brandRope .ink-white { display: block; }
 
     /* ABOVE the z-50 header on purpose: the ropes run from off the top of the screen, and behind
@@ -741,7 +744,7 @@
            Two bakes: only the LETTERING changes with the theme — the anchors and rope keep their
            own colours in both, since the rope has to match the SVG rope it turns into. -->
       <a href="#home" id="brandRope" aria-label="Oritoki — home">
-        <img class="ink-black" src="images/logo-word-black.png" alt="Oritoki" draggable="false" />
+        <img class="ink-outline" src="images/logo-word-outline.png" alt="Oritoki" draggable="false" />
         <img class="ink-white" src="images/logo-word-white.png" alt="" aria-hidden="true" draggable="false" />
       </a>
       </div>

@@ -22,6 +22,11 @@ param(
   [double]$OrSize = 48,           # font size for "Or"  (display px)
   [double]$TokSize = 35,          # font size for "tok"
   [double]$LineGap = 2,           # from the bottom of "Or"'s ink to the top of "tok"'s
+  # Linework for the outlined version. The hardware's own pen is 3.5 asset px on a 128px asset
+  # shown 10.8 wide - 0.30 display px - which on letters this size would be a hairline nobody
+  # sees. What carries across is the RATIO: that pen is a fifth of the carabiner frame it draws,
+  # and a fifth of the O's 9px ring is 1.8. Held back to 1.5 so the letters stay letters.
+  [double]$Outline = 1.5,
   [double]$AnchorTopR = 1,        # the "Or" anchor hangs from here  \ only sets the canvas
   [double]$AnchorTopL = 37,       # the "tok" one hangs lower        / height; the page places
                                   # them itself, from A.anchorTopBack / anchorTopWork
@@ -99,34 +104,52 @@ $Hd = [math]::Max($AnchorTopL + $anchorH, [math]::Max($AnchorTopR + $anchorH, $y
 
 $W = [int]([math]::Ceiling($Wd * $Scale)); $H = [int]([math]::Ceiling($Hd * $Scale))
 
-# Both inks in one run: the page shows the black one on the light bar and the white one over the
-# hero and in dark mode, and they have to be the SAME lettering in the same place.
+# Every version in one run: they have to be the SAME lettering in the same place, because the page
+# swaps between them. Over the hero and in dark mode it shows the white one; on the light bar it
+# shows the OUTLINED one - white letters with black linework, so the wordmark is made of the same
+# stuff as the carabiners standing next to it instead of turning into solid black beside them.
+# All three are drawn from one GraphicsPath, so the letterforms cannot drift apart.
 function Bake([string]$colour, [string]$file) {
   $bmp = New-Object System.Drawing.Bitmap($W, $H, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
   $g = [System.Drawing.Graphics]::FromImage($bmp)
   $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
   $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
   $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAlias
-  if ($colour -eq "white") { $col = [System.Drawing.Color]::FromArgb(255, 255, 255, 255) }
-  else                     { $col = [System.Drawing.Color]::FromArgb(255, 17, 17, 17) }
+  $gp = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $gp.AddString("Or",  $fam, 0, [single]($OrSize * $Scale),
+                (New-Object System.Drawing.PointF ([single]($xOr * $Scale), [single]0)), $fmt)
+  $gp.AddString("tok", $fam, 0, [single]($TokSize * $Scale),
+                (New-Object System.Drawing.PointF ([single]($xTok * $Scale), [single]($yTok * $Scale))), $fmt)
+  $col = [System.Drawing.Color]::FromArgb(255, 255, 255, 255)   # both versions are white letters
   # NOT $ink: PowerShell is case-insensitive and would collide with a parameter named $Ink -
   # assigning a brush to it would silently turn the brush into a string.
   $inkBrush = New-Object System.Drawing.SolidBrush ($col)
-  $g.DrawString("Or",  $fOr,  $inkBrush, [single]($xOr * $Scale),  [single](0), $fmt)
-  $g.DrawString("tok", $fTok, $inkBrush, [single]($xTok * $Scale), [single]($yTok * $Scale), $fmt)
+  $g.FillPath($inkBrush, $gp)
+  if ($colour -eq "out") {
+    # The stroke is centred on the outline, so half of it eats into the letter. Drawn at twice the
+    # width and clipped to the path, only the inside half lands - the letterforms keep the exact
+    # width the other two have, which is what lets the page swap between them without a shift.
+    $pen = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(255, 17, 17, 17)), ([single]($Outline * $Scale * 2))
+    $pen.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+    $g.SetClip($gp)
+    $g.DrawPath($pen, $gp)
+    $g.ResetClip(); $pen.Dispose()
+  }
   # The anchors are NOT baked in: the bolt hangs fixed and the carabiner swings with the rope, so
   # they are separate elements in the page. This asset is the lettering only - the canvas keeps
   # its full size so the same CSS box positions both.
-  $g.Dispose()
+  $gp.Dispose(); $g.Dispose()
   $path = Join-Path $OutDir $file
   $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
   $bmp.Dispose()
   return $path
 }
-$blackPath = Bake "black" "logo-word-black.png"
-[void](Bake "white" "logo-word-white.png")
+# Two files, because the page shows two. There is no solid-black one any more: the light bar gets
+# the outlined lettering instead, so nothing loaded it.
+$plainPath = Bake "white" "logo-word-white.png"
+[void](Bake "out" "logo-word-outline.png")
 
-"saved: logo-word-black.png / logo-word-white.png   {0}x{1} px  (shows at {2:N2} x {3:N2})" -f $W, $H, $Wd, $Hd
+"saved: logo-word-white / -outline.png   {0}x{1} px  (shows at {2:N2} x {3:N2})" -f $W, $H, $Wd, $Hd
 "  rope stems at {0:N4} and {1:N4} of the lockup's width" -f (($xAnchorL + $AnchorRopeX*$AnchorW)/$Wd), (($xAnchorR + $AnchorRopeX*$AnchorW)/$Wd)
 # What index.html needs, computed rather than eyeballed. The lockup is placed so its two rope
 # stems land on the strip's two rope fractions; that fixes both its width and its left offset.
@@ -135,7 +158,9 @@ $fL = ($xAnchorL + $AnchorRopeX*$AnchorW)/$Wd
 "  #brandRope width  = var(--worker-width) * {0:N4}" -f ($Wd / $StripW)
 "  #brandRope left   = var(--climber-left) - var(--worker-width) * {0:N4}" -f (($fL*$Wd - $RopeL*$StripW) / $StripW)
 # and where the lettering actually sits, so the anchors can be hung level with it
-$chk = New-Object System.Drawing.Bitmap($blackPath)
+# Read the ink off the PLAIN one: the outlined version's stroke would report the letterforms a
+# pixel and a half taller than they are, and these numbers place the anchors.
+$chk = New-Object System.Drawing.Bitmap($plainPath)
 $prev = $false
 for ($y = 0; $y -lt $chk.Height; $y++) {
   $has = $false
