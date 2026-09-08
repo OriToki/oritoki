@@ -15,9 +15,13 @@ param(
   [double]$AnchorW = 10.8,        # display px - at this width the anchor's own rope is exactly
                                   # the 1.55px the page draws, so the two meet with no step
   [double]$AnchorRopeX = 0.419,   # where the rope sits across the anchor asset
-  [double]$OrSize = 43,           # font size for "Or"  (display px)
-  [double]$TokSize = 30,          # font size for "tok"
-  [double]$TokIndent = 6,         # "tok" sits in from the left, as in the reference
+  # Sizes and leading are the owner's, measured off the layout he drew (tools/logo-arrangement.png)
+  # against the anchor's known 10.8px width: cap height 36.3 for "Or", 25.5 for "tok", and the two
+  # lines almost touching. "tok" is the wider word at these sizes, so it hangs out to the left -
+  # that stagger is deliberate, it is in the drawing.
+  [double]$OrSize = 48,           # font size for "Or"  (display px)
+  [double]$TokSize = 35,          # font size for "tok"
+  [double]$LineGap = 2,           # from the bottom of "Or"'s ink to the top of "tok"'s
   [double]$AnchorTopR = 1,        # the "Or" anchor hangs from here  \ only sets the canvas
   [double]$AnchorTopL = 37,       # the "tok" one hangs lower        / height; the page places
                                   # them itself, from A.anchorTopBack / anchorTopWork
@@ -53,6 +57,29 @@ $mg.Dispose(); $tmp.Dispose()
 $wOr = $szOr.Width / $Scale; $hOr = $szOr.Height / $Scale
 $wTok = $szTok.Width / $Scale; $hTok = $szTok.Height / $Scale
 
+# Where the INK sits inside a line box. The font's line height is no use for setting two lines this
+# close: it carries leading the letters do not fill, and "Or" has no descender while "tok" has
+# ascenders, so the only honest measure is the ink itself. Draw the word once on a scratch canvas
+# at y = 0 and read off its first and last inked row.
+function InkRows([string]$text, $font) {
+  $wid = [int]([math]::Ceiling($wOr * $Scale * 2)); $hei = [int]([math]::Ceiling($hOr * $Scale * 2))
+  $bm = New-Object System.Drawing.Bitmap($wid, $hei, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $gg = [System.Drawing.Graphics]::FromImage($bm)
+  $gg.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAlias
+  $gg.DrawString($text, $font, [System.Drawing.Brushes]::White, [single]0, [single]0, $fmt)
+  $gg.Dispose()
+  $top = -1; $bot = -1
+  for ($y = 0; $y -lt $hei; $y++) {
+    for ($x = 0; $x -lt $wid; $x += 2) {
+      if ($bm.GetPixel($x, $y).A -gt 40) { if ($top -lt 0) { $top = $y }; $bot = $y; break } } }
+  $bm.Dispose()
+  # Parenthesised on purpose: in PowerShell the comma binds tighter than the division, so
+  # @($top / $Scale, $bot / $Scale) means $top / ($Scale, $bot) / $Scale and blows up.
+  return @(($top / $Scale), ($bot / $Scale))
+}
+$inkOr  = InkRows "Or"  $fOr
+$inkTok = InkRows "tok" $fTok
+
 # Lay out in DISPLAY px, from the anchors outwards: each word ends 3px before its own anchor, and
 # the two anchors are a fixed 12.9px apart because the ropes are. So the words cannot both start
 # at the left edge - whichever one needs more room pushes the canvas out to the LEFT, and the CSS
@@ -64,7 +91,11 @@ $xTok = $xAnchorL - 3 - $wTok                            # "tok" ends just befor
 $shift = $Pad - [math]::Min(0.0, [math]::Min($xOr, $xTok))
 $xOr += $shift; $xTok += $shift; $xAnchorR += $shift; $xAnchorL += $shift
 $Wd = $xAnchorR + $AnchorW + $Pad                        # display width of the whole lockup
-$Hd = [math]::Max($AnchorTopL + $anchorH, [math]::Max($AnchorTopR + $anchorH, $hOr + $hTok)) + $Pad
+# Vertical: "tok" is set so that its ink starts $LineGap below where "Or"'s ink ends - the two
+# lines are tucked right up against each other, which is what makes the lockup read as one mark
+# instead of two words. $yTok is the DRAW position, so the ink offset comes off it.
+$yTok = $inkOr[1] + $LineGap - $inkTok[0]
+$Hd = [math]::Max($AnchorTopL + $anchorH, [math]::Max($AnchorTopR + $anchorH, $yTok + $inkTok[1])) + $Pad
 
 $W = [int]([math]::Ceiling($Wd * $Scale)); $H = [int]([math]::Ceiling($Hd * $Scale))
 
@@ -82,7 +113,7 @@ function Bake([string]$colour, [string]$file) {
   # assigning a brush to it would silently turn the brush into a string.
   $inkBrush = New-Object System.Drawing.SolidBrush ($col)
   $g.DrawString("Or",  $fOr,  $inkBrush, [single]($xOr * $Scale),  [single](0), $fmt)
-  $g.DrawString("tok", $fTok, $inkBrush, [single]($xTok * $Scale), [single](($hOr - 2) * $Scale), $fmt)
+  $g.DrawString("tok", $fTok, $inkBrush, [single]($xTok * $Scale), [single]($yTok * $Scale), $fmt)
   # The anchors are NOT baked in: the bolt hangs fixed and the carabiner swings with the rope, so
   # they are separate elements in the page. This asset is the lettering only - the canvas keeps
   # its full size so the same CSS box positions both.

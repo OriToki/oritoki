@@ -155,12 +155,12 @@
       --climber-bottom-gap: 78px;
     }
     /* Brand lockup. Its size and position are tied to the strip, not typed in: the asset is
-       80.14 display px wide where the strip is 97 (0.8262), and its left rope stem sits at 0.7358
+       88.38 display px wide where the strip is 97 (0.9111), and its left rope stem sits at 0.7604
        of its own width. Line those two facts up with the strip's working rope (0.44) and the left
-       offset falls out as 0.7358x0.8262 - 0.44 = 0.1679 of the strip. Touch neither number by
+       offset falls out as 0.7604x0.9111 - 0.44 = 0.2528 of the strip. Touch neither number by
        hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1679);
-                 width: calc(var(--worker-width) * 0.8262); z-index: 2; display: block; }
+    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.2528);
+                 width: calc(var(--worker-width) * 0.9111); z-index: 2; display: block; }
     /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
        its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
        backup rope would cross in front of the working rope's carabiner instead of disappearing
@@ -210,10 +210,11 @@
     body.menu-open #ropeClimber { opacity: 0; visibility: hidden; }
     @media (prefers-reduced-motion: reduce) { #climber { transition: none !important; } }
     /* Mobile: a narrower strip, set through the SAME two variables so the lockup, the ropes and
-       the technician all move together. --climber-left cannot go below about 0.13 of the strip's
-       width or the wordmark, which hangs that far to the LEFT of the ropes, runs off the screen. */
+       the technician all move together. --climber-left cannot go below the 0.2528 of the strip's
+       width that the wordmark hangs to the LEFT of the ropes (plus a couple of px of margin), or
+       the "t" runs off the screen — 72 x 0.2528 = 18.2, so 22 leaves 3.8px. */
     @media (max-width: 640px) {
-      :root { --climber-left: 11px; --worker-width: 72px; }
+      :root { --climber-left: 22px; --worker-width: 72px; }
       #header { height: 60px; }          /* shorter header bar on phones */
       #langToggle button { padding: 4px 8px; }
       #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
@@ -1442,15 +1443,19 @@
         anchorPivotX: 0.415, anchorPivotY: 0.592,
         anchorHangLen: 3.563,        // 1012 of 284 — where the rope leaves the hanging piece
         /* Each anchor is the i of its own word, so it stands on that word's BASELINE: the
-           carabiner is the i's stem, the bolt hanger above it the dot. The carabiner's bottom is
-           24.3px down the anchor asset at the size it is shown (2.25 of its own width — the waist
-           where the frame closes and the knot starts, measured off anchor-hang.png), so each of
-           these is that word's baseline minus 24.3. The wordmark sits at top 4px and
-           logo-wordmark.ps1 prints where its ink ends: 40.00 and 74.25, so 44.0 and 78.25 on the
-           page. Hung level with the cap heights instead, as they were, both anchors floated a
-           good 15px above their own letters. */
-        anchorTopWork: 54,           // px below the top of the window - the "tok" i
-        anchorTopBack: 21,           // ...and the "Or" i, higher, as the lettering has them
+           carabiner is the i's stem, the bolt hanger above it the dot. Hung level with the cap
+           heights instead, as they first were, both anchors floated a good 15px above their own
+           letters and read as hardware parked beside the wordmark.
+           These are fractions of the STRIP's width, not pixels, because the wordmark is sized
+           from the strip too — as plain px the anchors came adrift from the lettering as soon as
+           the phone breakpoint made the strip narrower. logo-wordmark.ps1 prints where each line's
+           ink ends (44.63 and 72.13 in an 88.38-wide lockup); with the lockup at 0.9111 of the
+           strip that is 0.4601 and 0.7435 of the strip below its top edge. */
+        brandTop: 4,                 // where the lockup sits, matching #brandRope's own top
+        baseBack: 0.4601,            // the "Or" baseline  \ of the strip's width, below brandTop
+        baseWork: 0.7435,            // the "tok" baseline /
+        carabBot: 2.25,              // the carabiner's bottom, in anchor widths down the asset —
+                                     // the waist where the frame closes and the knot starts
         anchorSwing: 0.06,           // spring that lets the carabiner lag the rope
         anchorDamp: 0.90,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
@@ -1477,17 +1482,20 @@
         // Place the four anchor pieces. Each anchor is hung so that the rope drawn across it lands
         // on the rope fraction it belongs to; the hanging piece is slotted under its own hanger.
         var aw = vw * A.anchorW;
-        function place(bolt, hang, ropeFx, topPx) {
+        // Stand an anchor on the baseline of the word it is the i of (see A.baseBack / baseWork).
+        function place(bolt, hang, ropeFx, baseFx) {
+          var topPx = (A.brandTop + baseFx * vw - A.carabBot * aw).toFixed(2);
           var left = ropeFx * vw - A.anchorRopeX * aw;
-          if (bolt) { bolt.style.width = aw.toFixed(2) + "px"; bolt.style.left = left.toFixed(2) + "px"; bolt.style.top = topPx + "px"; }
+          if (bolt) { bolt.style.width = aw.toFixed(2) + "px"; bolt.style.left = left.toFixed(2) + "px";
+                      bolt.style.top = topPx + "px"; }
           // Both pieces are full-size and overlay exactly, so they share a corner; only the
           // hanging one is ever transformed.
           if (hang) { hang.style.width = aw.toFixed(2) + "px"; hang.style.left = left.toFixed(2) + "px";
                       hang.style.top = topPx + "px"; }
-          return { px: left + A.anchorPivotX * aw, py: topPx + A.anchorPivotY * aw };   // the clip point
+          return { px: left + A.anchorPivotX * aw, py: +topPx + A.anchorPivotY * aw };   // the clip point
         }
-        pivotWork = place(boltWork, hangWork, A.workTopX, A.anchorTopWork);
-        pivotBack = place(boltBack, hangBack, A.backupX, A.anchorTopBack);
+        pivotWork = place(boltWork, hangWork, A.workTopX, A.baseWork);
+        pivotBack = place(boltBack, hangBack, A.backupX, A.baseBack);
         // Rope thickness scales with the strip, so it holds at any size. A.ropeW is the single
         // source of truth for it — the knots are drawn from the same number (see drawRopes).
         if (wrapEl) {
