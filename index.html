@@ -521,6 +521,10 @@
       border-color: #f97316; box-shadow: 0 30px 60px -24px rgba(20,20,42,.6);
     }
     #services article.svc-open::after { content: "\f068"; background: #f97316; color: #fff; }
+    /* Any card the open one lands on goes entirely, rather than showing the strip of itself that
+       happens to stick out past the edge. Specificity has to beat .reveal.in, which sets the
+       opacity these cards are sitting at. */
+    #services article.svc-covered { opacity: 0; pointer-events: none; transition: opacity .25s ease; }
     /* The number and the icon are the closed card's furniture — an open card wants its title
        first, and the room. */
     #services article.svc-open::before, #services article.svc-open .svc-ico { display: none; }
@@ -2084,7 +2088,7 @@
       if (!grid) return;
       var cards = Array.prototype.slice.call(grid.querySelectorAll("article"));
       if (!cards.length) return;
-      var current = null, ghost = null;
+      var current = null, ghost = null, covered = [];
       var EASE = "cubic-bezier(.22,1,.36,1)", MOVE = ".42s " + EASE;
 
       var MOVES = "left " + MOVE + ", top " + MOVE + ", width " + MOVE + ", height " + MOVE
@@ -2108,6 +2112,25 @@
           if (window.scrollBy) window.scrollBy({ top: by, left: 0, behavior: "smooth" });
           else window.scrollTo(0, window.pageYOffset + by);
         }
+      }
+
+      /* Every card the opened one overlaps goes, not just the part of it that would be hidden —
+         a card showing the strip of itself that sticks out past the edge reads as a mistake.
+         Tested against the laid-out boxes, so it follows whatever the column count happens to be. */
+      function cover(card, left, top, w, h) {
+        covered = [];
+        cards.forEach(function (c) {
+          if (c === card) return;
+          if (c.offsetLeft < left + w && c.offsetLeft + c.offsetWidth > left &&
+              c.offsetTop < top + h && c.offsetTop + c.offsetHeight > top) {
+            c.classList.add("svc-covered");
+            covered.push(c);
+          }
+        });
+      }
+      function uncover() {
+        covered.forEach(function (c) { c.classList.remove("svc-covered"); });
+        covered = [];
       }
 
       function open(card) {
@@ -2143,6 +2166,7 @@
           card.style.left = left + "px";
           card.style.width = w + "px"; card.style.height = h + "px";
           card.classList.add("svc-in");                  // fades the sub-services up
+          cover(card, left, from.top, w, h);             // ...and the cards it lands on go
           window.setTimeout(function () { if (current === card) fit(card, h); }, 110);
         });
       }
@@ -2155,6 +2179,7 @@
         current = null; ghost = null;
         card.classList.remove("svc-in");
         card.setAttribute("aria-expanded", "false");
+        uncover();                        // the neighbours come back as the card shrinks off them
 
         function settle() {
           card.classList.remove("svc-open");
