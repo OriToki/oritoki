@@ -20,13 +20,14 @@ param(
   # and pale is METAL - the plate, the bolt head, the hanger's tongue, the carabiner's body - and
   # keeps its white fill, exactly as climber.png does. Found by labelling every enclosed region on
   # the source drawing and reading off which ones are holes; see tools/README.md.
+  # Marked on the grid by the owner, who can tell hardware from holes at a glance where the
+  # geometry alone cannot: the eye is the wedge ABOVE the carabiner's bar, x 100..145 / y 88..125.
   [int[]]$Holes = @(150,350,   # the carabiner's opening
-                    136,180),  # the hanger's eye, the part of it seen under the tongue
-  # Enclosed and pale, but NOT holes - all of these are metal, and punching them out took bites
-  # out of the hardware:
-  #   (102,92)  and (115,131)  the plate itself. The tongue crosses the plate and cuts its white
-  #                            fill into separate pieces; those pieces are still the plate.
-  #   (223,201)                the carabiner's nose, where the gate closes onto it.
+                    102,92),   # the hanger's eye, seen between the tongue and the plate
+  # Enclosed and pale, but METAL - punching any of these out takes a bite out of the hardware:
+  #   (136,180)  the wedge under the tongue: carabiner frame, not a hole
+  #   (115,131)  a sliver of the plate, cut off from the rest of it by the tongue
+  #   (223,201)  the carabiner's nose, where the gate closes onto it
   [double]$Tile = 14.0, [double]$LineW = 5.0,
   [int]$OutW = 128,               # asset width in px (the pieces are shown ~11px wide)
   [string]$OutDir = "c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\images"
