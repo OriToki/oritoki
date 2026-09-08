@@ -162,11 +162,11 @@
     #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1128);
                  width: calc(var(--worker-width) * 0.771); z-index: 2; display: block; }
     /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
-       its knot. The hanging piece turns about the hanger's clip point — 75.7% across the anchor's
-       width and 12 of the 866 rows down its own height — which is where the carabiner sits in
-       the hanger's hole. */
+       its knot. The hanging piece turns about the point where the carabiner's bar passes through
+       the hanger's eye: 41.5% across the anchor's width, and 22 of its 866 rows down — keep this
+       in step with A.anchorPivotX / Y, which is the same point in the script's own units. */
     .anchor-bolt, .anchor-hang { position: absolute; z-index: 1; height: auto; pointer-events: none; }
-    .anchor-hang { transform-origin: 75.7% 1.39%; }
+    .anchor-hang { transform-origin: 41.5% 2.54%; }
     #brandRope img { display: block; width: 100%; height: auto; }
     #brandRope .ink-white { display: none; }
     /* White lettering over the hero photo and everywhere in dark mode; black on the light bar. */
@@ -1423,7 +1423,11 @@
            exactly the width the page draws (1.55px), so knot and rope meet with no step. */
         anchorW: 0.1113,             // of the strip's width
         anchorRopeX: 0.419,
-        anchorPivotX: 0.757, anchorPivotY: 0.556,
+        // The carabiner hangs where its top bar passes through the hanger's eye — source pixel
+        // (118, 168) of the 284px drawing, marked on the grid by the owner. Turning it about any
+        // other point drags the carabiner out from under its plate, and the two read as separate
+        // pieces of hardware.
+        anchorPivotX: 0.415, anchorPivotY: 0.592,
         anchorHangTop: 0.514,        // 146 of 284
         anchorHangLen: 3.049,        // the hanging piece's height
         anchorTopWork: 44,           // px below the top of the window - the "tok" i
