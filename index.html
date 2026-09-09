@@ -161,12 +161,12 @@
       --climber-bottom-gap: 78px;
     }
     /* Brand lockup. Its size and position are tied to the strip, not typed in: the asset is
-       88.38 display px wide where the strip is 97 (0.9111), and its left rope stem sits at 0.7604
+       84.59 display px wide where the strip is 97 (0.8721), and its left rope stem sits at 0.7757
        of its own width. Line those two facts up with the strip's working rope (0.44) and the left
-       offset falls out as 0.7604x0.9111 - 0.44 = 0.2528 of the strip. Touch neither number by
+       offset falls out as 0.7757x0.8721 - 0.44 = 0.2365 of the strip. Touch neither number by
        hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.2528);
-                 width: calc(var(--worker-width) * 0.9111); z-index: 2; display: block; }
+    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.2365);
+                 width: calc(var(--worker-width) * 0.8721); z-index: 2; display: block; }
     /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
        its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
        backup rope would cross in front of the working rope's carabiner instead of disappearing
@@ -1411,7 +1411,16 @@
         // Rope thickness, as a fraction of the strip's width — the one place it is set. Everything
         // sized off the rope (its two strokes, the stopper knots) is derived from this, so the
         // whole rig stays in proportion when it changes.
-        ropeW: 0.016,
+        /* Rope and hardware are sized to the MAN, measured off the gear drawn on him: his
+           descender is 55px tall in climber.png's own 560x686, and a descender is about 130mm, so
+           one of those pixels is 2.4mm — and the strip, 97px wide for the figure's 560, puts one
+           displayed pixel at 13.9mm. Life size is therefore a 0.8px rope and a 4.1px carabiner.
+           Drawn that small neither survives: the rope goes to a grey hair and the carabiner stops
+           reading as one, and these two are also the i's of the wordmark. 0.65 of what they were
+           is as close to true as they can be carried. ropeW stays anchorW x 0.1435, which is what
+           the rope measures across the anchor artwork — that is what keeps the drawn rope and the
+           SVG one the same cord. */
+        ropeW: 0.0104,
         // The weave, taken from the anchor artwork so the rope and the knot it comes out of are
         // the same cord. In that drawing the rope is 41px wide and the lattice repeats every
         // 14px measured across the lines, which are 5px thick — so as fractions of the rope:
@@ -1482,7 +1491,7 @@
              hangTop where the hanging piece starts, relative to the bolt's top
            anchorW itself is not free: at 0.1113 of the strip the anchor's own rope comes out at
            exactly the width the page draws (1.55px), so knot and rope meet with no step. */
-        anchorW: 0.1113,             // of the strip's width
+        anchorW: 0.0723,             // of the strip's width — see ropeW above
         anchorRopeX: 0.419,
         // The carabiner hangs where its top bar passes through the hanger's eye — source pixel
         // (118, 168) of the 284px drawing, marked on the grid by the owner. Turning it about any
