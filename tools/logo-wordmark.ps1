@@ -23,16 +23,14 @@ param(
   [double]$OrSize = 48,           # font size for "Or"  (display px)
   [double]$TokSize = 35,          # font size for "tok"
   [double]$LineGap = 2,           # from the bottom of "Or"'s ink to the top of "tok"'s
-  # Linework for the outlined version: the hardware's own pen, literally. 3.5px on a 128px asset
-  # shown 10.8 wide is 0.295 display px. Scaling it up to keep the same weight RELATIVE to the
-  # letters was tried at 1.5 and read as a thick black outline next to hairline-drawn carabiners -
-  # the very mismatch it was meant to fix. At 0.3 the outline is a soft grey edge at 1x, which is
-  # exactly what the carabiner's outline is, and the letters still hold: they are 36px tall.
-  [double]$Outline = 0.3,
   [double]$AnchorTopR = 1,        # the "Or" anchor hangs from here  \ only sets the canvas
   [double]$AnchorTopL = 37,       # the "tok" one hangs lower        / height; the page places
                                   # them itself, from A.anchorTopBack / anchorTopWork
   [double]$Pad = 2,
+  # Which weight of Helvetica Neue from fonts/: Black, Bold, Medium or Roman. Black is a solid
+  # slab beside hardware drawn in hairlines; Roman is the lightest here and puts the lettering in
+  # the same pen as the carabiners.
+  [string]$Face = "Roman",
   # Only the LETTERING changes with the theme. The anchors and the rope keep their own colours in
   # both, exactly as climber.png does - a white carabiner with black linework reads on either
   # background, and the rope has to match the SVG ropes it continues into.
@@ -48,7 +46,7 @@ $anchorH = $AnchorW * $anchor.Height / $anchor.Width
 # the anchors sit at the rope fractions; everything else is placed around them
 $gapR = $RopeR - $RopeL                                   # 0.133 of the strip
 $fonts = New-Object System.Drawing.Text.PrivateFontCollection
-$fonts.AddFontFile("c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\fonts\HelveticaNeue-Black.otf")
+$fonts.AddFontFile("c:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\fonts\HelveticaNeue-$Face.otf")
 $fam = $fonts.Families[0]
 $fOr  = New-Object System.Drawing.Font($fam, [single]($OrSize * $Scale), [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
 $fTok = New-Object System.Drawing.Font($fam, [single]($TokSize * $Scale), [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Pixel)
@@ -106,11 +104,13 @@ $Hd = [math]::Max($AnchorTopL + $anchorH, [math]::Max($AnchorTopR + $anchorH, $y
 
 $W = [int]([math]::Ceiling($Wd * $Scale)); $H = [int]([math]::Ceiling($Hd * $Scale))
 
-# Every version in one run: they have to be the SAME lettering in the same place, because the page
-# swaps between them. Over the hero and in dark mode it shows the white one; on the light bar it
-# shows the OUTLINED one - white letters with black linework, so the wordmark is made of the same
-# stuff as the carabiners standing next to it instead of turning into solid black beside them.
-# All three are drawn from one GraphicsPath, so the letterforms cannot drift apart.
+# Both versions in one run, from one GraphicsPath, so the letterforms cannot drift apart - the page
+# swaps between them and any difference would show as a jump. White over the hero and in dark mode,
+# solid dark ink on the light bar.
+# The light bar used to get white letters with hairline black linework, so that the wordmark was
+# made of the same stuff as the carabiners rather than a black slab beside them. At this weight
+# that is no longer the trade: a Roman "O" IS a hairline, so it can take solid ink and still belong
+# to the drawing - and white-on-beige held together by a 0.3px edge was barely readable at 1x.
 function Bake([string]$colour, [string]$file) {
   $bmp = New-Object System.Drawing.Bitmap($W, $H, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
   $g = [System.Drawing.Graphics]::FromImage($bmp)
@@ -122,21 +122,12 @@ function Bake([string]$colour, [string]$file) {
                 (New-Object System.Drawing.PointF ([single]($xOr * $Scale), [single]0)), $fmt)
   $gp.AddString("tok", $fam, 0, [single]($TokSize * $Scale),
                 (New-Object System.Drawing.PointF ([single]($xTok * $Scale), [single]($yTok * $Scale))), $fmt)
-  $col = [System.Drawing.Color]::FromArgb(255, 255, 255, 255)   # both versions are white letters
+  if ($colour -eq "dark") { $col = [System.Drawing.Color]::FromArgb(255, 17, 17, 17) }
+  else                    { $col = [System.Drawing.Color]::FromArgb(255, 255, 255, 255) }
   # NOT $ink: PowerShell is case-insensitive and would collide with a parameter named $Ink -
   # assigning a brush to it would silently turn the brush into a string.
   $inkBrush = New-Object System.Drawing.SolidBrush ($col)
   $g.FillPath($inkBrush, $gp)
-  if ($colour -eq "out") {
-    # The stroke is centred on the outline, so half of it eats into the letter. Drawn at twice the
-    # width and clipped to the path, only the inside half lands - the letterforms keep the exact
-    # width the other two have, which is what lets the page swap between them without a shift.
-    $pen = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(255, 17, 17, 17)), ([single]($Outline * $Scale * 2))
-    $pen.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
-    $g.SetClip($gp)
-    $g.DrawPath($pen, $gp)
-    $g.ResetClip(); $pen.Dispose()
-  }
   # The anchors are NOT baked in: the bolt hangs fixed and the carabiner swings with the rope, so
   # they are separate elements in the page. This asset is the lettering only - the canvas keeps
   # its full size so the same CSS box positions both.
@@ -146,12 +137,10 @@ function Bake([string]$colour, [string]$file) {
   $bmp.Dispose()
   return $path
 }
-# Two files, because the page shows two. There is no solid-black one any more: the light bar gets
-# the outlined lettering instead, so nothing loaded it.
 $plainPath = Bake "white" "logo-word-white.png"
-[void](Bake "out" "logo-word-outline.png")
+[void](Bake "dark" "logo-word-dark.png")
 
-"saved: logo-word-white / -outline.png   {0}x{1} px  (shows at {2:N2} x {3:N2})" -f $W, $H, $Wd, $Hd
+"saved: logo-word-white / -dark.png   {0}x{1} px  (shows at {2:N2} x {3:N2})" -f $W, $H, $Wd, $Hd
 "  rope stems at {0:N4} and {1:N4} of the lockup's width" -f (($xAnchorL + $AnchorRopeX*$AnchorW)/$Wd), (($xAnchorR + $AnchorRopeX*$AnchorW)/$Wd)
 # What index.html needs, computed rather than eyeballed. The lockup is placed so its two rope
 # stems land on the strip's two rope fractions; that fixes both its width and its left offset.
