@@ -161,12 +161,12 @@
       --climber-bottom-gap: 78px;
     }
     /* Brand lockup. Its size and position are tied to the strip, not typed in: the asset is
-       74.18 display px wide where the strip is 97 (0.7648), and its left rope stem sits at 0.7600
+       76.18 display px wide where the strip is 97 (0.7854), and its left rope stem sits at 0.7663
        of its own width. Line those two facts up with the strip's working rope (0.44) and the left
-       offset falls out as 0.7600x0.7648 - 0.44 = 0.1412 of the strip. Touch neither number by
+       offset falls out as 0.7663x0.7854 - 0.44 = 0.1618 of the strip. Touch neither number by
        hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1412);
-                 width: calc(var(--worker-width) * 0.7648); z-index: 2; display: block; }
+    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1618);
+                 width: calc(var(--worker-width) * 0.7854); z-index: 2; display: block; }
     /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
        its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
        backup rope would cross in front of the working rope's carabiner instead of disappearing

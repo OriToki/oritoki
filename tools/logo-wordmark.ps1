@@ -27,6 +27,14 @@ param(
   [double]$AnchorTopL = 37,       # the "tok" one hangs lower        / height; the page places
                                   # them itself, from A.anchorTopBack / anchorTopWork
   [double]$Pad = 2,
+  # Space between a word's last letter and its anchor. Not the same on both lines, and measuring
+  # says it should be: set equal, the ink gaps came out 3.05 and 3.28. They do not LOOK equal,
+  # because of where each letter reaches its rightmost point. The "r" reaches it at its shoulder,
+  # up at the top, clear of the carabiner hanging beside it; the "k" reaches it with the tip of
+  # its lower leg, down at the baseline, which is exactly the height of the carabiner's body. So
+  # the "tok" line is given the extra couple of pixels the eye asks for.
+  [double]$GapOr = 3,
+  [double]$GapTok = 5,
   # Which weight of Helvetica Neue from fonts/: Black, Bold, Medium or Roman. Black is a solid
   # slab beside hardware drawn in hairlines; Roman is the lightest here and puts the lettering in
   # the same pen as the carabiners.
@@ -90,9 +98,9 @@ $inkTok = InkRows "tok" $fTok
 # at the left edge - whichever one needs more room pushes the canvas out to the LEFT, and the CSS
 # offset (which is worked out from the rope stems this script prints) follows it.
 $xOr = 0.0
-$xAnchorR = $xOr + $wOr + 3
+$xAnchorR = $xOr + $wOr + $GapOr
 $xAnchorL = $xAnchorR - $gapR * $StripW                  # 12.9px to the left of it
-$xTok = $xAnchorL - 3 - $wTok                            # "tok" ends just before its anchor
+$xTok = $xAnchorL - $GapTok - $wTok                      # "tok" ends just before its anchor
 $shift = $Pad - [math]::Min(0.0, [math]::Min($xOr, $xTok))
 $xOr += $shift; $xTok += $shift; $xAnchorR += $shift; $xAnchorL += $shift
 $Wd = $xAnchorR + $AnchorW + $Pad                        # display width of the whole lockup
