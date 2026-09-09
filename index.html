@@ -1502,20 +1502,22 @@
         // pieces of hardware.
         anchorPivotX: 0.415, anchorPivotY: 0.592,
         anchorHangLen: 3.563,        // 1012 of 284 — where the rope leaves the hanging piece
-        /* Each anchor is the i of its own word, so it stands on that word's BASELINE: the
-           carabiner is the i's stem, the bolt hanger above it the dot. Hung level with the cap
-           heights instead, as they first were, both anchors floated a good 15px above their own
-           letters and read as hardware parked beside the wordmark.
+        /* Each anchor hangs level with the TOP of its own word: the carabiner's top edge lines up
+           with the cap, the bolt hanger sits above it like a dot, and the knot and rope run down
+           past the letters. Standing them on the baselines instead, as they were, put the whole
+           anchor low and the rope started somewhere around the letters' feet — the owner's
+           screenshot has them up at the top, and that is also where an anchor belongs: bolted
+           high, with everything else hanging from it.
            These are fractions of the STRIP's width, not pixels, because the wordmark is sized
            from the strip too — as plain px the anchors came adrift from the lettering as soon as
            the phone breakpoint made the strip narrower. logo-wordmark.ps1 prints where each line's
-           ink ends (44.13 and 71.50 in a 74.18-wide lockup); with the lockup at 0.7648 of the
-           strip that is 0.4550 and 0.7372 of the strip below its top edge. */
+           ink starts (8.25 and 46.00 in a 76.18-wide lockup); with the lockup at 0.7854 of the
+           strip that is 0.0851 and 0.4743 of the strip below its top edge. */
         brandTop: 4,                 // where the lockup sits, matching #brandRope's own top
-        baseBack: 0.4550,            // the "Or" baseline  \ of the strip's width, below brandTop
-        baseWork: 0.7372,            // the "tok" baseline /
-        carabBot: 2.25,              // the carabiner's bottom, in anchor widths down the asset —
-                                     // the waist where the frame closes and the knot starts
+        capBack: 0.0851,             // the "Or" cap top  \ of the strip's width, below brandTop
+        capWork: 0.4743,             // the "tok" cap top /
+        carabTop: 0.438,             // the carabiner's top, in anchor widths down the asset —
+                                     // 4.73 of the 10.8 the asset was first measured at
         anchorSwing: 0.06,           // spring that lets the carabiner lag the rope
         anchorDamp: 0.90,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
@@ -1542,9 +1544,9 @@
         // Place the four anchor pieces. Each anchor is hung so that the rope drawn across it lands
         // on the rope fraction it belongs to; the hanging piece is slotted under its own hanger.
         var aw = vw * A.anchorW;
-        // Stand an anchor on the baseline of the word it is the i of (see A.baseBack / baseWork).
-        function place(bolt, hang, ropeFx, baseFx) {
-          var topPx = (A.brandTop + baseFx * vw - A.carabBot * aw).toFixed(2);
+        // Hang an anchor level with the top of its own word (see A.capBack / capWork).
+        function place(bolt, hang, ropeFx, capFx) {
+          var topPx = (A.brandTop + capFx * vw - A.carabTop * aw).toFixed(2);
           var left = ropeFx * vw - A.anchorRopeX * aw;
           if (bolt) { bolt.style.width = aw.toFixed(2) + "px"; bolt.style.left = left.toFixed(2) + "px";
                       bolt.style.top = topPx + "px"; }
@@ -1554,8 +1556,8 @@
                       hang.style.top = topPx + "px"; }
           return { px: left + A.anchorPivotX * aw, py: +topPx + A.anchorPivotY * aw };   // the clip point
         }
-        pivotWork = place(boltWork, hangWork, A.workTopX, A.baseWork);
-        pivotBack = place(boltBack, hangBack, A.backupX, A.baseBack);
+        pivotWork = place(boltWork, hangWork, A.workTopX, A.capWork);
+        pivotBack = place(boltBack, hangBack, A.backupX, A.capBack);
         // Rope thickness scales with the strip, so it holds at any size. A.ropeW is the single
         // source of truth for it — the knots are drawn from the same number (see drawRopes).
         if (wrapEl) {
