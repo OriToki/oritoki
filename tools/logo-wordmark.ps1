@@ -12,8 +12,8 @@ param(
   [double]$RopeL = 0.44,          # working rope   \ fractions of the 97px strip, from index.html
   [double]$RopeR = 0.573,         # backup rope    /
   [double]$StripW = 97,
-  [double]$AnchorW = 7.01,        # display px - at this width the anchor's own rope is exactly
-                                  # the 1.01px the page draws, so the two meet with no step.
+  [double]$AnchorW = 5.0,         # display px - at this width the anchor's own rope is exactly
+                                  # the 0.72px the page draws, so the two meet with no step.
                                   # Keep it equal to index.html's A.anchorW x the strip's 97.
   [double]$AnchorRopeX = 0.419,   # where the rope sits across the anchor asset
   # Sizes and leading are the owner's, measured off the layout he drew (tools/logo-arrangement.png)
