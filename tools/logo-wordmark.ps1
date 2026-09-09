@@ -10,7 +10,7 @@
 param(
   [double]$Scale = 8,             # canvas px per display px
   [double]$RopeL = 0.44,          # working rope   \ fractions of the 97px strip, from index.html
-  [double]$RopeR = 0.573,         # backup rope    /
+  [double]$RopeR = 0.5018,        # backup rope    /
   [double]$StripW = 97,
   [double]$AnchorW = 5.0,         # display px - at this width the anchor's own rope is exactly
                                   # the 0.72px the page draws, so the two meet with no step.
@@ -27,14 +27,12 @@ param(
   [double]$AnchorTopL = 37,       # the "tok" one hangs lower        / height; the page places
                                   # them itself, from A.anchorTopBack / anchorTopWork
   [double]$Pad = 2,
-  # Space between a word's last letter and its anchor. Not the same on both lines, and measuring
-  # says it should be: set equal, the ink gaps came out 3.05 and 3.28. They do not LOOK equal,
-  # because of where each letter reaches its rightmost point. The "r" reaches it at its shoulder,
-  # up at the top, clear of the carabiner hanging beside it; the "k" reaches it with the tip of
-  # its lower leg, down at the baseline, which is exactly the height of the carabiner's body. So
-  # the "tok" line is given the extra couple of pixels the eye asks for.
+  # Space between a word's last letter and its anchor. The "tok" line had the wider gap for a
+  # while, because the k reaches its rightmost point with the tip of its lower leg, down at the
+  # baseline - which was exactly the height of the carabiner's body. The anchors hang at the tops
+  # of the words now, so the two no longer meet and the gaps go back to being equal.
   [double]$GapOr = 3,
-  [double]$GapTok = 5,
+  [double]$GapTok = 3,
   # Which weight of Helvetica Neue from fonts/: Black, Bold, Medium or Roman. Black is a solid
   # slab beside hardware drawn in hairlines; Roman is the lightest here and puts the lettering in
   # the same pen as the carabiners.
@@ -93,13 +91,16 @@ function InkRows([string]$text, $font) {
 $inkOr  = InkRows "Or"  $fOr
 $inkTok = InkRows "tok" $fTok
 
-# Lay out in DISPLAY px, from the anchors outwards: each word ends 3px before its own anchor, and
-# the two anchors are a fixed 12.9px apart because the ropes are. So the words cannot both start
-# at the left edge - whichever one needs more room pushes the canvas out to the LEFT, and the CSS
-# offset (which is worked out from the rope stems this script prints) follows it.
+# Lay out in DISPLAY px, from the anchors outwards: each word ends its own gap before its anchor,
+# and the two anchors are a fixed 6.0px apart because the ropes are. So the words cannot both
+# start at the left edge - whichever one needs more room pushes the canvas out to the LEFT, and
+# the CSS offset (which is worked out from the rope stems this script prints) follows it.
+# That 6.0 is not a free choice either: it is what puts the big O over the small o. The whole
+# chain is O centred on o -> how far apart the words sit -> how far apart their anchors sit -> how
+# far apart the ropes hang. Move any of them and the rest have to be re-derived.
 $xOr = 0.0
 $xAnchorR = $xOr + $wOr + $GapOr
-$xAnchorL = $xAnchorR - $gapR * $StripW                  # 12.9px to the left of it
+$xAnchorL = $xAnchorR - $gapR * $StripW                  # 6.0px to the left of it
 $xTok = $xAnchorL - $GapTok - $wTok                      # "tok" ends just before its anchor
 $shift = $Pad - [math]::Min(0.0, [math]::Min($xOr, $xTok))
 $xOr += $shift; $xTok += $shift; $xAnchorR += $shift; $xAnchorL += $shift

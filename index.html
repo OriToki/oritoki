@@ -161,12 +161,12 @@
       --climber-bottom-gap: 78px;
     }
     /* Brand lockup. Its size and position are tied to the strip, not typed in: the asset is
-       76.18 display px wide where the strip is 97 (0.7854), and its left rope stem sits at 0.7663
+       67.27 display px wide where the strip is 97 (0.6936), and its left rope stem sits at 0.8380
        of its own width. Line those two facts up with the strip's working rope (0.44) and the left
-       offset falls out as 0.7663x0.7854 - 0.44 = 0.1618 of the strip. Touch neither number by
+       offset falls out as 0.8380x0.6936 - 0.44 = 0.1412 of the strip. Touch neither number by
        hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1618);
-                 width: calc(var(--worker-width) * 0.7854); z-index: 2; display: block; }
+    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1412);
+                 width: calc(var(--worker-width) * 0.6936); z-index: 2; display: block; }
     /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
        its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
        backup rope would cross in front of the working rope's carabiner instead of disappearing
@@ -1431,7 +1431,16 @@
         weaveT: 0.483,               // tile, in rope widths
         weaveL: 0.253,               // line thickness, as a fraction of the tile
         weaveAng: 45,
-        backupX: 0.573,              // backup rope — straight vertical, through the cam device
+        /* The backup rope's TOP, which is no longer the same as where it meets his cam. The
+           owner's arrangement puts the big O centred over the small o, and that fixes how far
+           apart the two words are — which fixes how far apart their anchors are, since each word
+           ends just before its own. It comes out at 6.0px, not the 12.9 the two ropes used to
+           hang at. The working rope could not give that ground: workTopX and desc.x are equal on
+           purpose, and that is what drops it vertically into his fist. So the backup rope's top
+           moves instead, and the rope leans the 7px down to his cam over its whole drop - about a
+           degree, and a backup line angling into a chest device is what one does anyway. */
+        backupX: 0.5018,             // backup rope's top — 6.0px from the working rope's
+        camX: 0.573,                 // ...and where it passes through his cam, on his body
         // Both taken from the line the owner drew on the measuring grid (images/climber.png
         // with 0.01 gridlines): the working rope clears the helmet on its RIGHT and drops
         // PERFECTLY VERTICALLY into the gripping hand — it does not lean in towards the
@@ -1645,7 +1654,7 @@
           return { want: want, x: p.px + ex * c - ey * s, y: p.py + ex * s + ey * c };
         }
         var desc = bodyXY(A.desc.x, A.desc.y);
-        var camB = bodyXY(A.backupX, A.camY);
+        var camB = bodyXY(A.camX, A.camY);
         var sw = swing(pivotWork, angWork, desc.x, desc.y);
         var sb = swing(pivotBack, angBack, camB.x, camB.y);
         angWorkV += (sw.want - angWork) * A.anchorSwing; angWorkV *= A.anchorDamp; angWork += angWorkV;
@@ -1734,7 +1743,7 @@
           return " Q " + c.x.toFixed(1) + " " + c.y.toFixed(1) + " " + ex.toFixed(1) + " " + ey.toFixed(1);
         }
         // BACKUP rope, behind: fixed at the top, bending at his cam, loose end below him
-        var cam = bodyXY(A.backupX, A.camY), camX = cam.x, camYpx = cam.y;
+        var cam = bodyXY(A.camX, A.camY), camX = cam.x, camYpx = cam.y;
         var backEnd = freeEnd(camX, camYpx, endB, swayFree - sway);
         var backCtl = ctrlFor(camX, camYpx, backEnd.y);
         setSeg(rBackO, rBackI,
@@ -1940,7 +1949,8 @@
         var Hn = climber.offsetHeight || Wn * 1.225;
         var top = currentY - currentRise;
         var x = e.clientX - r.left, y = e.clientY;
-        if (Math.abs(x - (A.backupX * Wn + currentSway * 0.5)) < TRACK_TOL) return true;         // backup rope
+        // the backup rope leans from its anchor to his cam, so its track is the average of the two
+        if (Math.abs(x - ((A.backupX + A.camX) * 0.5 * Wn + currentSway * 0.5)) < TRACK_TOL) return true;  // backup rope
         if (y < top + A.desc.y * Hn && Math.abs(x - (A.workTopX * Wn)) < TRACK_TOL) return true; // working rope above him
         if (y > top + A.brake.y * Hn && Math.abs(x - (A.workGroundX * Wn)) < TRACK_TOL) return true;  // its tail below him
         return false;
