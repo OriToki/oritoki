@@ -741,7 +741,7 @@
     <img class="anchor-bolt" id="boltBack" src="images/anchor-bolt.png" alt="" draggable="false" />
     <img class="anchor-hang" id="hangWork" src="images/anchor-hang.png" alt="" draggable="false" />
     <img class="anchor-hang" id="hangBack" src="images/anchor-hang.png" alt="" draggable="false" />
-    <img id="climber" src="images/climber.png?v=12" alt="" draggable="false" />
+    <img id="climber" src="images/climber.png?v=13" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
       <!-- A LOCAL copy of the weave: Chrome won't apply #ropeBack's pattern to a path in this
            second SVG (it falls back to the flat #c3c3c3, so the brake strand lost its dark weave
@@ -1431,16 +1431,19 @@
         weaveT: 0.483,               // tile, in rope widths
         weaveL: 0.253,               // line thickness, as a fraction of the tile
         weaveAng: 45,
-        /* The backup rope's TOP, which is no longer the same as where it meets his cam. The
-           owner's arrangement puts the big O centred over the small o, and that fixes how far
-           apart the two words are — which fixes how far apart their anchors are, since each word
-           ends just before its own. It comes out at 6.0px, not the 12.9 the two ropes used to
-           hang at. The working rope could not give that ground: workTopX and desc.x are equal on
-           purpose, and that is what drops it vertically into his fist. So the backup rope's top
-           moves instead, and the rope leans the 7px down to his cam over its whole drop - about a
-           degree, and a backup line angling into a chest device is what one does anyway. */
-        backupX: 0.5018,             // backup rope's top — 6.0px from the working rope's
-        camX: 0.573,                 // ...and where it passes through his cam, on his body
+        /* The backup rope hangs STRAIGHT DOWN: backupX and camX are equal, the same way workTopX
+           and desc.x are, and that is what keeps each rope vertical.
+           Getting here moved the artwork. The logo fixes how far apart the two anchors are — the
+           big O sits centred over the small o, which fixes the words, which fixes their anchors —
+           and the anchors are the tops of the ropes. 6.0px apart, where the two devices he wears
+           were drawn 12.9px apart. The working rope could not give ground, so the backup device
+           swung across his chest to meet its rope: tools/move-backup-device.ps1, which rotates the
+           device, its carabiner and the absorber about the point where the absorber meets the
+           sling. They sit on transparent background in climber.png, so none of him was repainted. */
+        backupX: 0.5018,             // backup rope, top \ equal, so the rope is vertical
+        camX: 0.5018,                // ...through his cam /
+        camY: 0.1218,                // and how far down the figure that is — the rope bends
+                                     // there, fixed above it, free below
         // Both taken from the line the owner drew on the measuring grid (images/climber.png
         // with 0.01 gridlines): the working rope clears the helmet on its RIGHT and drops
         // PERFECTLY VERTICALLY into the gripping hand — it does not lean in towards the
@@ -1530,8 +1533,6 @@
         anchorSwing: 0.06,           // spring that lets the carabiner lag the rope
         anchorDamp: 0.90,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
-        camY: 0.15,                  // where the backup rope passes through his device, down the
-                                     // figure — the rope bends there, fixed above, free below
         // He is a pendulum on the rope above him, so how far he can swing is set by that rope's
         // length, not by a fixed number: sin(38°) of it, and never more than 45% of the window.
         // Low on the page the rope is long, so he can be thrown clean off the left edge.
