@@ -702,16 +702,17 @@
       <path class="rope-out" id="rBackO"></path><path class="rope-in" id="rBackI"></path>    <!-- backup rope BELOW the cam: the loose end, behind him -->
       <path class="rope-out" id="rKnotBO"></path><path class="rope-in" id="rKnotBI"></path>  <!-- backup rope's knot -->
     </svg>
-    <!-- The backup rope ABOVE the cam gets a layer to itself, over the wordmark. Dragged hard to
-         the left both ropes sweep across the lettering, and the owner wants this one to cross in
-         front of it while the working rope passes behind — which no single layer can give: the
-         working rope's upper stretch has to stay in front of the technician (#ropeFront), the
-         wordmark has to sit above that to hide it, and this has to sit above the wordmark again.
-         Only the stretch above the cam comes up here. Carry the whole rope and it would be drawn
-         over the cam device it is supposed to run THROUGH, and over his hand below that. It stops
-         exactly at the cam, so the device covers it from there down, which is what makes the rope
-         read as passing through the channel. Its own weave: Chrome will not reach into another
-         SVG's defs for a pattern. -->
+    <!-- A SECOND drawing of the backup rope's top stretch, over the wordmark. Dragged hard to the
+         left both ropes sweep across the lettering, and the owner wants this one to cross in front
+         of it while the working rope passes behind — which no single layer can give: the working
+         rope's upper stretch has to stay in front of the technician (#ropeFront), the wordmark has
+         to sit above that to hide it, and this has to sit above the wordmark again.
+         Putting the rope itself up here instead was wrong twice over: it was then drawn over the
+         cam device it is supposed to run THROUGH, and over his hand. So the rope stays where it
+         was, behind him, and this copy is CLIPPED to the band the lettering occupies (see
+         sizeRopes) — the only place it is wanted. Below that band nothing of it is drawn, and what
+         you see is the real one, behind. Its own weave: Chrome will not reach into another SVG's
+         defs for a pattern. -->
     <svg id="ropeTop" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <pattern id="ropeWeaveT" patternUnits="userSpaceOnUse" width=".75" height=".75" patternTransform="rotate(20)">
@@ -719,7 +720,7 @@
           <path d="M.375 0V.75M0 .375H.75" stroke="#151515" stroke-width=".19"/>
         </pattern>
       </defs>
-      <path class="rope-out" id="rBackUpO"></path><path class="rope-in" id="rBackUpI"></path>  <!-- anchor knot → cam -->
+      <path class="rope-out" id="rBackUpO"></path><path class="rope-in" id="rBackUpI"></path>  <!-- anchor knot → cam, over the letters -->
     </svg>
     <img class="anchor-bolt" id="boltWork" src="images/anchor-bolt.png" alt="" draggable="false" />
     <img class="anchor-bolt" id="boltBack" src="images/anchor-bolt.png" alt="" draggable="false" />
@@ -1521,6 +1522,12 @@
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box);
         svgTop.setAttribute("viewBox", box);
+        /* #ropeTop shows only where the lettering is. It is a duplicate of the backup rope's top
+           stretch, there to cross in FRONT of the wordmark; everywhere below the words the real
+           rope, behind him, is the one that should show. The band is the lockup itself: it sits at
+           brandTop and the asset is 1.089 as tall as it is wide, at 0.6936 of the strip. */
+        var band = A.brandTop + vw * 0.6936 * 1.089;
+        svgTop.style.clipPath = "inset(0 0 calc(100% - " + band.toFixed(1) + "px) 0)";
         // Place the four anchor pieces. Each anchor is hung so that the rope drawn across it lands
         // on the rope fraction it belongs to; the hanging piece is slotted under its own hanger.
         var aw = vw * A.anchorW;
@@ -1589,24 +1596,32 @@
         // climber.png pixel → strip coordinate, through the same body transform. The cut lines are
         // measured on the 560x686 artwork, which is the only place their exact position is legible.
         function art(x, y) { return bodyXY(x / 560, y / 686); }
-        /* Cut a rope along a device's outline: fills `clip` with the half-plane on the side of
-           the line c (two artwork pixels) that contains (kx,ky) — the direction the rope comes
-           from. The line is extended far past the strip both ways, so only its angle and
-           position matter, not where the two measured points sit along it. */
+        /* Cut a rope along a device's outline, so the outline reads as passing in front of it.
+           The cut is a PATCH, not a half-plane: a box hugging the line c (two artwork pixels),
+           reaching CUT_ALONG each way along it and CUT_DEEP behind it, removed from an otherwise
+           untouched clip by the even-odd rule.
+           It used to be the whole half-plane, extended 4000px each way, and that was fine only
+           while the rope came down more or less square to the line. Dragged hard sideways, the
+           rope meets it at a shallow angle and crosses the EXTENDED line a long way off to one
+           side — and everything past the crossing went, so most of the rope simply vanished.
+           A patch can only ever take the few pixels around the device it belongs to. */
+        var CUT_ALONG = 26, CUT_DEEP = 90;
         function applyCut(clip, c, kx, ky) {
           if (!clip) return;
           var p1 = art(c.x1, c.y1), p2 = art(c.x2, c.y2);
           var x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
           var dx = x2 - x1, dy = y2 - y1, L = Math.sqrt(dx * dx + dy * dy) || 1;
           var ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
-          if ((kx - x1) * nx + (ky - y1) * ny < 0) { nx = -nx; ny = -ny; }   // face the kept side
-          var E = 4000;
-          var ax1 = x1 - ux * E, ay1 = y1 - uy * E, ax2 = x2 + ux * E, ay2 = y2 + uy * E;
+          if ((kx - x1) * nx + (ky - y1) * ny > 0) { nx = -nx; ny = -ny; }   // face the cut side
+          var q1x = x1 - ux * CUT_ALONG, q1y = y1 - uy * CUT_ALONG;
+          var q2x = x2 + ux * CUT_ALONG, q2y = y2 + uy * CUT_ALONG;
+          clip.setAttribute("clip-rule", "evenodd");
           clip.setAttribute("d",
-            "M " + ax1.toFixed(1) + " " + ay1.toFixed(1) +
-            " L " + ax2.toFixed(1) + " " + ay2.toFixed(1) +
-            " L " + (ax2 + nx * E).toFixed(1) + " " + (ay2 + ny * E).toFixed(1) +
-            " L " + (ax1 + nx * E).toFixed(1) + " " + (ay1 + ny * E).toFixed(1) + " Z");
+            "M -4000 -4000 H 8000 V 8000 H -8000 Z" +          // everything...
+            " M " + q1x.toFixed(1) + " " + q1y.toFixed(1) +    // ...minus the patch
+            " L " + q2x.toFixed(1) + " " + q2y.toFixed(1) +
+            " L " + (q2x + nx * CUT_DEEP).toFixed(1) + " " + (q2y + ny * CUT_DEEP).toFixed(1) +
+            " L " + (q1x + nx * CUT_DEEP).toFixed(1) + " " + (q1y + ny * CUT_DEEP).toFixed(1) + " Z");
         }
         /* Carabiner, knot and rope are ONE PIECE hanging from the clip point. The carabiner turns
            in its hanger until it points exactly where the rope goes, the knot and the tail drawn
@@ -1716,18 +1731,15 @@
         function hangQ(c, ex, ey) {                   // the curve only — prefix it with its own M
           return " Q " + c.x.toFixed(1) + " " + c.y.toFixed(1) + " " + ex.toFixed(1) + " " + ey.toFixed(1);
         }
-        /* BACKUP rope: fixed at the top, bending at his cam, loose end below him — drawn as two
-           segments that meet AT the cam, because they belong in different layers. Above the cam it
-           is in front of the wordmark; below it, behind him. */
+        // BACKUP rope, behind: fixed at the top, bending at his cam, loose end below him
         var cam = bodyXY(A.camX, A.camY), camX = cam.x, camYpx = cam.y;
         var backEnd = freeEnd(camX, camYpx, endB, swayFree - sway);
         var backCtl = ctrlFor(camX, camYpx, backEnd.y);
-        setSeg(rBackUpO, rBackUpI,
-          "M " + knotB.x.toFixed(1) + " " + knotB.y.toFixed(1) +
-          " L " + camX.toFixed(1) + " " + camYpx.toFixed(1));
-        setSeg(rBackO, rBackI,
-          "M " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
-          hangQ(backCtl, backEnd.x, backEnd.y));
+        var backTop = "M " + knotB.x.toFixed(1) + " " + knotB.y.toFixed(1) +
+                      " L " + camX.toFixed(1) + " " + camYpx.toFixed(1);
+        setSeg(rBackO, rBackI, backTop + hangQ(backCtl, backEnd.x, backEnd.y));
+        // the same stretch again in #ropeTop, clipped to the lettering's band (see sizeRopes)
+        setSeg(rBackUpO, rBackUpI, backTop);
         setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise, trueEndB));
         // WORKING rope, IN FRONT: off-screen top → descender (grows as he descends).
         // Front layer so it crosses over the absorber and rests on the descender.
