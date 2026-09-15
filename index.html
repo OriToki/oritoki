@@ -164,17 +164,31 @@
        67.27 display px wide where the strip is 97 (0.6936), and its left rope stem sits at 0.8380
        of its own width. Line those two facts up with the strip's working rope (0.44) and the left
        offset falls out as 0.8380x0.6936 - 0.44 = 0.1412 of the strip. Touch neither number by
-       hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. */
-    /* BETWEEN the two rope layers, which is what sorts the ropes over the lettering: the backup
-       rope is in #ropeBack (z1) and passes BEHIND the words, the working rope is in #ropeFront
-       (z3) and crosses in front of them. Dragged far to the left both sweep across the lettering,
-       and the owner wants exactly that difference between them. */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1412);
-                 width: calc(var(--worker-width) * 0.6936); z-index: 2; display: block; }
-    /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
+       hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. The offset is the
+       whole of `left` because the strip it now sits in already starts at --climber-left.
+       It lives INSIDE #ropeClimber rather than in the header, and that placement is the point:
+       it is what sorts the two ropes over the lettering. Dragged far to the left both ropes
+       sweep across the words, and the owner wants them to read differently — the BACKUP rope
+       (in #ropeBack) passing BEHIND the letters, the WORKING rope (in #ropeFront) crossing in
+       front. That needs the words BETWEEN those two layers, and z-index cannot reach across a
+       stacking context: parked in the header, the whole z-50 bar sits under the z-60 strip, so
+       both ropes painted over the words whatever z-index they were given.
+       Same z-1 as #ropeBack and the anchors, ordered between them in the markup: after the back
+       ropes (so the backup rope goes behind the letters) and before the anchors (so each
+       carabiner still sits ON the word it dots, the way it always has).
+       pointer-events because the strip around it is click-through. */
+    #brandRope { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.1412);
+                 width: calc(var(--worker-width) * 0.6936); z-index: 1; display: block;
+                 pointer-events: auto; }
+    /* Anchor pieces. All four share z-1 with the back ropes, so a rope's first pixels tuck behind
        its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
        backup rope would cross in front of the working rope's carabiner instead of disappearing
        behind it; it fixed that crossing but read worse overall, and the owner asked for it back.
+       Since they all share a z-index, the LETTERING splits them by markup order instead (see
+       #brandRope): the backup pair is written before the words and the working pair after, so
+       each anchor sorts over the lettering the same way its own rope does — the knot under the
+       carabiner is the top of that rope, and it looked broken sweeping over a letter the rope
+       itself had just passed under.
        The hanging piece turns about the point where the carabiner's bar passes through the
        hanger's eye: 41.5% across the anchor's width, and 22 of its 866 rows down — keep this
        in step with A.anchorPivotX / Y, which is the same point in the script's own units. */
@@ -188,8 +202,11 @@
        made of the same stuff as the carabiners rather than a black slab beside them; at this
        weight that is not the trade any more — a Roman "O" IS a hairline — and white-on-beige on a
        0.3px edge was barely readable at 1x. */
-    #header:not(.scrolled) #brandRope .ink-dark, html.dark #brandRope .ink-dark { display: none; }
-    #header:not(.scrolled) #brandRope .ink-white, html.dark #brandRope .ink-white { display: block; }
+    /* Keyed off body, not off #header: the lockup is no longer inside the bar (see #brandRope
+       above), and it sits BEFORE the header in the markup, so no sibling selector reaches it
+       either. onHeaderScroll sets .header-scrolled on body in step with #header.scrolled. */
+    body:not(.header-scrolled) #brandRope .ink-dark, html.dark #brandRope .ink-dark { display: none; }
+    body:not(.header-scrolled) #brandRope .ink-white, html.dark #brandRope .ink-white { display: block; }
 
     /* ABOVE the z-50 header on purpose: the ropes run from off the top of the screen, and behind
        the header their whole upper stretch vanished the moment the bar turned solid on scroll.
@@ -221,8 +238,12 @@
     body.rope-track { cursor: pointer; }
     /* The native scrollbar stays on the right (scroll box, thumb, arrows). The technician is a
        decorative rappeller on the LEFT that still tracks scroll progress. */
-    /* Hide him while the mobile menu is open (otherwise he shows over the drawer). */
-    body.menu-open #ropeClimber { opacity: 0; visibility: hidden; }
+    /* Hide him while the mobile menu is open (otherwise he shows over the drawer) — but NOT the
+       lockup, which is brand furniture that only lives in this strip for z-order reasons and has
+       to stay put while the drawer is down. Hence the children rather than the container: opacity
+       on a parent is a group, and no child can opt back out of it. */
+    #ropeClimber > * { transition: opacity .25s ease; }
+    body.menu-open #ropeClimber > :not(#brandRope) { opacity: 0; visibility: hidden; }
     @media (prefers-reduced-motion: reduce) { #climber { transition: none !important; } }
     /* Mobile: a narrower strip, set through the SAME two variables so the lockup, the ropes and
        the technician all move together. --climber-left cannot go below the 0.2528 of the strip's
@@ -532,11 +553,12 @@
        above this and so above the header; the blur takes the header with the rest. */
     .svc-back {
       position: fixed; inset: 0; z-index: 110;
-      /* Deep, not a haze: in the iPhone recording the owner sent as the reference, the home screen
-         behind an open folder is blurred until the icons are only colours. 6px read as a smudge
-         over a page you were still trying to read; this puts the page properly behind the card. */
-      background: rgba(10,11,13,.5);
-      -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+      /* A haze, not a curtain. Blurred deeply (18px over a half-black wash, as the iPhone folder
+         reference did it) the page behind stopped being a page at all — the card read as a modal
+         again, which is the thing this replaced. Just enough softening to push the neighbours a
+         step back and let the card's own edge and shadow do the separating. */
+      background: rgba(10,11,13,.2);
+      -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
       opacity: 0; transition: opacity .3s ease;
     }
     .svc-back.svc-in { opacity: 1; }
@@ -700,10 +722,30 @@
       <path class="rope-out" id="rBackO"></path><path class="rope-in" id="rBackI"></path>    <!-- backup rope BELOW the cam: the loose end, behind him -->
       <path class="rope-out" id="rKnotBO"></path><path class="rope-in" id="rKnotBI"></path>  <!-- backup rope's knot -->
     </svg>
-    <img class="anchor-bolt" id="boltWork" src="images/anchor-bolt.png" alt="" draggable="false" />
+    <!-- The BACKUP anchor sits with its own rope, ahead of the lettering: its knot is the top of
+         that rope, so it has to sort the way the rope does or a long sideways drag splits one
+         line in two — knot over the letters, rope under them. Its bolt hanger comes with it to
+         keep the pair in the order they were drawn in (hanger first, then the carabiner whose bar
+         passes through its eye). Neither piece touches a letter at rest; it only shows on a
+         drag. The WORKING anchor stays on the far side of the lettering, below. -->
     <img class="anchor-bolt" id="boltBack" src="images/anchor-bolt.png" alt="" draggable="false" />
-    <img class="anchor-hang" id="hangWork" src="images/anchor-hang.png" alt="" draggable="false" />
     <img class="anchor-hang" id="hangBack" src="images/anchor-hang.png" alt="" draggable="false" />
+    <!-- ORITOKI: "Or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
+         standing in for each dotted i, and the rope running on out of each knot. Those two rope
+         stems land exactly on the two fractions of the strip where the ropes below are drawn
+         (A.workTopX / A.backupX), which is what lets the SVG ropes continue out of the knots
+         with no seam; #brandRope's width/left maths is what holds that alignment at any size.
+         It is a header element by rights — it is only parked here, after everything that belongs
+         to the backup rope and before everything that belongs to the working one, because that
+         is the one place in the document where the whole backup line passes behind the letters
+         while the working line crosses in front of them.
+         Two bakes, and only the LETTERING changes with the theme. -->
+    <a href="#home" id="brandRope" aria-label="Oritoki — home">
+      <img class="ink-dark" src="images/logo-word-dark.png" alt="Oritoki" draggable="false" />
+      <img class="ink-white" src="images/logo-word-white.png" alt="" aria-hidden="true" draggable="false" />
+    </a>
+    <img class="anchor-bolt" id="boltWork" src="images/anchor-bolt.png" alt="" draggable="false" />
+    <img class="anchor-hang" id="hangWork" src="images/anchor-hang.png" alt="" draggable="false" />
     <img id="climber" src="images/climber.png?v=13" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
       <!-- A LOCAL copy of the weave: Chrome won't apply #ropeBack's pattern to a path in this
@@ -741,21 +783,11 @@
   <header id="header" class="fixed top-0 inset-x-0 z-50 h-[88px]">
     <div id="headerInner" class="w-full h-full max-w-[96rem] mx-auto px-6 flex items-center gap-2 lg:gap-3">
 
-      <!-- Left group (brand). flex-1 grows so the nav is pushed to the right; the lockup itself is
-           absolutely positioned, so this wrapper stays empty and the centred nav keeps its balance. -->
-      <div class="flex-1 min-w-0 flex justify-start">
-      <!-- ORITOKI: "Or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
-           standing in for each dotted i, and the rope running on out of each knot. Those two rope
-           stems land exactly on the two fractions of the strip where the ropes below are drawn
-           (A.workTopX / A.backupX), which is what lets the SVG ropes continue out of the knots
-           with no seam; the width/left maths below is what holds that alignment at any size.
-           Two bakes: only the LETTERING changes with the theme — the anchors and rope keep their
-           own colours in both, since the rope has to match the SVG rope it turns into. -->
-      <a href="#home" id="brandRope" aria-label="Oritoki — home">
-        <img class="ink-dark" src="images/logo-word-dark.png" alt="Oritoki" draggable="false" />
-        <img class="ink-white" src="images/logo-word-white.png" alt="" aria-hidden="true" draggable="false" />
-      </a>
-      </div>
+      <!-- Left group (brand). flex-1 grows so the nav is pushed to the right; the lockup is
+           absolutely positioned AND lives in #ropeClimber now (it has to sit between the two rope
+           layers — see #brandRope in the CSS), so this wrapper is deliberately empty and exists
+           only to keep the centred nav in balance. -->
+      <div class="flex-1 min-w-0 flex justify-start"></div>
 
       <!-- Navigation -->
       <!-- No `uppercase` class here on purpose: text-transform:uppercase makes Chrome render
@@ -1316,9 +1348,13 @@
     /* ---------- 4. Sticky header shadow on scroll ---------- */
     var header = document.getElementById("header");
 
-    /* Sticky-header state on scroll (transparent hero → solid bar). */
+    /* Sticky-header state on scroll (transparent hero → solid bar). Mirrored onto body because
+       the brand lockup is no longer inside the header — it hangs in #ropeClimber so the ropes can
+       sort around it — and still has to flip its ink with the bar. */
     function onHeaderScroll() {
-      if (header) header.classList.toggle("scrolled", (window.scrollY || window.pageYOffset || 0) > 40);
+      var solid = (window.scrollY || window.pageYOffset || 0) > 40;
+      if (header) header.classList.toggle("scrolled", solid);
+      document.body.classList.toggle("header-scrolled", solid);
     }
     onHeaderScroll();
     window.addEventListener("scroll", onHeaderScroll, { passive: true });
@@ -2185,12 +2221,20 @@
         card.setAttribute("aria-expanded", "false");
         backdrop(false, instant);         // the page comes back into focus as the card shrinks
 
+        /* Landing it is a cut, never a move. Every card also carries .reveal, and .reveal's own
+           rule is `transform .6s ease` — so simply clearing the inline transform handed the card
+           straight back to that transition, which then ran the shrink a SECOND time, from wherever
+           the first one had got to, in its finished cell. That was the twitch at the end of a
+           close. The transition is pinned off while the card is put back, and only released once
+           it is already sitting still. */
         function settle() {
           card.classList.remove("svc-open");
-          card.style.transition = ""; card.style.top = ""; card.style.left = "";
+          card.style.transition = "none"; card.style.top = ""; card.style.left = "";
           card.style.width = ""; card.style.height = "";
           card.style.transform = ""; card.style.transformOrigin = "";
           if (gh && gh.parentNode) gh.parentNode.removeChild(gh);
+          card.getBoundingClientRect();
+          card.style.transition = "";
         }
         if (instant === true) { settle(); return; }
 
@@ -2205,7 +2249,13 @@
             + (gh.offsetWidth / w).toFixed(4) + "," + (gh.offsetHeight / h).toFixed(4) + ")";
         }
         var done = false;
+        /* The card's OWN transform, and nothing else's. The sub-services inside it are fading and
+           sliding out at the same time on a shorter curve (.34s against the card's .42s), and
+           their transitionend bubbles up here carrying propertyName "transform" too — so the card
+           was being dropped into its cell while it still had 80ms of travel left, arriving with a
+           jolt. */
         function drop(e) {
+          if (e && e.target !== card) return;
           if (e && e.propertyName && e.propertyName !== "transform") return;
           if (done) return;
           done = true;
