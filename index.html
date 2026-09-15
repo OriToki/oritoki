@@ -165,8 +165,12 @@
        of its own width. Line those two facts up with the strip's working rope (0.44) and the left
        offset falls out as 0.8380x0.6936 - 0.44 = 0.1412 of the strip. Touch neither number by
        hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. */
+    /* Above BOTH rope layers (4 beats #ropeFront's 3): dragged far to the left, the working rope
+       swings across the lettering, and a rope drawn over the wordmark reads as a scratch through
+       it. Behind it, the letters simply stand in front of the rope. Nothing else reaches up here
+       — the anchors hang to the right of the words, and the technician is far below. */
     #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1412);
-                 width: calc(var(--worker-width) * 0.6936); z-index: 2; display: block; }
+                 width: calc(var(--worker-width) * 0.6936); z-index: 4; display: block; }
     /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
        its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
        backup rope would cross in front of the working rope's carabiner instead of disappearing
@@ -1455,8 +1459,8 @@
         // other point drags the carabiner out from under its plate, and the two read as separate
         // pieces of hardware.
         anchorPivotX: 0.415, anchorPivotY: 0.592,
-        anchorKnotY: 2.25,           // where the carabiner's frame closes on the knot, in anchor
-                                     // widths down the asset — the rope hangs from here
+        anchorHangLen: 3.563,        // 1012 of 284 — the end of the drawn tail, where the SVG rope
+                                     // picks the line up
         /* Each anchor hangs level with the TOP of its own word: the carabiner's top edge lines up
            with the cap, the bolt hanger sits above it like a dot, and the knot and rope run down
            past the letters. Standing them on the baselines instead, as they were, put the whole
@@ -1473,8 +1477,6 @@
         capWork: 0.4743,             // the "tok" cap top /
         carabTop: 0.438,             // the carabiner's top, in anchor widths down the asset —
                                      // 4.73 of the 10.8 the asset was first measured at
-        anchorSwing: 0.06,           // spring that lets the carabiner lag the rope
-        anchorDamp: 0.90,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
         // He is a pendulum on the rope above him, so how far he can swing is set by that rope's
         // length, not by a fixed number: sin(38°) of it, and never more than 45% of the window.
@@ -1488,7 +1490,7 @@
       var hangWork = document.getElementById("hangWork"), hangBack = document.getElementById("hangBack");
       var weaves = [document.getElementById("ropeWeave"), document.getElementById("ropeWeaveF")];
       var pivotWork = { px: 0, py: 0 }, pivotBack = { px: 0, py: 0 };   // the hangers' clip points
-      var angWork = 0, angBack = 0, angWorkV = 0, angBackV = 0;         // and how far each has swung
+      var angWork = 0, angBack = 0;                                    // and how far each has swung
       var ropeCeil = -24;                                              // the lower of the two knots
       function sizeRopes() {
         if (!hasRopes) return;
@@ -1581,33 +1583,31 @@
             " L " + (ax2 + nx * E).toFixed(1) + " " + (ay2 + ny * E).toFixed(1) +
             " L " + (ax1 + nx * E).toFixed(1) + " " + (ay1 + ny * E).toFixed(1) + " Z");
         }
-        /* Each rope begins at ITS OWN KNOT, and the knot moves: the carabiner turns in its hanger
-           to follow the rope, so the start point swings with it. The angle is worked out from the
-           pivot towards whatever the rope runs to (his descender, his cam), then let through a
-           spring so the hardware lags the rope instead of snapping to it. */
+        /* Carabiner, knot and rope are ONE PIECE hanging from the clip point. The carabiner turns
+           in its hanger until it points exactly where the rope goes, the knot and the tail drawn
+           below it come round with it, and the rope carries on from the end of that tail — so
+           however far he is dragged, the four read as a single line from the hanger down to him.
+           They used to disagree: the hardware was held to 24 degrees and let through a spring, so
+           the tail pointed one way and the rope left at another, and the join kinked. A carabiner
+           clipped into a hanger really does swing round to face its load, so there is nothing to
+           hold it back to. */
         var aw = Wn * A.anchorW;
-        function swing(p, ang, tx, ty) {                   // -> the knot's exit, and the new angle
+        function swing(p, ang, tx, ty) {                   // -> the rope's exit, and the new angle
           /* Note the minus: a positive CSS rotation is clockwise, and rotating a point that hangs
              BELOW the pivot clockwise moves it LEFT. Without it the carabiner leaned away from the
              rope instead of towards it, and its knot travelled opposite to the rope's own end. */
           var want = Math.atan2(-(tx - p.px), Math.max(1, ty - p.py)) * 57.2957795;
-          want = Math.max(-24, Math.min(24, want));
           var rad = ang * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad);
-          /* The rope leaves at the KNOT, where the carabiner's frame closes on it — not at the
-             bottom of the drawn tail, which is where it used to. Hung from the tail's end, the
-             rope swung about a point below the knot: pulled sideways, the knot stayed put and the
-             rope pivoted out from under it, so the two came apart at exactly the moment they
-             should read as one piece. Taken from the knot, the pivot is inside the knot, and the
-             rope comes out of it however far he is dragged. */
-          var ex = (A.anchorRopeX - A.anchorPivotX) * aw, ey = (A.anchorKnotY - A.anchorPivotY) * aw;
+          // the rope leaves at the end of the drawn tail, on the rope's own line across the asset
+          var ex = (A.anchorRopeX - A.anchorPivotX) * aw, ey = (A.anchorHangLen - A.anchorPivotY) * aw;
           return { want: want, x: p.px + ex * c - ey * s, y: p.py + ex * s + ey * c };
         }
         var desc = bodyXY(A.desc.x, A.desc.y);
         var camB = bodyXY(A.camX, A.camY);
         var sw = swing(pivotWork, angWork, desc.x, desc.y);
         var sb = swing(pivotBack, angBack, camB.x, camB.y);
-        angWorkV += (sw.want - angWork) * A.anchorSwing; angWorkV *= A.anchorDamp; angWork += angWorkV;
-        angBackV += (sb.want - angBack) * A.anchorSwing; angBackV *= A.anchorDamp; angBack += angBackV;
+        // straight to the angle, with nothing damping it: any lag is a kink at the join
+        angWork = sw.want; angBack = sb.want;
         if (hangWork) { hangWork.style.transform = "rotate(" + angWork.toFixed(2) + "deg)"; }
         if (hangBack) { hangBack.style.transform = "rotate(" + angBack.toFixed(2) + "deg)"; }
         var knotW = swing(pivotWork, angWork, desc.x, desc.y);
