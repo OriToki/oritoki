@@ -165,12 +165,12 @@
        of its own width. Line those two facts up with the strip's working rope (0.44) and the left
        offset falls out as 0.8380x0.6936 - 0.44 = 0.1412 of the strip. Touch neither number by
        hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. */
-    /* Above BOTH rope layers (4 beats #ropeFront's 3): dragged far to the left, the working rope
-       swings across the lettering, and a rope drawn over the wordmark reads as a scratch through
-       it. Behind it, the letters simply stand in front of the rope. Nothing else reaches up here
-       — the anchors hang to the right of the words, and the technician is far below. */
+    /* BETWEEN the two rope layers, which is what sorts the ropes over the lettering: the backup
+       rope is in #ropeBack (z1) and passes BEHIND the words, the working rope is in #ropeFront
+       (z3) and crosses in front of them. Dragged far to the left both sweep across the lettering,
+       and the owner wants exactly that difference between them. */
     #brandRope { position: absolute; top: 4px; left: calc(var(--climber-left) - var(--worker-width) * 0.1412);
-                 width: calc(var(--worker-width) * 0.6936); z-index: 4; display: block; }
+                 width: calc(var(--worker-width) * 0.6936); z-index: 2; display: block; }
     /* Anchor pieces. z-1 puts them in the back-rope layer, so a rope's first pixels tuck behind
        its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
        backup rope would cross in front of the working rope's carabiner instead of disappearing
@@ -197,10 +197,9 @@
        came out, and the nav sits centre/right, well clear of this 97px strip. Still below the
        service modal (z-120) and the search panel (z-130), which must cover everything. */
     #ropeClimber { position: fixed; left: var(--climber-left); top: 0; height: 100vh; width: var(--worker-width); z-index: 60; pointer-events: none; transition: opacity .25s ease; }
-    #ropeBack, #ropeFront, #ropeTop { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-    #ropeBack  { z-index: 1; }   /* rope parts that pass behind the body */
-    #ropeFront { z-index: 3; }   /* the brake strand, in front of the lap */
-    #ropeTop   { z-index: 5; }   /* the backup rope, in front of the wordmark (which is 4) */
+    #ropeBack, #ropeFront { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    #ropeBack  { z-index: 1; }   /* rope parts that pass behind the body — and behind the wordmark */
+    #ropeFront { z-index: 3; }   /* the brake strand, in front of the lap — and of the wordmark */
     /* Braided-rope look matching the reference: light core + dark outline. Solid strokes give one
        constant colour (no shimmer, now that horizontal sway is disabled). */
     /* Colours and widths are SAMPLED from the logo's rope at the size it actually renders.
@@ -214,7 +213,6 @@
     /* The brake strand lives in the second SVG (#ropeFront), which can't reach #ropeBack's
        pattern — point it at its own local copy so it keeps the dark weave, like the tail. */
     #ropeFront .rope-in { stroke: url(#ropeWeaveF) #c3c3c3; }
-    #ropeTop   .rope-in { stroke: url(#ropeWeaveT) #c3c3c3; }
     #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
     body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
     body.climber-grabbing #climber { cursor: grabbing; }
@@ -701,26 +699,6 @@
       <path class="rope-out" id="rKnotWO"></path><path class="rope-in" id="rKnotWI"></path>  <!-- working rope's knot -->
       <path class="rope-out" id="rBackO"></path><path class="rope-in" id="rBackI"></path>    <!-- backup rope BELOW the cam: the loose end, behind him -->
       <path class="rope-out" id="rKnotBO"></path><path class="rope-in" id="rKnotBI"></path>  <!-- backup rope's knot -->
-    </svg>
-    <!-- A SECOND drawing of the backup rope's top stretch, over the wordmark. Dragged hard to the
-         left both ropes sweep across the lettering, and the owner wants this one to cross in front
-         of it while the working rope passes behind — which no single layer can give: the working
-         rope's upper stretch has to stay in front of the technician (#ropeFront), the wordmark has
-         to sit above that to hide it, and this has to sit above the wordmark again.
-         Putting the rope itself up here instead was wrong twice over: it was then drawn over the
-         cam device it is supposed to run THROUGH, and over his hand. So the rope stays where it
-         was, behind him, and this copy is CLIPPED to the band the lettering occupies (see
-         sizeRopes) — the only place it is wanted. Below that band nothing of it is drawn, and what
-         you see is the real one, behind. Its own weave: Chrome will not reach into another SVG's
-         defs for a pattern. -->
-    <svg id="ropeTop" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <pattern id="ropeWeaveT" patternUnits="userSpaceOnUse" width=".75" height=".75" patternTransform="rotate(20)">
-          <rect width=".75" height=".75" fill="#eeeeee"/>
-          <path d="M.375 0V.75M0 .375H.75" stroke="#151515" stroke-width=".19"/>
-        </pattern>
-      </defs>
-      <path class="rope-out" id="rBackUpO"></path><path class="rope-in" id="rBackUpI"></path>  <!-- anchor knot → cam, over the letters -->
     </svg>
     <img class="anchor-bolt" id="boltWork" src="images/anchor-bolt.png" alt="" draggable="false" />
     <img class="anchor-bolt" id="boltBack" src="images/anchor-bolt.png" alt="" draggable="false" />
@@ -1361,9 +1339,7 @@
          descender → (brake strand, in front) → brake hand → ground. The descender + hand hide
          where the segments meet. */
       var svgBack = document.getElementById("ropeBack"), svgFront = document.getElementById("ropeFront");
-      var svgTop = document.getElementById("ropeTop");
       var rBackO = document.getElementById("rBackO"), rBackI = document.getElementById("rBackI");
-      var rBackUpO = document.getElementById("rBackUpO"), rBackUpI = document.getElementById("rBackUpI");
       var rWupO = document.getElementById("rWupO"), rWupI = document.getElementById("rWupI");
       var rWtipO = document.getElementById("rWtipO"), rWtipI = document.getElementById("rWtipI");
       var cutP = document.getElementById("ropeCutP");    // cut along the descender's outline
@@ -1372,7 +1348,7 @@
       var rKnotBO = document.getElementById("rKnotBO"), rKnotBI = document.getElementById("rKnotBI");
       var rKnotWO = document.getElementById("rKnotWO"), rKnotWI = document.getElementById("rKnotWI");
       var rBrkO = document.getElementById("rBrkO"), rBrkI = document.getElementById("rBrkI");
-      var hasRopes = !!(svgBack && svgFront && svgTop && rBackO && rBackUpO && rWupO && rWtipO && rWloO && rBrkO && rKnotBO && rKnotWO);
+      var hasRopes = !!(svgBack && svgFront && rBackO && rWupO && rWtipO && rWloO && rBrkO && rKnotBO && rKnotWO);
       /* climber.png is the technician ALONE — no ropes are drawn into it, so every rope here
          is free geometry. The two vertical x's are therefore set to the fractions of the two
          rope stems in the header logo (0.481 / 0.573), which is what makes them continue out
@@ -1512,8 +1488,7 @@
       var wrapEl = document.getElementById("ropeClimber");
       var boltWork = document.getElementById("boltWork"), boltBack = document.getElementById("boltBack");
       var hangWork = document.getElementById("hangWork"), hangBack = document.getElementById("hangBack");
-      var weaves = [document.getElementById("ropeWeave"), document.getElementById("ropeWeaveF"),
-                    document.getElementById("ropeWeaveT")];
+      var weaves = [document.getElementById("ropeWeave"), document.getElementById("ropeWeaveF")];
       var pivotWork = { px: 0, py: 0 }, pivotBack = { px: 0, py: 0 };   // the hangers' clip points
       var angWork = 0, angBack = 0;                                    // and how far each has swung
       var ropeCeil = -24;                                              // the lower of the two knots
@@ -1521,13 +1496,6 @@
         if (!hasRopes) return;
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box);
-        svgTop.setAttribute("viewBox", box);
-        /* #ropeTop shows only where the lettering is. It is a duplicate of the backup rope's top
-           stretch, there to cross in FRONT of the wordmark; everywhere below the words the real
-           rope, behind him, is the one that should show. The band is the lockup itself: it sits at
-           brandTop and the asset is 1.089 as tall as it is wide, at 0.6936 of the strip. */
-        var band = A.brandTop + vw * 0.6936 * 1.089;
-        svgTop.style.clipPath = "inset(0 0 calc(100% - " + band.toFixed(1) + "px) 0)";
         // Place the four anchor pieces. Each anchor is hung so that the rope drawn across it lands
         // on the rope fraction it belongs to; the hanging piece is slotted under its own hanger.
         var aw = vw * A.anchorW;
@@ -1605,7 +1573,7 @@
            rope meets it at a shallow angle and crosses the EXTENDED line a long way off to one
            side — and everything past the crossing went, so most of the rope simply vanished.
            A patch can only ever take the few pixels around the device it belongs to. */
-        var CUT_ALONG = 26, CUT_DEEP = 90;
+        var CUT_ALONG = 14, CUT_DEEP = 22;
         function applyCut(clip, c, kx, ky) {
           if (!clip) return;
           var p1 = art(c.x1, c.y1), p2 = art(c.x2, c.y2);
@@ -1735,21 +1703,26 @@
         var cam = bodyXY(A.camX, A.camY), camX = cam.x, camYpx = cam.y;
         var backEnd = freeEnd(camX, camYpx, endB, swayFree - sway);
         var backCtl = ctrlFor(camX, camYpx, backEnd.y);
-        var backTop = "M " + knotB.x.toFixed(1) + " " + knotB.y.toFixed(1) +
-                      " L " + camX.toFixed(1) + " " + camYpx.toFixed(1);
-        setSeg(rBackO, rBackI, backTop + hangQ(backCtl, backEnd.x, backEnd.y));
-        // the same stretch again in #ropeTop, clipped to the lettering's band (see sizeRopes)
-        setSeg(rBackUpO, rBackUpI, backTop);
+        setSeg(rBackO, rBackI,
+          "M " + knotB.x.toFixed(1) + " " + knotB.y.toFixed(1) +
+          " L " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
+          hangQ(backCtl, backEnd.x, backEnd.y));
         setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise, trueEndB));
         // WORKING rope, IN FRONT: off-screen top → descender (grows as he descends).
         // Front layer so it crosses over the absorber and rests on the descender.
         setSeg(rWupO, rWupI, "M " + knotW.x.toFixed(1) + " " + knotW.y.toFixed(1) + " L " + pt(A.desc.x, A.desc.y));
-        /* ...cut along the descender's outline (applyCut / A.cutWork), keeping the side the rope
-           actually comes FROM: its own fixed top. It used to be a point 400px above the FIGURE,
-           which rotates with him — swing him far enough and the cut line, extended, passes between
-           that point and the rope, so the clip kept the wrong half and the visible rope vanished.
-           Anchoring the test to the rope's own start makes that impossible by construction. */
-        applyCut(cutP, A.cutWork, knotW.x, knotW.y);
+        /* ...cut along the descender's outline (applyCut / A.cutWork). Which side to keep is asked
+           of a point ON THE ROPE, a short way back from the descender — never of the rope's far
+           end. The far end used to be a point above the figure, then the knot at the anchor; both
+           travel, and the further they travel the easier it is for the cut line, swung round with
+           him, to end up BETWEEN that point and the descender. When it does, the sides swap and
+           the patch lands on the rope instead of under it — which is the flicker: drag him left
+           and a length of rope blinks out at one particular angle. A point 14px up the rope is on
+           the approach side at every angle there is. */
+        var dsc = bodyXY(A.desc.x, A.desc.y);
+        var kdx = dsc.x - knotW.x, kdy = dsc.y - knotW.y;
+        var kdl = Math.sqrt(kdx * kdx + kdy * kdy) || 1;
+        applyCut(cutP, A.cutWork, dsc.x - (kdx / kdl) * 14, dsc.y - (kdy / kdl) * 14);
         // ...and its TIP, behind the figure: starts above the cut so no seam shows between the
         // two layers, and dies under the descender.
         setSeg(rWtipO, rWtipI, "M " + pt(A.desc.x, (A.cutWork.y2 / 686) - 0.01) + " L " + pt(A.desc.x, A.descTipY));
