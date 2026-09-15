@@ -1455,7 +1455,8 @@
         // other point drags the carabiner out from under its plate, and the two read as separate
         // pieces of hardware.
         anchorPivotX: 0.415, anchorPivotY: 0.592,
-        anchorHangLen: 3.563,        // 1012 of 284 — where the rope leaves the hanging piece
+        anchorKnotY: 2.25,           // where the carabiner's frame closes on the knot, in anchor
+                                     // widths down the asset — the rope hangs from here
         /* Each anchor hangs level with the TOP of its own word: the carabiner's top edge lines up
            with the cap, the bolt hanger sits above it like a dot, and the knot and rope run down
            past the letters. Standing them on the baselines instead, as they were, put the whole
@@ -1592,8 +1593,13 @@
           var want = Math.atan2(-(tx - p.px), Math.max(1, ty - p.py)) * 57.2957795;
           want = Math.max(-24, Math.min(24, want));
           var rad = ang * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad);
-          // the rope leaves the hanging piece at its bottom edge, on the rope's own line
-          var ex = (A.anchorRopeX - A.anchorPivotX) * aw, ey = (A.anchorHangLen - A.anchorPivotY) * aw;
+          /* The rope leaves at the KNOT, where the carabiner's frame closes on it — not at the
+             bottom of the drawn tail, which is where it used to. Hung from the tail's end, the
+             rope swung about a point below the knot: pulled sideways, the knot stayed put and the
+             rope pivoted out from under it, so the two came apart at exactly the moment they
+             should read as one piece. Taken from the knot, the pivot is inside the knot, and the
+             rope comes out of it however far he is dragged. */
+          var ex = (A.anchorRopeX - A.anchorPivotX) * aw, ey = (A.anchorKnotY - A.anchorPivotY) * aw;
           return { want: want, x: p.px + ex * c - ey * s, y: p.py + ex * s + ey * c };
         }
         var desc = bodyXY(A.desc.x, A.desc.y);
