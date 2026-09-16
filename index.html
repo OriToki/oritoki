@@ -526,73 +526,77 @@
     #services .svc-ico { color: #f97316; }
     #services .svc-ico svg { width: 2rem; height: 2rem; }
     #services article:hover { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
-    /* ---------- Service details, opened IN the grid ----------
-       A card used to open a modal over the page. It opens a full-width panel in the grid instead:
-       nothing is covered, the cards below just move down, and the card's [+] badge becomes [-].
-       The panel is inserted after the LAST card of the clicked card's row, so it lands on a row of
-       its own — spanning the card itself 1/-1 would leave the rest of its row standing empty. */
-    /* An open card grows in place: it stays at its own corner of the grid and takes as much room
-       as its text needs, overlapping the cards beside and below it. Nothing is dimmed or blurred
-       behind it — a click out there closes it. A placeholder holds the card's cell while it is
-       out of the flow, so the grid underneath never reflows (the row gap is carried by the cards'
-       own margin so the placeholder can hold the exact height).
+    /* ---------- Service details, unfolded the way the header's own menu unfolds ----------
+       The card used to travel: it left the grid, grew into a rectangle and shrank back into its
+       cell. It drops a PANEL out of its own top corner instead, on exactly the motion the
+       "WHAT WE DO" menu has in the header — both read the same three tokens (--dd-lift,
+       --dd-fade, --dd-slide) a long way up this stylesheet, so the two can never drift apart.
+
+       The card itself never moves and never leaves its cell. That is what makes a close
+       instant: the closed card's own title and summary are not put back at the end of an
+       animation, they were sitting under the panel the whole time.
+
+       The panel is exactly as wide as its longest line asks for (width: max-content), so the
+       sub-services run down it in ONE column, one service to a line — which is how the header's
+       menu reads, and the whole point of doing it this way.
+
        No pulse on opening, on purpose. The pulse (svcFlash, further up) belongs to arriving from
        the header's dropdown, where the page jumps and the card has to be pointed at; a card you
        clicked yourself needs no pointing at. */
-    #svcGrid { position: relative; row-gap: 0; }
-    #svcGrid > article { margin-bottom: 1rem; }
-    .svc-ghost { margin-bottom: 1rem; }
-    #services article.svc-open {
-      position: absolute; z-index: 120; overflow: hidden; transform: none; will-change: transform;
-      padding: 1.7rem 1.9rem 1.9rem; border-radius: 1.25rem;
-      border-color: #f97316; box-shadow: 0 30px 60px -24px rgba(20,20,42,.6);
+    #svcGrid { position: relative; }
+    #services .svc-panel {
+      position: absolute; z-index: 120; cursor: pointer;
+      width: max-content; max-width: 100%;
+      padding: 1.6rem 1.8rem 1.8rem; border-radius: 1.25rem;
+      border: 1px solid #f97316; background: rgb(var(--c-surface));
+      box-shadow: 0 26px 52px -22px rgba(20,20,42,.55);
+      transform: translateY(var(--dd-lift)) scaleY(.96); transform-origin: top center;
+      opacity: 0;
+      transition: var(--dd-fade), var(--dd-slide);
     }
-    #services article.svc-open::after { content: "\f068"; background: #f97316; color: #fff; }
-    /* Everything behind the open card is blurred back instead — the neighbours it lands on stay
-       where they are rather than vanishing, they simply stop competing for the eye. The card is
-       above this and so above the header; the blur takes the header with the rest. */
-    .svc-back {
-      position: fixed; inset: 0; z-index: 110;
-      /* A haze, not a curtain. Blurred deeply (18px over a half-black wash, as the iPhone folder
-         reference did it) the page behind stopped being a page at all — the card read as a modal
-         again, which is the thing this replaced. Just enough softening to push the neighbours a
-         step back and let the card's own edge and shadow do the separating. */
-      background: rgba(10,11,13,.2);
-      -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-      opacity: 0; transition: opacity .3s ease;
+    #services .svc-panel.svc-in { opacity: 1; transform: translateY(0) scaleY(1); }
+    /* The [-] that shuts it, standing in the corner the card's [+] came from. */
+    #services .svc-panel::after {
+      content: "\f068"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: .68rem;
+      position: absolute; top: 1rem; right: 1rem; height: 1.7rem; width: 1.7rem;
+      border-radius: 9999px; background: #f97316; color: #fff;
+      display: flex; align-items: center; justify-content: center;
     }
-    .svc-back.svc-in { opacity: 1; }
-    /* The number and the icon are the closed card's furniture — an open card wants its title
-       first, and the room. */
-    #services article.svc-open::before, #services article.svc-open .svc-ico { display: none; }
-    #services article.svc-open > h3 { margin-top: 0; font-size: 1.55rem; line-height: 1.22; }
+    /* Every rule here is hung off #services so it outranks the Tailwind utilities the cloned
+       title, summary and list bring with them from the closed card. The title's right padding is
+       the badge's room, and it counts towards max-content, so the panel widens to make that room
+       rather than letting the badge sit on the last word. */
+    #services .svc-panel > h3 { margin-top: 0; padding-right: 2.6rem; font-size: 1.55rem; line-height: 1.22; }
     /* The summary line gets the same orange bullet the sub-services have, and lines up with them:
        set without one it read as a list item that had lost its marker. Bullet and indent are the
        list's own — 6px dot, 10px gap — so the two sit on the same left edge. */
-    #services article.svc-open > p {
-      position: relative; margin-top: .8rem; padding-left: 1rem;
+    #services .svc-panel > p {
+      position: relative; margin-top: .85rem; padding-left: 1rem;
       font-size: 1.05rem; line-height: 1.55;
     }
-    #services article.svc-open > p::before {
+    #services .svc-panel > p::before {
       content: ""; position: absolute; left: 0; top: .58rem;
       height: .375rem; width: .375rem; border-radius: 9999px; background: rgb(249 115 22 / .7);
     }
-    /* The sub-services, hidden on a closed card. */
-    #services article.svc-open > ul {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: .7rem 2rem; margin-top: 1.4rem; font-size: 1.05rem; line-height: 1.5;
-      opacity: 0; transform: translateY(-8px);
-      transition: opacity .26s ease, transform .34s cubic-bezier(.22,1,.36,1);
+    #services .svc-panel > ul {
+      display: block; margin-top: 1.25rem; font-size: 1.05rem; line-height: 1.5;
     }
-    #services article.svc-open > ul li > span:first-child { margin-top: .58rem !important; }
-    /* svc-in, not "in": every card also carries .reveal, whose scroll-in state IS the class "in".
-       Taking that off at close left the card at .reveal's opacity 0 — it vanished for good. */
-    #services article.svc-open.svc-in > ul { opacity: 1; transform: none; transition-delay: .1s; }
-    #services article.svc-open > ul > li { margin-top: 0; }
+    #services .svc-panel > ul > li + li { margin-top: .55rem; }
+    #services .svc-panel > ul li > span:first-child { margin-top: .58rem; }
     /* Photo background on the flagship service, as its modal used to have. */
-    #svc-glass.svc-open { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.22); }
-    #svc-glass.svc-open h3 { color: #ffffff; }
-    #svc-glass.svc-open p, #svc-glass.svc-open li { color: rgba(255,255,255,.92); }
+    #services .svc-panel.svc-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.35); }
+    #services .svc-panel.svc-photo h3 { color: #ffffff; }
+    #services .svc-panel.svc-photo p, #services .svc-panel.svc-photo li { color: rgba(255,255,255,.92); }
+    /* Everything behind is hazed back — just enough that the neighbours stop competing for the
+       eye, never enough to stop the page being a page. The card is above this and so above the
+       header; the haze takes the header with the rest. */
+    .svc-back {
+      position: fixed; inset: 0; z-index: 110;
+      background: rgba(10,11,13,.12);
+      -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+      opacity: 0; transition: opacity .28s ease;
+    }
+    .svc-back.svc-in { opacity: 1; }
 
     /* ===================== CARABINER THEME TOGGLE ===================== */
     /* The gate pivots on its rivet (16.31, 16 in the icon's viewBox). Closed sits at 3.4deg
@@ -672,9 +676,6 @@
       100% { border-color: #2a2b2c; background-color: #202123; box-shadow: 0 0 0 16px rgba(249,115,22,0), 0 20px 42px -22px rgba(249,115,22,0); }
     }
     html.dark .gallery-card { background: #202123; border-color: #2a2b2c; }
-    /* The open card keeps the dark card fill (from #services article above) — except the flagship,
-       whose photo would otherwise be painted straight over. */
-    html.dark #svc-glass.svc-open { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; }
   </style>
 </head>
 
@@ -758,10 +759,12 @@
         </pattern>
         <!-- Each rope that runs into one of his devices is CUT along that device's black
              outline, so the outline reads as passing in front of the rope instead of the rope
-             ending on top of it. One clip per rope; JS re-cuts them as the climber slides
-             (see drawRopes). ropeCut = working rope at the descender, brakeCut = brake strand
-             at the glove. -->
-        <clipPath id="ropeCut"><path id="ropeCutP"></path></clipPath>
+             ending on top of it. JS re-cuts it as the climber slides (see drawRopes).
+             Only the brake strand is cut this way. It can be, because both of ITS ends are
+             anchored to the body, so it never turns relative to the artwork and the cut always
+             meets it at the same angle. The working rope above cannot: its far end is the anchor
+             at the top of the page, it swings through ~125°, and a half-plane cut gave it a tip
+             that slid right off the device. That one ends at a point instead. -->
         <clipPath id="brakeCut"><path id="brakeCutP"></path></clipPath>
       </defs>
       <!-- The upper working rope lives in the FRONT layer on purpose: coming down it must pass
@@ -769,7 +772,10 @@
            the way the original artwork has it. Drawn behind the figure it disappeared under
            the absorber instead. Its x (0.44) clears the helmet and the gripping fist, so
            being in front covers nothing it shouldn't. -->
-      <path class="rope-out" id="rWupO" clip-path="url(#ropeCut)"></path><path class="rope-in" id="rWupI" clip-path="url(#ropeCut)"></path>  <!-- working rope: ceiling → descender, over the absorber -->
+      <!-- No clip on this one: it ends ON the descender's outline (A.desc) and pivots there, so
+           there is nothing past the device to hide. It used to be cut like the strand below, and
+           that cut is what made its tip crawl across the device as he swung — see drawRopes. -->
+      <path class="rope-out" id="rWupO"></path><path class="rope-in" id="rWupI"></path>  <!-- working rope: ceiling → descender, over the absorber -->
       <path class="rope-out" id="rBrkO" clip-path="url(#brakeCut)"></path><path class="rope-in" id="rBrkI" clip-path="url(#brakeCut)"></path>  <!-- working rope brake strand: descender → brake hand -->
     </svg>
   </div>
@@ -923,8 +929,8 @@
       <div class="reveal order-1 lg:order-none lg:col-start-1 lg:row-start-1">
         <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲡᲘᲛᲐᲦᲚᲔ ᲩᲕᲔᲜᲘ ᲡᲐᲛᲣᲨᲐᲝ ᲡᲘᲕᲠᲪᲔᲐ, ᲣᲡᲐᲤᲠᲗᲮᲝᲔᲑᲐ ᲞᲠᲘᲝᲠᲘᲢᲔᲢᲘ">HEIGHT IS OUR WORKSPACE, SAFETY OUR PRIORITY</h2>
         <div id="aboutBody">
-        <p class="mt-5 text-mute leading-relaxed" data-ka="ორითოკი არის სამრეწველო ალპინიზმის კომპანია, რომელიც უზრუნველყოფს სასიმაღლო სამუშაოების უსაფრთხო, სწრაფ და ეფექტურ შესრულებას იქ, სადაც ხარაჩოების, ამწეების ან სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელია ან არაეფექტურია.">
-          Oritoki is an industrial rope-access company that delivers safe, fast and
+        <p class="mt-5 text-mute leading-relaxed" data-ka="შპს „ორითოკი“ არის სამრეწველო ალპინიზმის კომპანია, რომელიც უზრუნველყოფს სასიმაღლო სამუშაოების უსაფრთხო, სწრაფ და ეფექტურ შესრულებას იქ, სადაც ხარაჩოების, ამწეების ან სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელი ან არაეფექტურია.">
+          Oritoki LTD is an industrial rope-access company that delivers safe, fast and
           effective works at height where the use of scaffolding, cranes or other
           traditional methods is impossible or ineffective.
         </p>
@@ -1378,7 +1384,6 @@
       var rBackO = document.getElementById("rBackO"), rBackI = document.getElementById("rBackI");
       var rWupO = document.getElementById("rWupO"), rWupI = document.getElementById("rWupI");
       var rWtipO = document.getElementById("rWtipO"), rWtipI = document.getElementById("rWtipI");
-      var cutP = document.getElementById("ropeCutP");    // cut along the descender's outline
       var brkP = document.getElementById("brakeCutP");   // cut along the glove's outline
       var rWloO = document.getElementById("rWloO"), rWloI = document.getElementById("rWloI");
       var rKnotBO = document.getElementById("rKnotBO"), rKnotBI = document.getElementById("rKnotBI");
@@ -1439,9 +1444,11 @@
         // in climber.png's OWN pixels (560x686), which is how the owner measures them; only the
         // LINE through them matters, since drawRopes extends it past the strip either way.
         //
-        // Working rope at the descender: the owner read the outline off the artwork as y 219 at
-        // the rope's right edge, 224 at its middle, 229 at its left edge (the rope spans
-        // x 240.8..252, i.e. 0.44 of the width ± half a stroke).
+        // The descender's top outline: the owner read it off the artwork as y 219 at the rope's
+        // right edge, 224 at its middle, 229 at its left edge (the rope spans x 240.8..252, i.e.
+        // 0.44 of the width ± half a stroke). No longer a CUT — the working rope ends on this
+        // line now (see A.desc) instead of being clipped by it — but it is still the line, so it
+        // still places both A.desc and the top of the hidden rWtip segment.
         cutWork:  { x1: 240.8, y1: 229, x2: 252, y2: 219 },
         // Brake strand at the glove. The owner put the contour at 0.23 across / 0.53 down of
         // the figure = pixel (128.8, 363.6), so the cut runs through that point, along the
@@ -1449,7 +1456,13 @@
         // earlier, on the outer lip of the same outline — and 15px before THAT is the harness
         // strap, which the strand crosses over a gap of transparent pixels. Both are decoys.)
         cutBrake: { x1: 124.05, y1: 360.35, x2: 133.55, y2: 366.85 },
-        desc:   { x: 0.44, y: 0.36 },// the path itself runs on past the cut; the clip hides it
+        /* Where the working rope meets the descender — and, since the rope now ENDS here rather
+           than running on under a clip, the point it pivots about when he swings. It sits ON the
+           cutWork outline below: at the rope's x (0.44 = px 246.4) that line is at y 224.0, so
+           0.3265 = 224.0/686. Keep the two in step — move the outline and this has to follow, or
+           the rope stops short of the device or laps over it. It used to read 0.36, a good 23px
+           further down, because back then everything past the outline was clipped away. */
+        desc:   { x: 0.44, y: 0.3265 },
         descTipY: 0.40,              // the tip then runs on to here in the BACK layer, hidden
                                      // by the device (the artwork is solid all the way down
                                      // this column, so nothing of it shows)
@@ -1744,21 +1757,28 @@
           " L " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
           hangQ(backCtl, backEnd.x, backEnd.y));
         setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise, trueEndB));
-        // WORKING rope, IN FRONT: off-screen top → descender (grows as he descends).
-        // Front layer so it crosses over the absorber and rests on the descender.
-        setSeg(rWupO, rWupI, "M " + knotW.x.toFixed(1) + " " + knotW.y.toFixed(1) + " L " + pt(A.desc.x, A.desc.y));
-        /* ...cut along the descender's outline (applyCut / A.cutWork). Which side to keep is asked
-           of a point ON THE ROPE, a short way back from the descender — never of the rope's far
-           end. The far end used to be a point above the figure, then the knot at the anchor; both
-           travel, and the further they travel the easier it is for the cut line, swung round with
-           him, to end up BETWEEN that point and the descender. When it does, the sides swap and
-           the patch lands on the rope instead of under it — which is the flicker: drag him left
-           and a length of rope blinks out at one particular angle. A point 14px up the rope is on
-           the approach side at every angle there is. */
-        var dsc = bodyXY(A.desc.x, A.desc.y);
-        var kdx = dsc.x - knotW.x, kdy = dsc.y - knotW.y;
+        /* WORKING rope, IN FRONT: off-screen top → descender (grows as he descends). Front layer
+           so it crosses over the absorber and rests on the descender.
+           It STOPS at A.desc, which is a point on the descender's own outline, and the drawn end
+           is pulled back half a stroke so the round cap's tip lands exactly on it. That point is
+           the rope's pivot: swing him and the rope turns about it instead of sliding along the
+           device.
+           It used to run on PAST the device and be hidden by a half-plane clip along that outline
+           — and the tip you actually saw was wherever the rope happened to cross the cut line.
+           This rope is the one thing that turns relative to the body (its far end is the anchor at
+           the top of the page, which does not travel with him), so that crossing swept: measured
+           over a full drag it ran from artwork px (246,224) out to (184,280), and at the angle
+           where the rope came parallel to the cut line it degenerated completely. No reference
+           point can fix that — a half-plane is simply the wrong tool for a line that rotates
+           through 125°. With a real endpoint there is nothing left to clip. */
+        var dscEnd = bodyXY(A.desc.x, A.desc.y);
+        var kdx = dscEnd.x - knotW.x, kdy = dscEnd.y - knotW.y;
         var kdl = Math.sqrt(kdx * kdx + kdy * kdy) || 1;
-        applyCut(cutP, A.cutWork, dsc.x - (kdx / kdl) * 14, dsc.y - (kdy / kdl) * 14);
+        var capBack = Wn * A.ropeW / 2;      // half a stroke; sizeRopes sets --rope-w from the same
+        setSeg(rWupO, rWupI,
+          "M " + knotW.x.toFixed(1) + " " + knotW.y.toFixed(1) +
+          " L " + (dscEnd.x - (kdx / kdl) * capBack).toFixed(1) + " " +
+                  (dscEnd.y - (kdy / kdl) * capBack).toFixed(1));
         // ...and its TIP, behind the figure: starts above the cut so no seam shows between the
         // two layers, and dies under the descender.
         setSeg(rWtipO, rWtipI, "M " + pt(A.desc.x, (A.cutWork.y2 / 686) - 0.01) + " L " + pt(A.desc.x, A.descTipY));
@@ -2109,32 +2129,28 @@
       });
     });
 
-    /* ---------- 10. A service card opens into a centred rectangle ----------
-       Not a modal built from the card's contents, as it once was, and not a strip across its row:
-       the CARD itself grows from where it sits to a rectangle in the middle of the screen, with
-       its sub-services inside it. Nothing is dimmed or blurred behind it. Clicking the card
-       again, clicking anywhere else, or Escape closes it, back to its own place in the grid; the
-       [-] badge in its top-right corner is the close affordance. */
+    /* ---------- 10. A service card unfolds a panel, like the header's menu ----------
+       Not a modal, not a strip across the row, and no longer the card itself travelling out of
+       the grid and growing: clicking a card drops a PANEL out of its own top corner with the
+       header dropdown's motion, listing the sub-services one to a line. The card stays put
+       underneath it the whole time. Clicking the panel, the card, anywhere else, or Escape
+       shuts it; the [-] badge in the panel's top-right corner is the affordance. */
     (function () {
       var grid = document.getElementById("svcGrid");
       if (!grid) return;
       var cards = Array.prototype.slice.call(grid.querySelectorAll("article"));
       if (!cards.length) return;
-      var current = null, ghost = null, back = null;
-      var EASE = "cubic-bezier(.22,1,.36,1)", MOVE = ".42s " + EASE;
-      var MOVES = "transform " + MOVE + ", border-color .2s ease, box-shadow .3s ease";
+      var current = null, panel = null, back = null;
 
-      /* If the opened card would not fit on screen, bring it in — moving the page WITH it rather
-         than after it, so the two read as one movement. The final height is known before the
-         growth starts, so where the card's bottom will land is known too. It scrolls only as far
-         as it must, and never far enough to push the card's top under the fixed header; a card
-         too tall for the window at least starts at the top of it.
-         Measured off the placeholder, not the card: the card is mid-transform and its own box
-         would report where it is passing through rather than where it is going. */
-      function fit(gh, h) {
+      /* If the panel would not fit on screen, bring it in — moving the page WITH it rather than
+         after it, so the two read as one movement. It scrolls only as far as it must, and never
+         far enough to push the panel's top under the fixed header; a panel too tall for the
+         window at least starts at the top of it. Measured off the CARD, since the panel is
+         mid-unfold and its own box would report where it is passing through. */
+      function fit(card, h) {
         var head = (document.getElementById("header") || {}).offsetHeight || 88;
         var gap = 16;
-        var top = gh.getBoundingClientRect().top;
+        var top = card.getBoundingClientRect().top;
         var by = 0;
         if (top < head + gap) by = top - head - gap;
         else if (top + h > window.innerHeight - gap) {
@@ -2146,8 +2162,8 @@
         }
       }
 
-      /* The blur behind. It is a plain element rather than a filter on the page, because a filter
-         on an ancestor would take the open card down with it. */
+      /* The haze behind. It is a plain element rather than a filter on the page, because a filter
+         on an ancestor would take the panel down with it. */
       function backdrop(on, instant) {
         if (on) {
           if (back) return;                           // switching cards: the blur is already up
@@ -2166,104 +2182,62 @@
       }
 
       function open(card) {
-        // Switching cards: hold the backdrop aside so closing the old one does not take it down
-        // and the new one put it straight back up — the blur would blink between the two.
+        // Switching cards: hold the haze aside so closing the old one does not take it down and
+        // the new one put it straight back up — it would blink between the two.
         if (current) { var keep = back; back = null; close(true); back = keep; }
         current = card;
-        var from = { left: card.offsetLeft, top: card.offsetTop, w: card.offsetWidth, h: card.offsetHeight };
-
-        /* A placeholder takes the card's cell the moment the card leaves the flow, so the grid
-           behind it does not move at all while it is open. */
-        ghost = document.createElement("div");
-        ghost.className = "svc-ghost";
-        ghost.style.height = from.h + "px";
-        grid.insertBefore(ghost, card);
+        card.setAttribute("aria-expanded", "true");
         backdrop(true);
 
-        card.classList.add("svc-open");
-        card.setAttribute("aria-expanded", "true");
-        card.style.transition = "none";
-        /* It opens at its own corner and takes the room its text needs. Width first — a card's
-           worth of columns, never wider than the grid — then whatever height the text runs to at
-           that width. A card in the last column would open off the right edge, so the left is
-           pulled back just far enough to keep it inside. */
-        var w = Math.min(600, grid.clientWidth);
-        var left = Math.max(0, Math.min(from.left, grid.clientWidth - w));
-        card.style.left = left + "px"; card.style.top = from.top + "px";
-        card.style.width = w + "px"; card.style.height = "auto";
-        var h = card.offsetHeight;
-        card.style.height = h + "px";
-
-        /* From here on the card is laid out ONCE, at the size it is opening to, and nothing but a
-           TRANSFORM moves it. Animating width and height instead re-flows the text on every
-           frame — the letters crawl over each other as the lines re-wrap, which is what looked
-           wrong. Scaled, the text is typeset once and the box carries it. */
-        var sx = from.w / w, sy = from.h / h;
-        card.style.transformOrigin = "0 0";
-        card.style.transform = "translate(" + (from.left - left) + "px,0) scale(" + sx.toFixed(4) + "," + sy.toFixed(4) + ")";
-        card.getBoundingClientRect();                    // reflow, so the move animates from here
-        window.requestAnimationFrame(function () {
-          if (current !== card) return;
-          card.style.transition = MOVES;
-          card.style.transform = "none";
-          card.classList.add("svc-in");                  // fades the sub-services up
-          window.setTimeout(function () { if (current === card && ghost) fit(ghost, h); }, 110);
+        /* The panel is built from the card's own title, summary and list rather than being the
+           card itself: that is what lets the card stay where it is. The clones keep their
+           data-ka / data-en attributes, so the language toggle reaches them like anything else. */
+        panel = document.createElement("div");
+        panel.className = "svc-panel";
+        if (card.id === "svc-glass") panel.classList.add("svc-photo");
+        ["h3", "p", "ul"].forEach(function (sel) {
+          var el = card.querySelector(sel);
+          if (el) panel.appendChild(el.cloneNode(true));
         });
+
+        /* It stands exactly on the card — same corner, and never smaller, so no edge of the card
+           can peek out from behind a panel whose text happens to be short. Appended to the grid,
+           which is the positioned ancestor; a div rather than an article, so it takes no cell and
+           does not touch the 01…11 counter. */
+        panel.style.top = card.offsetTop + "px";
+        panel.style.minWidth = card.offsetWidth + "px";
+        panel.style.minHeight = card.offsetHeight + "px";
+        panel.style.left = card.offsetLeft + "px";
+        grid.appendChild(panel);
+
+        /* max-content can reach past the grid's right edge from a card in the last column: pull
+           the panel back just far enough to sit inside. */
+        var left = card.offsetLeft, w = panel.offsetWidth;
+        if (left + w > grid.clientWidth) {
+          left = Math.max(0, grid.clientWidth - w);
+          panel.style.left = left + "px";
+        }
+
+        var h = panel.offsetHeight;
+        panel.getBoundingClientRect();                   // reflow, so the unfold has a start
+        panel.classList.add("svc-in");
+        window.setTimeout(function () { if (current === card && panel) fit(card, h); }, 60);
       }
 
-      /* `instant` is for swapping cards: the old one has to be back in the flow before the new
-         one measures its cell, or it measures against a layout that is still moving. */
+      /* `instant` is for swapping cards — the old panel goes without a fade, so the new one is
+         not unfolding through it. */
       function close(instant) {
         if (!current) return;
-        var card = current, gh = ghost;
-        current = null; ghost = null;
-        card.classList.remove("svc-in");
+        var card = current, pn = panel;
+        current = null; panel = null;
         card.setAttribute("aria-expanded", "false");
-        backdrop(false, instant);         // the page comes back into focus as the card shrinks
-
-        /* Landing it is a cut, never a move. Every card also carries .reveal, and .reveal's own
-           rule is `transform .6s ease` — so simply clearing the inline transform handed the card
-           straight back to that transition, which then ran the shrink a SECOND time, from wherever
-           the first one had got to, in its finished cell. That was the twitch at the end of a
-           close. The transition is pinned off while the card is put back, and only released once
-           it is already sitting still. */
-        function settle() {
-          card.classList.remove("svc-open");
-          card.style.transition = "none"; card.style.top = ""; card.style.left = "";
-          card.style.width = ""; card.style.height = "";
-          card.style.transform = ""; card.style.transformOrigin = "";
-          if (gh && gh.parentNode) gh.parentNode.removeChild(gh);
-          card.getBoundingClientRect();
-          card.style.transition = "";
-        }
-        if (instant === true) { settle(); return; }
-
-        /* Back into its own cell the same way it came out — one transform, no re-flow. Where the
-           cell is is asked of the placeholder standing in it rather than remembered from opening
-           time, so this stays right even if something else on the page has moved since. */
-        if (gh) {
-          var w = card.offsetWidth, h = card.offsetHeight;   // layout size; transforms don't count
-          var dx = gh.offsetLeft - parseFloat(card.style.left || "0");
-          card.style.transition = MOVES;
-          card.style.transform = "translate(" + dx + "px,0) scale("
-            + (gh.offsetWidth / w).toFixed(4) + "," + (gh.offsetHeight / h).toFixed(4) + ")";
-        }
-        var done = false;
-        /* The card's OWN transform, and nothing else's. The sub-services inside it are fading and
-           sliding out at the same time on a shorter curve (.34s against the card's .42s), and
-           their transitionend bubbles up here carrying propertyName "transform" too — so the card
-           was being dropped into its cell while it still had 80ms of travel left, arriving with a
-           jolt. */
-        function drop(e) {
-          if (e && e.target !== card) return;
-          if (e && e.propertyName && e.propertyName !== "transform") return;
-          if (done) return;
-          done = true;
-          card.removeEventListener("transitionend", drop);
-          settle();
-        }
-        card.addEventListener("transitionend", drop);
-        window.setTimeout(drop, 520);            // in case the transition never fires
+        backdrop(false, instant);
+        if (!pn) return;
+        /* Nothing has to be put back. The card never left, so its own title and summary are
+           already on screen the instant this runs — the panel only has to get out of the way. */
+        if (instant === true) { if (pn.parentNode) pn.parentNode.removeChild(pn); return; }
+        pn.classList.remove("svc-in");
+        window.setTimeout(function () { if (pn.parentNode) pn.parentNode.removeChild(pn); }, 380);
       }
 
       cards.forEach(function (card) {
@@ -2281,16 +2255,16 @@
         });
       });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
-      /* A click anywhere else closes it. This runs after the card's own handler, so opening a
-         second card is safe: by the time this fires, `current` is already the new card. */
+      /* One click anywhere shuts it — on the panel itself as much as off it. This runs after the
+         card's own handler, so opening a second card is safe: by the time this fires, `current`
+         is already the new card, and a click inside it must not close what it just opened. */
       document.addEventListener("click", function (e) {
         if (!current) return;
-        if (current.contains(e.target)) return;          // the card closes itself
+        if (current.contains(e.target)) return;          // the card's own handler decided
         close();
       });
-      /* Everything about an open card — its cell, the row's width, how tall its text runs — is
-         measured at the moment it opens, and all of it changes when the grid reflows. Rather than
-         chase that, it closes. */
+      /* Where the panel stands and how wide it grew are measured at the moment it opens, and both
+         change when the grid reflows. Rather than chase that, it closes. */
       window.addEventListener("resize", function () { close(true); });
     })();
   })();
