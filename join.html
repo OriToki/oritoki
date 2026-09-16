@@ -679,10 +679,15 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       statusBox.classList.add("hidden");
+      /* First name, last name and phone are the whole of it, and the browser checks those three
+         from the `required` attributes on them. Nothing else may stand in the way of sending —
+         there used to be a second gate here demanding at least one certification, which turned
+         a box the form never marked as required into one, and stopped a filled-in application
+         at the button with no asterisk anywhere to explain why. */
       if (!form.reportValidity()) return;
 
-      if (checkedValues("certifications").length === 0) { setStatus("error", document.documentElement.lang === "ka" ? "აირჩიეთ მინიმუმ ერთი სერტიფიკატი." : "Please select at least one certification."); return; }
-
+      /* Not a required field — a limit on what the storage bucket will take, and it only
+         applies to a file that was actually chosen. */
       var certFile = form.querySelector('input[name="certificate"]').files[0];
       if (certFile && certFile.size > 10 * 1024 * 1024) { setStatus("error", document.documentElement.lang === "ka" ? "სერტიფიკატის ფაილი 10 MB-ს აღემატება." : "The certificate file exceeds 10 MB."); return; }
 
