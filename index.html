@@ -509,13 +509,36 @@
 
     /* ---------- Service detail modal (iOS-style zoom-from-card) ---------- */
     #services article { cursor: pointer; position: relative; }
-    /* Compact: cards show only the icon + title; the sub-services live in the modal. */
+    /* Compact: a closed card carries its number, icon, title and chevron, nothing else. The
+       summary and the sub-services are both hidden HERE rather than removed from the markup —
+       the panel is built by cloning the card's own h3/p/ul (see the open() below), so the text
+       has to exist on the card for the opened panel to have anything to say. Dropping the
+       summary is what lets the cards be this short, which is most of the gain on a phone. */
+    #services article > p,
     #services article > ul { display: none; }
-    #services article > h3 { margin-bottom: .1rem; }
+    #services article > h3 { margin-bottom: 0; }
     /* The same chevron the header's "WHAT WE DO" wears, for the same reason: it is the mark that
-       says something unfolds below. A [+] promised a different thing — adding, or a lightbox. */
-    #services article::after { content: "\f078"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: .68rem; position: absolute; top: 1rem; right: 1rem; height: 1.7rem; width: 1.7rem; border-radius: 9999px; background: #f5f5f2; color: #9ca3af; display: flex; align-items: center; justify-content: center; transition: background .2s ease, color .2s ease; }
+       says something unfolds below. A [+] promised a different thing — adding, or a lightbox.
+       This badge is the hinge the whole gesture turns on, so it is never replaced and never
+       moves: the card keeps it, open or shut, and it simply turns over. The turn is slower than
+       a hover and overshoots a few degrees before it settles, because it is the one thing
+       telling the visitor that the click landed. */
+    #services article::after { content: "\f078"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: .68rem; position: absolute; top: 1rem; right: 1rem; height: 1.7rem; width: 1.7rem; border-radius: 9999px; background: #f5f5f2; color: #9ca3af; display: flex; align-items: center; justify-content: center; transition: background .2s ease, color .2s ease, transform .44s cubic-bezier(.34,1.42,.5,1); }
     #services article:hover::after { background: #f97316; color: #fff; }
+    /* Open: the badge is turned over and lit, and the card wears the panel's edge so the two read
+       as one piece. Listed after the hover rule, which it ties with on specificity. */
+    #services article.svc-lit::after { transform: rotate(180deg); background: #f97316; color: #fff; }
+    #services article.svc-lit {
+      border-color: #f97316;
+      /* The hover lift has to sit down while the panel is out, or pointing at the card would
+         shift it out from under its own list. !important beats Tailwind's hover:-translate-y-1. */
+      transform: none !important;
+    }
+    /* Above the haze (z 110) with its panel, so the pair being read stays sharp while the rest of
+       the page goes back. Held a little past svc-lit — the chevron has to turn back the instant
+       the click lands, but dropping the card under the haze before the haze has finished fading
+       would blur it for a third of a second on the way out. */
+    #services article.svc-top { z-index: 120; }
     /* Auto card numbers (01, 02, …) top-left; stroke-icon sizing. Hover-lift is in the markup. */
     #svcGrid { counter-reset: svc; }
     #services article { counter-increment: svc; }
@@ -529,18 +552,19 @@
     #services .svc-ico svg { width: 2rem; height: 2rem; }
     #services article:hover { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
     /* ---------- Service details, unfolded the way the header's own menu unfolds ----------
-       The card used to travel: it left the grid, grew into a rectangle and shrank back into its
-       cell. It drops a PANEL out of its own top corner instead, on exactly the motion the
+       The card stays exactly where it is and its list drops out from UNDER it, on the motion the
        "WHAT WE DO" menu has in the header — both read the same three tokens (--dd-lift,
        --dd-fade, --dd-slide) a long way up this stylesheet, so the two can never drift apart.
 
-       The card itself never moves and never leaves its cell. That is what makes a close
-       instant: the closed card's own title and summary are not put back at the end of an
-       animation, they were sitting under the panel the whole time.
+       Why under it and not over it, which is where this started: the chevron is the hinge, and
+       the visitor has to see it stay put and turn. It sits in the card's RIGHT corner, and a
+       panel wide enough to hold a service on one line is twice the card's width — so a panel
+       covering the card can only put its own corner somewhere else. Leaving the card alone is
+       the only arrangement in which the badge never moves, and it is also, exactly, what the
+       header does: the trigger stays, the list comes out below it.
 
-       The panel is exactly as wide as its longest line asks for (width: max-content), so the
-       sub-services run down it in ONE column, one service to a line — which is how the header's
-       menu reads, and the whole point of doing it this way.
+       Nothing is repeated: the card already carries the title and the summary, so the panel is
+       the sub-services and nothing else, one to a line, like the menu upstairs.
 
        No pulse on opening, on purpose. The pulse (svcFlash, further up) belongs to arriving from
        the header's dropdown, where the page jumps and the card has to be pointed at; a card you
@@ -549,7 +573,7 @@
     #services .svc-panel {
       position: absolute; z-index: 120; cursor: pointer;
       width: max-content; max-width: 100%;
-      padding: 1.6rem 1.8rem 1.8rem; border-radius: 1.25rem;
+      padding: 1rem 1.4rem 1.1rem; border-radius: 1rem;
       border: 1px solid #f97316; background: rgb(var(--c-surface));
       box-shadow: 0 26px 52px -22px rgba(20,20,42,.55);
       transform: translateY(var(--dd-lift)) scaleY(.96); transform-origin: top center;
@@ -557,40 +581,16 @@
       transition: var(--dd-fade), var(--dd-slide);
     }
     #services .svc-panel.svc-in { opacity: 1; transform: translateY(0) scaleY(1); }
-    /* The chevron that shuts it, in the corner the card's own chevron came from — the SAME glyph,
-       turned over, exactly as the header's caret turns over when its menu is down. */
-    #services .svc-panel::after {
-      content: "\f078"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: .68rem;
-      position: absolute; top: 1rem; right: 1rem; height: 1.7rem; width: 1.7rem;
-      border-radius: 9999px; background: #f97316; color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      transform: rotate(180deg);
-    }
-    /* Every rule here is hung off #services so it outranks the Tailwind utilities the cloned
-       title, summary and list bring with them from the closed card. The title's right padding is
-       the badge's room, and it counts towards max-content, so the panel widens to make that room
-       rather than letting the badge sit on the last word. */
-    #services .svc-panel > h3 { margin-top: 0; padding-right: 2.6rem; font-size: 1.55rem; line-height: 1.22; }
-    /* The summary line gets the same orange bullet the sub-services have, and lines up with them:
-       set without one it read as a list item that had lost its marker. Bullet and indent are the
-       list's own — 6px dot, 10px gap — so the two sit on the same left edge. */
-    #services .svc-panel > p {
-      position: relative; margin-top: .85rem; padding-left: 1rem;
-      font-size: 1.05rem; line-height: 1.55;
-    }
-    #services .svc-panel > p::before {
-      content: ""; position: absolute; left: 0; top: .58rem;
-      height: .375rem; width: .375rem; border-radius: 9999px; background: rgb(249 115 22 / .7);
-    }
+    /* Hung off #services so it outranks the Tailwind utilities the cloned list brings with it
+       from the card, where the same markup is set small and hidden. */
     #services .svc-panel > ul {
-      display: block; margin-top: 1.25rem; font-size: 1.05rem; line-height: 1.5;
+      display: block; margin-top: 0; font-size: 1.02rem; line-height: 1.5;
     }
-    #services .svc-panel > ul > li + li { margin-top: .55rem; }
-    #services .svc-panel > ul li > span:first-child { margin-top: .58rem; }
+    #services .svc-panel > ul > li + li { margin-top: .5rem; }
+    #services .svc-panel > ul li > span:first-child { margin-top: .55rem; }
     /* Photo background on the flagship service, as its modal used to have. */
     #services .svc-panel.svc-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.35); }
-    #services .svc-panel.svc-photo h3 { color: #ffffff; }
-    #services .svc-panel.svc-photo p, #services .svc-panel.svc-photo li { color: rgba(255,255,255,.92); }
+    #services .svc-panel.svc-photo li { color: rgba(255,255,255,.92); }
     /* Everything behind is hazed back — just enough that the neighbours stop competing for the
        eye, never enough to stop the page being a page. The card is above this and so above the
        header; the haze takes the header with the rest. */
@@ -2133,18 +2133,21 @@
       });
     });
 
-    /* ---------- 10. A service card unfolds a panel, like the header's menu ----------
-       Not a modal, not a strip across the row, and no longer the card itself travelling out of
-       the grid and growing: clicking a card drops a PANEL out of its own top corner with the
-       header dropdown's motion, listing the sub-services one to a line. The card stays put
-       underneath it the whole time. Clicking the panel, the card, anywhere else, or Escape
-       shuts it; the [-] badge in the panel's top-right corner is the affordance. */
+    /* ---------- 10. A service card unfolds its list, like the header's menu ----------
+       Not a modal, not a strip across the row, and no longer the card travelling out of the grid
+       and growing: clicking a card drops its sub-services out from UNDER it, one to a line, with
+       the header dropdown's motion. The card does not move at all — which is what lets the
+       chevron in its corner stay put and simply turn over, the one bit of feedback saying the
+       click landed. Clicking the panel, the card, anywhere else, or Escape shuts it. */
     (function () {
       var grid = document.getElementById("svcGrid");
       if (!grid) return;
       var cards = Array.prototype.slice.call(grid.querySelectorAll("article"));
       if (!cards.length) return;
       var current = null, panel = null, back = null;
+      /* How far below the card the list hangs. The header keeps its menu 14px clear of its link
+         (.nav-dd-menu padding-top); a card's edge is heavier, so this is a touch more. */
+      var DROP = 10;
 
       /* If the panel would not fit on screen, bring it in — moving the page WITH it rather than
          after it, so the two read as one movement. It scrolls only as far as it must, and never
@@ -2193,24 +2196,19 @@
         card.setAttribute("aria-expanded", "true");
         backdrop(true);
 
-        /* The panel is built from the card's own title, summary and list rather than being the
-           card itself: that is what lets the card stay where it is. The clones keep their
-           data-ka / data-en attributes, so the language toggle reaches them like anything else. */
+        /* The panel holds a copy of the card's list and nothing else — the title and the summary
+           are on the card, which is still there to be read. The clone keeps its data-ka / data-en
+           attributes, so the language toggle reaches it like anything else. */
         panel = document.createElement("div");
         panel.className = "svc-panel";
         if (card.id === "svc-glass") panel.classList.add("svc-photo");
-        ["h3", "p", "ul"].forEach(function (sel) {
-          var el = card.querySelector(sel);
-          if (el) panel.appendChild(el.cloneNode(true));
-        });
+        var list = card.querySelector("ul");
+        if (list) panel.appendChild(list.cloneNode(true));
 
-        /* It stands exactly on the card — same corner, and never smaller, so no edge of the card
-           can peek out from behind a panel whose text happens to be short. Appended to the grid,
-           which is the positioned ancestor; a div rather than an article, so it takes no cell and
-           does not touch the 01…11 counter. */
-        panel.style.top = card.offsetTop + "px";
-        panel.style.minWidth = card.offsetWidth + "px";
-        panel.style.minHeight = card.offsetHeight + "px";
+        /* Hung under the card's bottom-left corner, the way the header's menu hangs under its
+           link. Appended to the grid, which is the positioned ancestor; a div rather than an
+           article, so it takes no cell and does not touch the 01…11 counter. */
+        panel.style.top = (card.offsetTop + card.offsetHeight + DROP) + "px";
         panel.style.left = card.offsetLeft + "px";
         grid.appendChild(panel);
 
@@ -2222,7 +2220,9 @@
           panel.style.left = left + "px";
         }
 
-        var h = panel.offsetHeight;
+        card.classList.add("svc-lit");                   // turns the chevron over and lights it
+        card.classList.add("svc-top");                   // and lifts the pair clear of the haze
+        var h = card.offsetHeight + DROP + panel.offsetHeight;
         panel.getBoundingClientRect();                   // reflow, so the unfold has a start
         panel.classList.add("svc-in");
         window.setTimeout(function () { if (current === card && panel) fit(card, h); }, 60);
@@ -2235,13 +2235,22 @@
         var card = current, pn = panel;
         current = null; panel = null;
         card.setAttribute("aria-expanded", "false");
+        card.classList.remove("svc-lit");               // the chevron turns back, and is seen to
         backdrop(false, instant);
         if (!pn) return;
-        /* Nothing has to be put back. The card never left, so its own title and summary are
-           already on screen the instant this runs — the panel only has to get out of the way. */
-        if (instant === true) { if (pn.parentNode) pn.parentNode.removeChild(pn); return; }
+        /* Nothing has to be put back. The card never left, so everything it says is already on
+           screen the instant this runs — the panel only has to fold away. */
+        if (instant === true) {
+          card.classList.remove("svc-top");
+          if (pn.parentNode) pn.parentNode.removeChild(pn);
+          return;
+        }
         pn.classList.remove("svc-in");
-        window.setTimeout(function () { if (pn.parentNode) pn.parentNode.removeChild(pn); }, 380);
+        window.setTimeout(function () {
+          // Not if it has been opened again in the meantime — this timer belongs to the old panel.
+          if (current !== card) card.classList.remove("svc-top");
+          if (pn.parentNode) pn.parentNode.removeChild(pn);
+        }, 380);
       }
 
       cards.forEach(function (card) {
