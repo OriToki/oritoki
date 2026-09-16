@@ -516,7 +516,15 @@
        summary is what lets the cards be this short, which is most of the gain on a phone. */
     #services article > p,
     #services article > ul { display: none; }
-    #services article > h3 { margin-bottom: 0; }
+    /* Title first, icon under it, and the icon pushed to the foot of the card. The grid stretches
+       every card in a row to the tallest one, so space-between lands all the icons on a single
+       line across the row instead of each one floating wherever its own title stopped.
+       Only h3 and .svc-ico are flex items — p and ul are display:none above, and the number and
+       the chevron are absolutely positioned, so neither takes part.
+       The h3's own mt-3.5 is zeroed here rather than in each of the eleven cards' class lists. */
+    #services article { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; }
+    #services article > h3 { order: 1; margin-top: 0; margin-bottom: 12px; }
+    #services .svc-ico { order: 2; }
     /* The same chevron the header's "WHAT WE DO" wears, for the same reason: it is the mark that
        says something unfolds below. A [+] promised a different thing — adding, or a lightbox.
        This badge is the hinge the whole gesture turns on, so it is never replaced and never
@@ -525,82 +533,89 @@
        telling the visitor that the click landed. */
     #services article::after { content: "\f078"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: .68rem; position: absolute; top: 1rem; right: 1rem; height: 1.7rem; width: 1.7rem; border-radius: 9999px; background: #f5f5f2; color: #9ca3af; display: flex; align-items: center; justify-content: center; transition: background .2s ease, color .2s ease, transform .44s cubic-bezier(.34,1.42,.5,1); }
     #services article:hover::after { background: #f97316; color: #fff; }
-    /* Open: the badge is turned over and lit, and the card wears the panel's edge so the two read
+    /* Open: the badge is turned over and lit, and the card wears the strip's edge so the two read
        as one piece. Listed after the hover rule, which it ties with on specificity. */
     #services article.svc-lit::after { transform: rotate(180deg); background: #f97316; color: #fff; }
     #services article.svc-lit {
       border-color: #f97316;
-      /* The hover lift has to sit down while the panel is out, or pointing at the card would
-         shift it out from under its own list. !important beats Tailwind's hover:-translate-y-1. */
+      /* The hover lift has to sit down while the strip is out, or pointing at the card would
+         shift it off the box it opened. !important beats Tailwind's hover:-translate-y-1. */
       transform: none !important;
     }
-    /* Above the haze (z 110) with its panel, so the pair being read stays sharp while the rest of
-       the page goes back. Held a little past svc-lit — the chevron has to turn back the instant
-       the click lands, but dropping the card under the haze before the haze has finished fading
-       would blur it for a third of a second on the way out. */
-    #services article.svc-top { z-index: 120; }
-    /* Auto card numbers (01, 02, …) top-left; stroke-icon sizing. Hover-lift is in the markup. */
-    #svcGrid { counter-reset: svc; }
-    #services article { counter-increment: svc; }
-    #services article::before {
-      content: counter(svc, decimal-leading-zero);
-      position: absolute; top: 1.15rem; left: 1.4rem;
-      font-size: 12px; font-weight: 700; letter-spacing: .5px; color: #9ca3af;
-    }
-    html.dark #services article::before { color: #8a8a90; }
+    /* Stroke-icon sizing. Hover-lift is in the markup. The cards used to be numbered 01…11 in the
+       top-left corner; with the number gone the icon comes back up to the card's own padding, so
+       the markup carries p-5 rather than the p-5 pt-11 that made room for it. */
     #services .svc-ico { color: #f97316; }
     #services .svc-ico svg { width: 2rem; height: 2rem; }
     #services article:hover { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
-    /* ---------- Service details, unfolded the way the header's own menu unfolds ----------
-       The card stays exactly where it is and its list drops out from UNDER it, on the motion the
-       "WHAT WE DO" menu has in the header — both read the same three tokens (--dd-lift,
-       --dd-fade, --dd-slide) a long way up this stylesheet, so the two can never drift apart.
+    /* ---------- Service details, opened IN the grid ----------
+       Clicking a card opens a STRIP in the grid's own flow, on the row below the clicked card's
+       row. Nothing is covered and nothing floats: the strip takes room, and the rows beneath it
+       move down to make that room, on the same easing the header's menu unfolds with.
 
-       Why under it and not over it, which is where this started: the chevron is the hinge, and
-       the visitor has to see it stay put and turn. It sits in the card's RIGHT corner, and a
-       panel wide enough to hold a service on one line is twice the card's width — so a panel
-       covering the card can only put its own corner somewhere else. Leaving the card alone is
-       the only arrangement in which the badge never moves, and it is also, exactly, what the
-       header does: the trigger stays, the list comes out below it.
+       Two things fall out of doing it in the flow. The clicked card does not move, so the
+       chevron in its corner is a real hinge — it stays exactly where it was and simply turns
+       over. And the strip spans every column, which is the only way a full row can be pushed
+       down; the visible box inside it is only as wide as its longest line needs, sitting under
+       the card it belongs to, so each service still reads on one line.
 
-       Nothing is repeated: the card already carries the title and the summary, so the panel is
-       the sub-services and nothing else, one to a line, like the menu upstairs.
+       The row gap is carried by the cards' own margin (row-gap: 0), so the strip's own box can
+       carry the gap BELOW it inside the height being animated. Left to the grid's row-gap, two
+       16px gaps would have appeared the instant the strip was inserted, before its height had
+       grown a pixel — a 32px jump at the start of every open.
 
        No pulse on opening, on purpose. The pulse (svcFlash, further up) belongs to arriving from
        the header's dropdown, where the page jumps and the card has to be pointed at; a card you
        clicked yourself needs no pointing at. */
-    #svcGrid { position: relative; }
-    #services .svc-panel {
-      position: absolute; z-index: 120; cursor: pointer;
+    #svcGrid { row-gap: 0; }
+    #svcGrid > article { margin-bottom: 1rem; }
+    #services .svc-strip {
+      grid-column: 1 / -1;
+      height: 0; overflow: hidden;
+      transition: height .42s cubic-bezier(.2,.85,.25,1);
+    }
+    #services .svc-strip-box {
       width: max-content; max-width: 100%;
-      padding: 1rem 1.4rem 1.1rem; border-radius: 1rem;
+      margin-bottom: 1rem;                       /* the row gap, inside the animated height */
+      padding: 1.2rem 1.6rem 1.4rem; border-radius: 1rem;
       border: 1px solid #f97316; background: rgb(var(--c-surface));
-      box-shadow: 0 26px 52px -22px rgba(20,20,42,.55);
-      transform: translateY(var(--dd-lift)) scaleY(.96); transform-origin: top center;
-      opacity: 0;
+      box-shadow: 0 18px 38px -20px rgba(20,20,42,.45);
+      cursor: pointer;
+      opacity: 0; transform: translateY(-8px);
       transition: var(--dd-fade), var(--dd-slide);
     }
-    #services .svc-panel.svc-in { opacity: 1; transform: translateY(0) scaleY(1); }
-    /* Hung off #services so it outranks the Tailwind utilities the cloned list brings with it
-       from the card, where the same markup is set small and hidden. */
-    #services .svc-panel > ul {
-      display: block; margin-top: 0; font-size: 1.02rem; line-height: 1.5;
+    #services .svc-strip.svc-in .svc-strip-box { opacity: 1; transform: none; }
+    /* Hung off #services so these outrank the Tailwind utilities the cloned title and list bring
+       with them from the card, where the same markup is set small and the list is hidden. */
+    #services .svc-strip-box > h3 { margin-top: 0; font-size: 1.35rem; line-height: 1.25; }
+    /* The summary carries the same orange bullet the sub-services have, and lines up with them:
+       set without one it read as a list item that had lost its marker. Bullet and indent are the
+       list's own — 6px dot, 10px gap — so the two sit on the same left edge. */
+    #services .svc-strip-box > p {
+      display: block; position: relative;
+      margin-top: .8rem; padding-left: 1rem;
+      font-size: 1.02rem; line-height: 1.5;
     }
-    #services .svc-panel > ul > li + li { margin-top: .5rem; }
-    #services .svc-panel > ul li > span:first-child { margin-top: .55rem; }
-    /* Photo background on the flagship service, as its modal used to have. */
-    #services .svc-panel.svc-photo { background: linear-gradient(155deg, rgba(6,8,16,.60), rgba(6,8,16,.86)), url('images/svc-modal-bg.jpg') center/cover; border-color: rgba(255,255,255,.35); }
-    #services .svc-panel.svc-photo li { color: rgba(255,255,255,.92); }
-    /* Everything behind is hazed back — just enough that the neighbours stop competing for the
-       eye, never enough to stop the page being a page. The card is above this and so above the
-       header; the haze takes the header with the rest. */
-    .svc-back {
-      position: fixed; inset: 0; z-index: 110;
-      background: rgba(10,11,13,.12);
-      -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
-      opacity: 0; transition: opacity .28s ease;
+    #services .svc-strip-box > p::before {
+      content: ""; position: absolute; left: 0; top: .55rem;
+      height: .375rem; width: .375rem; border-radius: 9999px; background: rgb(249 115 22 / .7);
     }
-    .svc-back.svc-in { opacity: 1; }
+    #services .svc-strip-box > ul {
+      display: block; margin-top: 1.1rem; font-size: 1.02rem; line-height: 1.5;
+    }
+    #services .svc-strip-box > ul > li + li { margin-top: .5rem; }
+    #services .svc-strip-box > ul li > span:first-child { margin-top: .55rem; }
+    /* A photograph behind the opened box. Which photograph is the CARD's business: it carries a
+       data-bg="images/…" and open() paints it, so giving another service a picture is one
+       attribute in the markup and nothing here. The dark gradient is what keeps the text legible
+       over whatever the photograph turns out to be, so it is painted with the image, not chosen
+       per service. Cards without a data-bg open on the plain card fill. */
+    #services .svc-strip-box.svc-photo {
+      background-position: center; background-size: cover; background-repeat: no-repeat;
+      border-color: rgba(255,255,255,.35);
+    }
+    #services .svc-strip-box.svc-photo h3 { color: #ffffff; }
+    #services .svc-strip-box.svc-photo p, #services .svc-strip-box.svc-photo li { color: rgba(255,255,255,.92); }
 
     /* ===================== CARABINER THEME TOGGLE ===================== */
     /* The gate pivots on its rivet (16.31, 16 in the icon's viewBox). Closed sits at 3.4deg
@@ -969,7 +984,7 @@
 
       <!-- All service categories (glass first, styled like the rest) -->
       <div id="svcGrid" class="mt-10 grid gap-4 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
-        <article id="svc-glass" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-glass" data-bg="images/svc-modal-bg.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="მაღალსართულიანი შენობების წმენდა, ჰერმეტიზაცია და მოვლა.">High-rise building cleaning, sealing and maintenance.</p>
@@ -981,7 +996,7 @@
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის კონსტრუქციების მონტაჟი">Glass structures installation</span></li>
           </ul>
         </article>
-        <article id="svc-buildings" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-buildings" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="შენობების მოვლა">Building Maintenance</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ტექნიკური მომსახურება, რემონტი და პრევენციული ინსპექტირება.">Technical maintenance, repairs and preventive inspection.</p>
@@ -994,7 +1009,7 @@
           </ul>
         </article>
 
-        <article id="svc-electrical" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-electrical" data-bg="images/svc-electrical.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ელექტროობა და ტელეკომუნიკაცია">Electrical &amp; Telecom</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკაბელო სისტემების, განათებისა და ანძების მონტაჟი.">Cabling systems, lighting and mast installation.</p>
@@ -1009,7 +1024,7 @@
           </ul>
         </article>
 
-        <article id="svc-signage" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-signage" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="რეკლამები">Advertising &amp; Signage</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების ინსტალაცია.">Installation of banners, billboards and advertising structures.</p>
@@ -1021,7 +1036,7 @@
           </ul>
         </article>
 
-        <article id="svc-painting" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-painting" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ღებვა და დაცვა">Painting &amp; Protection</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა.">Treatment and painting of facades and metal structures.</p>
@@ -1032,7 +1047,7 @@
           </ul>
         </article>
 
-        <article id="svc-construction" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-construction" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სამშენებლო სამუშაოები და იზოლაცია">Construction &amp; Insulation</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამონტაჟო, საიზოლაციო და სარეკონსტრუქციო სერვისები.">Assembly, insulation and reconstruction services.</p>
@@ -1046,7 +1061,7 @@
           </ul>
         </article>
 
-        <article id="svc-rock" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-rock" data-bg="images/svc-rock.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="კლდეები, ფერდობები და გარემო">Rock, Slope &amp; Environment</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფერდობების გამაგრება, დამცავი ბადეების მონტაჟი და დამუშავება.">Slope reinforcement, protective-mesh installation and treatment.</p>
@@ -1057,7 +1072,7 @@
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ხეების გასხვლა და სახიფათო ტოტების მოცილება">Tree pruning &amp; hazardous-branch removal</span></li>          </ul>
         </article>
 
-        <article id="svc-industrial" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-industrial" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინდუსტრიული ობიექტები">Industrial Facilities</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ქარხნების, ქიმიური საწარმოებისა და სპეციალური ნაგებობების მომსახურება.">Servicing of plants, chemical facilities and special structures.</p>
@@ -1069,7 +1084,7 @@
           </ul>
         </article>
 
-        <article id="svc-inspection" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-inspection" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინსპექტირება">Inspection</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება.">Structural diagnostics, ultrasonic and visual inspection.</p>
@@ -1078,7 +1093,7 @@
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების ინსპექტირება">Safety-system inspection</span></li>          </ul>
         </article>
 
-        <article id="svc-film" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-film" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სცენა და გადაღებები">Stage &amp; Filming</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკინემატოგრაფიო და შოუ-ბიზნესის კონსტრუქციების უსაფრთხოება.">Safety for cinematographic and show-business structures.</p>
@@ -1090,7 +1105,7 @@
           </ul>
         </article>
 
-        <article id="svc-emergency" class="reveal group relative rounded-2xl border border-line bg-surface p-5 pt-11 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-emergency" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამაშველო ოპერაციები">Rescue operations</p>
@@ -2133,124 +2148,123 @@
       });
     });
 
-    /* ---------- 10. A service card unfolds its list, like the header's menu ----------
-       Not a modal, not a strip across the row, and no longer the card travelling out of the grid
-       and growing: clicking a card drops its sub-services out from UNDER it, one to a line, with
-       the header dropdown's motion. The card does not move at all — which is what lets the
-       chevron in its corner stay put and simply turn over, the one bit of feedback saying the
-       click landed. Clicking the panel, the card, anywhere else, or Escape shuts it. */
+    /* ---------- 10. A service card opens a strip in the grid ----------
+       Clicking a card inserts a STRIP into the grid's own flow, on the row below the clicked
+       card's row, and grows its height from nothing. Nothing is covered and nothing floats: the
+       rows beneath move down to make the room. The clicked card does not move either — its row
+       is above the strip — which is what lets the chevron in its corner stay put and simply turn
+       over, the one bit of feedback saying the click landed. Clicking the strip, the card,
+       anywhere else, or Escape shuts it. */
     (function () {
       var grid = document.getElementById("svcGrid");
       if (!grid) return;
       var cards = Array.prototype.slice.call(grid.querySelectorAll("article"));
       if (!cards.length) return;
-      var current = null, panel = null, back = null;
-      /* How far below the card the list hangs. The header keeps its menu 14px clear of its link
-         (.nav-dd-menu padding-top); a card's edge is heavier, so this is a touch more. */
-      var DROP = 10;
+      var current = null, strip = null, openW = 0;
+      var GROW = 420;                                    // must match .svc-strip's height easing
 
-      /* If the panel would not fit on screen, bring it in — moving the page WITH it rather than
-         after it, so the two read as one movement. It scrolls only as far as it must, and never
-         far enough to push the panel's top under the fixed header; a panel too tall for the
-         window at least starts at the top of it. Measured off the CARD, since the panel is
-         mid-unfold and its own box would report where it is passing through. */
-      function fit(card, h) {
+      /* If the opened strip runs off the bottom of the window, bring it up — but never far enough
+         to push its own top under the fixed header, so a strip taller than the window at least
+         starts at the top of it. */
+      function fit(el) {
         var head = (document.getElementById("header") || {}).offsetHeight || 88;
         var gap = 16;
-        var top = card.getBoundingClientRect().top;
+        var r = el.getBoundingClientRect();
         var by = 0;
-        if (top < head + gap) by = top - head - gap;
-        else if (top + h > window.innerHeight - gap) {
-          by = Math.min(top + h - window.innerHeight + gap, top - head - gap);
+        if (r.bottom > window.innerHeight - gap) {
+          by = Math.min(r.bottom - window.innerHeight + gap, r.top - head - gap);
         }
-        if (Math.abs(by) > 4) {
+        if (by > 4) {
           if (window.scrollBy) window.scrollBy({ top: by, left: 0, behavior: "smooth" });
           else window.scrollTo(0, window.pageYOffset + by);
         }
       }
 
-      /* The haze behind. It is a plain element rather than a filter on the page, because a filter
-         on an ancestor would take the panel down with it. */
-      function backdrop(on, instant) {
-        if (on) {
-          if (back) return;                           // switching cards: the blur is already up
-          back = document.createElement("div");
-          back.className = "svc-back";
-          document.body.appendChild(back);
-          back.getBoundingClientRect();               // reflow, so the fade has a 0 to start from
-          back.classList.add("svc-in");
-          return;
-        }
-        if (!back) return;
-        var b = back; back = null;
-        if (instant === true) { if (b.parentNode) b.parentNode.removeChild(b); return; }
-        b.classList.remove("svc-in");
-        window.setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, 340);
+      /* The last card on the same grid row as this one. Cards on a row share an offsetTop, and
+         the strip has to go after ALL of them — dropped in beside the clicked card it would take
+         a cell in the middle of the row and push the rest of the row along. */
+      function rowEnd(card) {
+        var row = card.offsetTop, last = card;
+        cards.forEach(function (c) { if (c.offsetTop === row) last = c; });
+        return last;
       }
 
       function open(card) {
-        // Switching cards: hold the haze aside so closing the old one does not take it down and
-        // the new one put it straight back up — it would blink between the two.
-        if (current) { var keep = back; back = null; close(true); back = keep; }
+        if (current) close(true);
         current = card;
         card.setAttribute("aria-expanded", "true");
-        backdrop(true);
-
-        /* The panel holds a copy of the card's list and nothing else — the title and the summary
-           are on the card, which is still there to be read. The clone keeps its data-ka / data-en
-           attributes, so the language toggle reaches it like anything else. */
-        panel = document.createElement("div");
-        panel.className = "svc-panel";
-        if (card.id === "svc-glass") panel.classList.add("svc-photo");
-        var list = card.querySelector("ul");
-        if (list) panel.appendChild(list.cloneNode(true));
-
-        /* Hung under the card's bottom-left corner, the way the header's menu hangs under its
-           link. Appended to the grid, which is the positioned ancestor; a div rather than an
-           article, so it takes no cell and does not touch the 01…11 counter. */
-        panel.style.top = (card.offsetTop + card.offsetHeight + DROP) + "px";
-        panel.style.left = card.offsetLeft + "px";
-        grid.appendChild(panel);
-
-        /* max-content can reach past the grid's right edge from a card in the last column: pull
-           the panel back just far enough to sit inside. */
-        var left = card.offsetLeft, w = panel.offsetWidth;
-        if (left + w > grid.clientWidth) {
-          left = Math.max(0, grid.clientWidth - w);
-          panel.style.left = left + "px";
-        }
-
         card.classList.add("svc-lit");                   // turns the chevron over and lights it
-        card.classList.add("svc-top");                   // and lifts the pair clear of the haze
-        var h = card.offsetHeight + DROP + panel.offsetHeight;
-        panel.getBoundingClientRect();                   // reflow, so the unfold has a start
-        panel.classList.add("svc-in");
-        window.setTimeout(function () { if (current === card && panel) fit(card, h); }, 60);
+
+        /* The strip holds a copy of the card's title, summary and list — the summary included,
+           because a closed card hides it (see "Compact:" in the stylesheet), so the opened strip
+           is the only place it is read. The clones keep their data-ka / data-en attributes, so
+           the language toggle reaches them like anything else. */
+        strip = document.createElement("div");
+        strip.className = "svc-strip";
+        var box = document.createElement("div");
+        box.className = "svc-strip-box";
+        var bg = card.getAttribute("data-bg");
+        if (bg) {
+          box.classList.add("svc-photo");
+          box.style.backgroundImage =
+            "linear-gradient(155deg, rgba(6,8,16,.55), rgba(6,8,16,.84)), url('" + bg + "')";
+        }
+        ["h3", "p", "ul"].forEach(function (sel) {
+          var el = card.querySelector(sel);
+          if (el) box.appendChild(el.cloneNode(true));
+        });
+        strip.appendChild(box);
+        grid.insertBefore(strip, rowEnd(card).nextSibling);
+
+        /* The strip spans every column so that a whole row can be pushed down, but the box inside
+           it is only as wide as its longest line wants — stood under the card it belongs to, and
+           pulled back when a card in the last column would send it past the grid's right edge.
+           Measured off the rects: the grid is not a positioned ancestor, so offsetLeft would be
+           counted from whatever is, and the box landed ~90px to the right of its card. */
+        var left = card.getBoundingClientRect().left - grid.getBoundingClientRect().left;
+        var w = box.offsetWidth;
+        if (left + w > grid.clientWidth) left = Math.max(0, grid.clientWidth - w);
+        box.style.marginLeft = Math.max(0, Math.round(left)) + "px";
+        openW = grid.clientWidth;                        // what the two measurements above assume
+
+        /* Grow from 0 to the height the content actually needs. Measured with height:auto and put
+           straight back, so the transition has a 0 to start from; overflow:hidden makes the strip
+           its own block formatting context, which is what keeps the box's bottom margin — the row
+           gap below the strip — inside the height being animated. */
+        strip.style.height = "auto";
+        var h = strip.offsetHeight;
+        strip.style.height = "0px";
+        strip.getBoundingClientRect();
+        strip.style.height = h + "px";
+        strip.classList.add("svc-in");
+        window.setTimeout(function () {
+          if (current !== card || !strip) return;
+          /* Let it size itself from here on: pinned to a pixel height it would clip if the text
+             reflowed under it — switching language, most of all. */
+          strip.style.height = "auto";
+          fit(strip);
+        }, GROW);
       }
 
-      /* `instant` is for swapping cards — the old panel goes without a fade, so the new one is
-         not unfolding through it. */
+      /* `instant` is for swapping cards — the old strip goes at once, so the grid is settled
+         before the new one measures where its row ends. */
       function close(instant) {
         if (!current) return;
-        var card = current, pn = panel;
-        current = null; panel = null;
+        var card = current, st = strip;
+        current = null; strip = null;
         card.setAttribute("aria-expanded", "false");
         card.classList.remove("svc-lit");               // the chevron turns back, and is seen to
-        backdrop(false, instant);
-        if (!pn) return;
-        /* Nothing has to be put back. The card never left, so everything it says is already on
-           screen the instant this runs — the panel only has to fold away. */
-        if (instant === true) {
-          card.classList.remove("svc-top");
-          if (pn.parentNode) pn.parentNode.removeChild(pn);
-          return;
-        }
-        pn.classList.remove("svc-in");
+        if (!st) return;
+        if (instant === true) { if (st.parentNode) st.parentNode.removeChild(st); return; }
+        /* Back down to nothing from wherever it actually stands — it is on height:auto by now,
+           which has no number for the transition to run from. */
+        st.style.height = st.offsetHeight + "px";
+        st.getBoundingClientRect();
+        st.classList.remove("svc-in");
+        st.style.height = "0px";
         window.setTimeout(function () {
-          // Not if it has been opened again in the meantime — this timer belongs to the old panel.
-          if (current !== card) card.classList.remove("svc-top");
-          if (pn.parentNode) pn.parentNode.removeChild(pn);
-        }, 380);
+          if (st.parentNode) st.parentNode.removeChild(st);
+        }, GROW + 20);
       }
 
       cards.forEach(function (card) {
@@ -2268,7 +2282,7 @@
         });
       });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
-      /* One click anywhere shuts it — on the panel itself as much as off it. This runs after the
+      /* One click anywhere shuts it — on the strip itself as much as off it. This runs after the
          card's own handler, so opening a second card is safe: by the time this fires, `current`
          is already the new card, and a click inside it must not close what it just opened. */
       document.addEventListener("click", function (e) {
@@ -2276,9 +2290,15 @@
         if (current.contains(e.target)) return;          // the card's own handler decided
         close();
       });
-      /* Where the panel stands and how wide it grew are measured at the moment it opens, and both
-         change when the grid reflows. Rather than chase that, it closes. */
-      window.addEventListener("resize", function () { close(true); });
+      /* Which row the strip sits after, and how far in its box stands, are both measured at the
+         moment it opens, and a grid that has re-columned invalidates both. Rather than chase
+         that, it closes — but only on a resize that actually changed the grid's WIDTH. Closing
+         on every resize event meant an open strip could shut itself: growing the page past the
+         window's height brings up a scrollbar, the viewport narrows by its width, and that is a
+         resize. The strip would then vanish the instant it was opened. */
+      window.addEventListener("resize", function () {
+        if (current && grid.clientWidth !== openW) close(true);
+      });
     })();
   })();
   </script>
