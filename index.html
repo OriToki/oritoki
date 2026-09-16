@@ -519,8 +519,11 @@
     /* Title first, icon under it, and the icon pushed to the foot of the card. The grid stretches
        every card in a row to the tallest one, so space-between lands all the icons on a single
        line across the row instead of each one floating wherever its own title stopped.
-       Only h3 and .svc-ico are flex items — p and ul are display:none above, and the number and
-       the chevron are absolutely positioned, so neither takes part.
+       The markup still reads icon-then-title; the order properties swap them visually, which
+       keeps the icon first for a screen reader (it is decorative) and the heading where the
+       document outline wants it.
+       Only h3 and .svc-ico are flex items — p and ul are display:none above, and the chevron is
+       absolutely positioned, so none of them take part.
        The h3's own mt-3.5 is zeroed here rather than in each of the eleven cards' class lists. */
     #services article { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; }
     #services article > h3 { order: 1; margin-top: 0; margin-bottom: 12px; }
@@ -543,8 +546,8 @@
       transform: none !important;
     }
     /* Stroke-icon sizing. Hover-lift is in the markup. The cards used to be numbered 01…11 in the
-       top-left corner; with the number gone the icon comes back up to the card's own padding, so
-       the markup carries p-5 rather than the p-5 pt-11 that made room for it. */
+       top-left corner; with the number gone nothing has to be cleared at the top, so the markup
+       carries a plain even p-6 rather than the p-5 pt-11 that made room for it. */
     #services .svc-ico { color: #f97316; }
     #services .svc-ico svg { width: 2rem; height: 2rem; }
     #services article:hover { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
@@ -613,6 +616,10 @@
     #services .svc-strip-box.svc-photo {
       background-position: center; background-size: cover; background-repeat: no-repeat;
       border-color: rgba(255,255,255,.35);
+      /* A box sized only by its text is a letterbox, and cover would then throw most of the
+         photograph away. This is the room the picture needs to be a picture; the sources are cut
+         taller than it, so what gets trimmed is the top and bottom, never the sides. */
+      min-height: 20rem;
     }
     #services .svc-strip-box.svc-photo h3 { color: #ffffff; }
     #services .svc-strip-box.svc-photo p, #services .svc-strip-box.svc-photo li { color: rgba(255,255,255,.92); }
@@ -984,7 +991,7 @@
 
       <!-- All service categories (glass first, styled like the rest) -->
       <div id="svcGrid" class="mt-10 grid gap-4 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
-        <article id="svc-glass" data-bg="images/svc-modal-bg.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-glass" data-bg="images/svc-modal-bg.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="მაღალსართულიანი შენობების წმენდა, ჰერმეტიზაცია და მოვლა.">High-rise building cleaning, sealing and maintenance.</p>
@@ -996,7 +1003,7 @@
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის კონსტრუქციების მონტაჟი">Glass structures installation</span></li>
           </ul>
         </article>
-        <article id="svc-buildings" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-buildings" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="შენობების მოვლა">Building Maintenance</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ტექნიკური მომსახურება, რემონტი და პრევენციული ინსპექტირება.">Technical maintenance, repairs and preventive inspection.</p>
@@ -1009,7 +1016,7 @@
           </ul>
         </article>
 
-        <article id="svc-electrical" data-bg="images/svc-electrical.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-electrical" data-bg="images/svc-electrical.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ელექტროობა და ტელეკომუნიკაცია">Electrical &amp; Telecom</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკაბელო სისტემების, განათებისა და ანძების მონტაჟი.">Cabling systems, lighting and mast installation.</p>
@@ -1024,7 +1031,7 @@
           </ul>
         </article>
 
-        <article id="svc-signage" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-signage" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="რეკლამები">Advertising &amp; Signage</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების ინსტალაცია.">Installation of banners, billboards and advertising structures.</p>
@@ -1036,7 +1043,7 @@
           </ul>
         </article>
 
-        <article id="svc-painting" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-painting" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ღებვა და დაცვა">Painting &amp; Protection</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა.">Treatment and painting of facades and metal structures.</p>
@@ -1047,7 +1054,7 @@
           </ul>
         </article>
 
-        <article id="svc-construction" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-construction" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სამშენებლო სამუშაოები და იზოლაცია">Construction &amp; Insulation</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამონტაჟო, საიზოლაციო და სარეკონსტრუქციო სერვისები.">Assembly, insulation and reconstruction services.</p>
@@ -1061,7 +1068,7 @@
           </ul>
         </article>
 
-        <article id="svc-rock" data-bg="images/svc-rock.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-rock" data-bg="images/svc-rock.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="კლდეები, ფერდობები და გარემო">Rock, Slope &amp; Environment</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფერდობების გამაგრება, დამცავი ბადეების მონტაჟი და დამუშავება.">Slope reinforcement, protective-mesh installation and treatment.</p>
@@ -1072,7 +1079,7 @@
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ხეების გასხვლა და სახიფათო ტოტების მოცილება">Tree pruning &amp; hazardous-branch removal</span></li>          </ul>
         </article>
 
-        <article id="svc-industrial" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-industrial" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინდუსტრიული ობიექტები">Industrial Facilities</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ქარხნების, ქიმიური საწარმოებისა და სპეციალური ნაგებობების მომსახურება.">Servicing of plants, chemical facilities and special structures.</p>
@@ -1084,7 +1091,7 @@
           </ul>
         </article>
 
-        <article id="svc-inspection" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-inspection" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინსპექტირება">Inspection</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება.">Structural diagnostics, ultrasonic and visual inspection.</p>
@@ -1093,7 +1100,7 @@
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების ინსპექტირება">Safety-system inspection</span></li>          </ul>
         </article>
 
-        <article id="svc-film" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-film" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სცენა და გადაღებები">Stage &amp; Filming</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკინემატოგრაფიო და შოუ-ბიზნესის კონსტრუქციების უსაფრთხოება.">Safety for cinematographic and show-business structures.</p>
@@ -1105,7 +1112,7 @@
           </ul>
         </article>
 
-        <article id="svc-emergency" class="reveal group relative rounded-2xl border border-line bg-surface p-5 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-emergency" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამაშველო ოპერაციები">Rescue operations</p>
@@ -2206,8 +2213,13 @@
         var bg = card.getAttribute("data-bg");
         if (bg) {
           box.classList.add("svc-photo");
+          /* Lightest where the heading sits and deepest in the far corner: the text stays
+             legible over whatever the photograph turns out to be, and the far corner — which is
+             where a real site photograph keeps its street, its parked cars and other people's
+             shop signs — is buried rather than framed. */
           box.style.backgroundImage =
-            "linear-gradient(155deg, rgba(6,8,16,.55), rgba(6,8,16,.84)), url('" + bg + "')";
+            "linear-gradient(155deg, rgba(6,8,16,.5) 0%, rgba(6,8,16,.78) 58%, rgba(6,8,16,.93) 100%)," +
+            " url('" + bg + "')";
         }
         ["h3", "p", "ul"].forEach(function (sel) {
           var el = card.querySelector(sel);
