@@ -1143,18 +1143,22 @@
   </div>
   <!-- ============================ GALLERY ============================ -->
   <section id="gallery" class="py-20 bg-panel border-y border-line">
+    <!-- The carousel sits INSIDE the page's container, like every other section. It used to be a
+         sibling of it, edge to edge across the window, so the photographs ran out past the
+         margin the whole rest of the page keeps. Its own px-5 goes with the move — the
+         container already carries that padding. -->
     <div class="max-w-7xl mx-auto px-5">
       <div class="reveal max-w-2xl">
         <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</h2>
       </div>
-    </div>
 
-    <!-- Slides are built automatically from js/images.js -->
-    <div class="swiper gallery-swiper mt-12 px-5">
-      <div class="swiper-wrapper" id="gallery-wrapper"></div>
-      <div class="swiper-button-prev"></div>
-      <div class="swiper-button-next"></div>
-      <div class="swiper-pagination"></div>
+      <!-- Slides are built automatically from js/images.js -->
+      <div class="swiper gallery-swiper mt-12">
+        <div class="swiper-wrapper" id="gallery-wrapper"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-pagination"></div>
+      </div>
     </div>
   </section>
 
