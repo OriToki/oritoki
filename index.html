@@ -759,6 +759,12 @@
     html.dark #services article { background-color: #202123; }
     html.dark #services article::after { background: #303133; color: #78787e; }
     html.dark #services article:hover::after { background: #f97316; color: #fff; }
+    /* An open card's chevron stays lit in the dark theme too. It needs saying again here because
+       `html.dark #services article::after` outranks the `#services article.svc-lit::after` that
+       lights it up in the light theme — so in the dark the open chevron went back to grey the
+       moment the pointer left the card, which is exactly when the strip below it is being read.
+       Last of the three, so it also wins the tie against the :hover rule above. */
+    html.dark #services article.svc-lit::after { background: #f97316; color: #fff; }
     html.dark #services article.svc-flash { animation: svcFlashDark 2.4s ease-out; }
     @keyframes svcFlashDark {
       0%   { border-color: #f97316; background-color: #2a1c0c; box-shadow: 0 0 0 0 rgba(249,115,22,.55), 0 20px 42px -22px rgba(249,115,22,.55); }
