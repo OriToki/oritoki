@@ -36,18 +36,23 @@
    window.galleryImages, and in a plain <script> a top-level const creates a global BINDING
    without creating a property on window — so with const the check there is false and the
    carousel is built with no slides at all. */
+/* All of these are the company's own job photographs — there are no placeholders left. The
+   carousel shows a landscape frame, so anything shot upright was cut to the band its subject is
+   actually in rather than to the middle of the frame; `full` is always the whole picture.
+   Ordered so the carousel opens on the strongest ones. */
 var galleryImages = [
-  /* Real photographs from the company's own jobs. They were shot upright on a phone and the
-     carousel shows a landscape frame, so each was cut to the band its subject is actually in
-     rather than to the middle of the frame. */
-  { file: "facade-tower.jpg",    full: "full/facade-tower.jpg",    en: "Facade cleaning",         ka: "ფასადის წმენდა" },
-  { file: "window-cleaning.jpg", full: "full/window-cleaning.jpg", en: "Window cleaning",         ka: "მინების წმენდა" },
-  { file: "waterproofing.jpg",   full: "full/waterproofing.jpg",   en: "Waterproofing & sealing", ka: "ჰიდროიზოლაცია" },
-  { file: "rock-slope.jpg",      full: "full/rock-slope.jpg",      en: "Rock & slope protection", ka: "კლდეები, ფერდობები და გარემო" },
-  { file: "telecom-mast.jpg",    full: "full/telecom-mast.jpg",    en: "Telecom mast works",      ka: "ელექტროობა და ტელეკომუნიკაცია" },
+  { file: "facade-tower.jpg",    full: "full/facade-tower.jpg",    en: "Facade cleaning",             ka: "ფასადის წმენდა" },
+  { file: "facade-glass.jpg",    full: "full/facade-glass.jpg",    en: "Glass facade cleaning",       ka: "მინის ფასადის წმენდა" },
+  { file: "window-cleaning.jpg", full: "full/window-cleaning.jpg", en: "Window cleaning",             ka: "მინების წმენდა" },
+  { file: "height-window.jpg",   full: "full/height-window.jpg",   en: "Working at height",           ka: "სამუშაო სიმაღლეზე" },
+  { file: "facade-inside.jpg",   full: "full/facade-inside.jpg",   en: "Facade works",                ka: "ფასადის სამუშაოები" },
+  { file: "vardzia-rock.jpg",    full: "full/vardzia-rock.jpg",    en: "Rock stabilization — Vardzia", ka: "კლდის გამაგრება — ვარძია" },
+  { file: "rock-slope.jpg",      full: "full/rock-slope.jpg",      en: "Rock & slope protection",     ka: "კლდეები, ფერდობები და გარემო" },
+  { file: "bridge-clean.jpg",    full: "full/bridge-clean.jpg",    en: "Bridge cleaning",             ka: "ხიდის წმენდა" },
+  { file: "structure-work.jpg",  full: "full/structure-work.jpg",  en: "Work on structures",          ka: "კონსტრუქციებზე მუშაობა" },
+  { file: "install-height.jpg",  full: "full/install-height.jpg",  en: "Installation at height",      ka: "სამონტაჟო სამუშაოები სიმაღლეზე" },
+  { file: "telecom-mast.jpg",    full: "full/telecom-mast.jpg",    en: "Telecom mast works",          ka: "ელექტროობა და ტელეკომუნიკაცია" },
+  { file: "waterproofing.jpg",   full: "full/waterproofing.jpg",   en: "Waterproofing & sealing",     ka: "ჰიდროიზოლაცია" },
   { file: "chimney-flue.jpg",    full: "full/chimney-flue.jpg",    en: "Chimney & flue installation", ka: "საკვამურის მონტაჟი" },
-  /* Placeholders, waiting for a real photograph each. Delete a line as its photo arrives. */
-  { file: "sample-2.svg", en: "Painting at height",     ka: "შეღებვა სიმაღლეზე" },
-  { file: "sample-5.svg", en: "Sign installation",      ka: "რეკლამის მონტაჟი" },
-  { file: "sample-6.svg", en: "Roof maintenance",       ka: "სახურავის მოვლა" },
+  { file: "team-portrait.jpg",   full: "full/team-portrait.jpg",   en: "Our team",                    ka: "ჩვენი გუნდი" },
 ];
