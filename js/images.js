@@ -23,11 +23,21 @@
    Tip: photos look best at around 1200 x 800 pixels (landscape).
    ===================================================================== */
 
-const galleryImages = [
+/* var, not const, and it has to stay var. index.html builds the slides from
+   window.galleryImages, and in a plain <script> a top-level const creates a global BINDING
+   without creating a property on window — so with const the check there is false and the
+   carousel is built with no slides at all. */
+var galleryImages = [
+  /* Real photographs from the company's own jobs. They were shot upright on a phone and the
+     carousel shows a landscape frame, so each was cut to the band its subject is actually in
+     rather than to the middle of the frame. */
+  { file: "window-cleaning.jpg", en: "Window cleaning",        ka: "მინების წმენდა" },
+  { file: "waterproofing.jpg",   en: "Waterproofing & sealing", ka: "ჰიდროიზოლაცია" },
+  { file: "rock-slope.jpg",      en: "Rock & slope protection", ka: "კლდეები, ფერდობები და გარემო" },
+  { file: "telecom-mast.jpg",    en: "Telecom mast works",      ka: "ელექტროობა და ტელეკომუნიკაცია" },
+  /* Placeholders, waiting for a real photograph each. Delete a line as its photo arrives. */
   { file: "sample-1.svg", en: "Facade cleaning",        ka: "ფასადის წმენდა" },
   { file: "sample-2.svg", en: "Painting at height",     ka: "შეღებვა სიმაღლეზე" },
-  { file: "sample-3.svg", en: "Window washing",         ka: "ფანჯრების წმენდა" },
-  { file: "sample-4.svg", en: "Waterproofing & sealing", ka: "ჰიდროიზოლაცია" },
   { file: "sample-5.svg", en: "Sign installation",      ka: "რეკლამის მონტაჟი" },
   { file: "sample-6.svg", en: "Roof maintenance",       ka: "სახურავის მოვლა" },
 ];
