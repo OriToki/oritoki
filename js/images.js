@@ -19,6 +19,15 @@
 
      3. Save this file and refresh the website. Done!
 
+   OPTIONAL — a bigger version for the click-to-enlarge view:
+
+        { file: "facade.jpg", full: "full/facade.jpg", en: "…", ka: "…" },
+
+     Put the untouched original in  images/gallery/full/  and name it in `full`.
+     The carousel frame is landscape, so a phone photo has to be cropped to fit
+     it; `full` is what a visitor sees when they click — the whole picture, as
+     it was taken. Leave `full` out and clicking simply enlarges `file`.
+
    To REMOVE a photo, just delete its line.
    Tip: photos look best at around 1200 x 800 pixels (landscape).
    ===================================================================== */
@@ -31,10 +40,10 @@ var galleryImages = [
   /* Real photographs from the company's own jobs. They were shot upright on a phone and the
      carousel shows a landscape frame, so each was cut to the band its subject is actually in
      rather than to the middle of the frame. */
-  { file: "window-cleaning.jpg", en: "Window cleaning",        ka: "მინების წმენდა" },
-  { file: "waterproofing.jpg",   en: "Waterproofing & sealing", ka: "ჰიდროიზოლაცია" },
-  { file: "rock-slope.jpg",      en: "Rock & slope protection", ka: "კლდეები, ფერდობები და გარემო" },
-  { file: "telecom-mast.jpg",    en: "Telecom mast works",      ka: "ელექტროობა და ტელეკომუნიკაცია" },
+  { file: "window-cleaning.jpg", full: "full/window-cleaning.jpg", en: "Window cleaning",        ka: "მინების წმენდა" },
+  { file: "waterproofing.jpg",   full: "full/waterproofing.jpg",   en: "Waterproofing & sealing", ka: "ჰიდროიზოლაცია" },
+  { file: "rock-slope.jpg",      full: "full/rock-slope.jpg",      en: "Rock & slope protection", ka: "კლდეები, ფერდობები და გარემო" },
+  { file: "telecom-mast.jpg",    full: "full/telecom-mast.jpg",    en: "Telecom mast works",      ka: "ელექტროობა და ტელეკომუნიკაცია" },
   /* Placeholders, waiting for a real photograph each. Delete a line as its photo arrives. */
   { file: "sample-1.svg", en: "Facade cleaning",        ka: "ფასადის წმენდა" },
   { file: "sample-2.svg", en: "Painting at height",     ka: "შეღებვა სიმაღლეზე" },

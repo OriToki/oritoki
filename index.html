@@ -503,6 +503,59 @@
     .gallery-card img { width: 100%; height: 260px; object-fit: cover; display: block; }
     .slide-caption { position: absolute; left: 0; right: 0; bottom: 0; padding: .8rem 1rem; font-weight: 600; color: #f5f5f0; background: linear-gradient(transparent, rgba(20,20,42,.92)); }
     .swiper-button-next, .swiper-button-prev { color: #f97316; }
+    .gallery-card { cursor: zoom-in; }
+
+    /* ---------- Click a gallery photo to see the whole frame ----------
+       The carousel can only show one shape, and these are phone photographs taken upright, so
+       the slide is a crop. This is the picture itself: the file named `full` in js/images.js,
+       fetched only when someone asks for it, so the page still loads on the thumbnails alone. */
+    .lb {
+      /* The frame's own margins, as tokens: the picture is sized against the VIEWPORT minus
+         these, not against its parent. Sized against the parent, the photo and the box it sits
+         in each waited on the other and the result came out well short of the room available —
+         570px tall in a 900px window. */
+      --lb-x: 5rem; --lb-y: 4.5rem; --lb-cap: 2.6rem;
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: var(--lb-y) var(--lb-x);
+      background: rgba(8,9,12,.93);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transition: opacity .25s ease, visibility 0s linear .25s;
+    }
+    .lb.lb-on { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .25s ease, visibility 0s; }
+    .lb-figure { margin: 0; text-align: center; }
+    /* JS narrows these two to the file's own pixel size once it has loaded, so a 1200px
+       photograph is never blown up to fill a 2560px screen and softened — it stops at its
+       natural size, centred. */
+    .lb-figure img {
+      display: block; margin: 0 auto; border-radius: 12px;
+      width: auto; height: auto;
+      max-width: calc(100vw - var(--lb-x) * 2);
+      max-height: calc(100vh - var(--lb-y) * 2 - var(--lb-cap));
+      box-shadow: 0 30px 70px -30px rgba(0,0,0,.9);
+      opacity: 0; transform: scale(.985);
+      transition: opacity .28s ease, transform .34s cubic-bezier(.2,.85,.25,1);
+    }
+    .lb.lb-ready .lb-figure img { opacity: 1; transform: none; }
+    .lb-cap { margin-top: 1rem; color: rgba(255,255,255,.9); font-weight: 600; font-size: 1rem; text-align: center; }
+    .lb-btn {
+      position: absolute; display: flex; align-items: center; justify-content: center;
+      height: 2.9rem; width: 2.9rem; border-radius: 9999px; border: 0;
+      background: rgba(255,255,255,.1); color: #fff; font-size: 1rem; cursor: pointer;
+      transition: background .2s ease, color .2s ease;
+    }
+    .lb-btn:hover { background: #f97316; color: #fff; }
+    .lb-close { top: 1.25rem; right: 1.25rem; }
+    .lb-prev { left: 1.25rem; top: 50%; transform: translateY(-50%); }
+    .lb-next { right: 1.25rem; top: 50%; transform: translateY(-50%); }
+    /* One photo in the gallery: nothing to step through. */
+    .lb.lb-single .lb-prev, .lb.lb-single .lb-next { display: none; }
+    @media (max-width: 640px) {
+      .lb { --lb-x: 1rem; --lb-y: 3.5rem; }
+      .lb-prev { left: .5rem; } .lb-next { right: .5rem; }
+      .lb-btn { height: 2.5rem; width: 2.5rem; }
+    }
 
     /* Keep the white hero text legible over bright parts of the photo */
     .hero-shadow { text-shadow: 0 2px 18px rgba(0,0,0,.7), 0 1px 4px rgba(0,0,0,.6); }
@@ -1160,6 +1213,18 @@
         <div class="swiper-pagination"></div>
       </div>
     </div>
+
+    <!-- Click a photo to see the whole frame. The carousel shows a landscape crop because the
+         row has to be one height; this shows the picture as it was taken. -->
+    <div id="lightbox" class="lb" role="dialog" aria-modal="true" aria-label="Photo">
+      <button type="button" class="lb-btn lb-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      <button type="button" class="lb-btn lb-prev" aria-label="Previous photo"><i class="fa-solid fa-chevron-left"></i></button>
+      <button type="button" class="lb-btn lb-next" aria-label="Next photo"><i class="fa-solid fa-chevron-right"></i></button>
+      <figure class="lb-figure">
+        <img id="lbImg" alt="" />
+        <figcaption id="lbCap" class="lb-cap"></figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- ============================ CONTACT ============================ -->
@@ -1261,11 +1326,14 @@
     /* ---------- 1. Build gallery slides from js/images.js ---------- */
     var wrapper = document.getElementById("gallery-wrapper");
     if (wrapper && Array.isArray(window.galleryImages)) {
-      window.galleryImages.forEach(function (img) {
+      window.galleryImages.forEach(function (img, i) {
         var slide = document.createElement("div");
         slide.className = "swiper-slide";
+        /* data-i is what the lightbox opens on. It has to live in the markup rather than in a
+           closure, because Swiper's loop mode CLONES these slides at init and a click can land
+           on a clone — the attribute is copied with it, a listener would not be. */
         slide.innerHTML =
-          '<div class="gallery-card">' +
+          '<div class="gallery-card" data-i="' + i + '">' +
             '<img src="images/gallery/' + img.file + '" alt="' + img.en + '" loading="lazy" />' +
             '<div class="slide-caption" data-ka="' + img.ka + '">' + img.en + '</div>' +
           '</div>';
@@ -1286,6 +1354,96 @@
         breakpoints: { 640: { slidesPerView: 2 }, 1000: { slidesPerView: 3 } },
       });
     }
+
+    /* ---------- 2b. Click a gallery photo to see the whole frame ----------
+       The slide is a crop — the carousel can only show one shape and these are phone photographs
+       taken upright. This opens the file named `full` in js/images.js, which is the picture as it
+       was taken, and falls back to the slide's own file where there is no `full` (the
+       placeholders). Nothing here is fetched until someone actually asks for a photo. */
+    (function () {
+      var lb = document.getElementById("lightbox");
+      var pics = window.galleryImages;
+      if (!lb || !wrapper || !Array.isArray(pics) || !pics.length) return;
+      var lbImg = document.getElementById("lbImg");
+      var lbCap = document.getElementById("lbCap");
+      var at = -1;
+      if (pics.length < 2) lb.classList.add("lb-single");
+
+      function show(i) {
+        at = (i + pics.length) % pics.length;
+        var p = pics[at];
+        lb.classList.remove("lb-ready");           // fade the new one in, rather than swapping it
+        lbImg.removeAttribute("style");
+        lbImg.alt = p.en;
+        lbImg.src = "images/gallery/" + (p.full || p.file);
+        /* The caption keeps data-ka/data-en, so switching language with a photo open moves it
+           too — applyLanguage walks every [data-ka] on the page. */
+        lbCap.dataset.en = p.en;
+        lbCap.dataset.ka = p.ka;
+        lbCap.textContent = document.documentElement.lang === "ka" ? p.ka : p.en;
+      }
+
+      lbImg.addEventListener("load", function () {
+        /* Fit the window, but never stretch past the file's own pixels: a 1200px photograph
+           blown up to fill a 2560px screen is just a soft one. Same expressions the stylesheet
+           uses, with the file's size folded in — the --lb-* tokens are inherited from .lb, so
+           the two can only ever agree. */
+        lbImg.style.maxWidth =
+          "min(calc(100vw - var(--lb-x) * 2), " + lbImg.naturalWidth + "px)";
+        lbImg.style.maxHeight =
+          "min(calc(100vh - var(--lb-y) * 2 - var(--lb-cap)), " + lbImg.naturalHeight + "px)";
+        lb.classList.add("lb-ready");
+      });
+
+      var header = document.getElementById("header");
+      function open(i) {
+        show(i);
+        lb.classList.add("lb-on");
+        /* Stopping the page scrolling takes its scrollbar away with it, and everything laid out
+           against the window's right edge jumps over by that scrollbar's width — the fixed
+           header most visibly. Hand back exactly as many pixels as were taken. */
+        var pad = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = "hidden";
+        if (pad > 0) {
+          document.body.style.paddingRight = pad + "px";
+          if (header) header.style.paddingRight = pad + "px";
+        }
+      }
+      function close() {
+        lb.classList.remove("lb-on", "lb-ready");
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+        if (header) header.style.paddingRight = "";
+        at = -1;
+      }
+
+      /* A drag across the carousel ends in a click too, so a click that MOVED is a swipe and
+         must not open anything. */
+      var downX = 0, downY = 0;
+      wrapper.addEventListener("pointerdown", function (e) { downX = e.clientX; downY = e.clientY; });
+      wrapper.addEventListener("click", function (e) {
+        var card = e.target.closest(".gallery-card");
+        if (!card) return;
+        if (Math.abs(e.clientX - downX) > 6 || Math.abs(e.clientY - downY) > 6) return;
+        var i = parseInt(card.getAttribute("data-i"), 10);
+        if (i >= 0) open(i);
+      });
+
+      lb.querySelector(".lb-close").addEventListener("click", close);
+      lb.querySelector(".lb-prev").addEventListener("click", function () { show(at - 1); });
+      lb.querySelector(".lb-next").addEventListener("click", function () { show(at + 1); });
+      /* Anywhere off the picture shuts it; the buttons stop their own clicks getting here. */
+      lb.addEventListener("click", function (e) {
+        if (e.target === lbImg || e.target.closest(".lb-btn")) return;
+        close();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (!lb.classList.contains("lb-on")) return;
+        if (e.key === "Escape") close();
+        else if (e.key === "ArrowLeft") show(at - 1);
+        else if (e.key === "ArrowRight") show(at + 1);
+      });
+    })();
 
     /* ---------- 3. Language switch (Georgian default / English) ---------- */
     // Convert Georgian mkhedruli letters to their MTAVRULI (all-caps) forms.
