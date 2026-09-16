@@ -23,13 +23,13 @@
   <meta property="og:locale" content="ka_GE" />
   <meta property="og:url" content="https://oritoki.ge/join.html" />
   <meta property="og:title" content="შემოგვიერთდი — ორითოკი" />
-  <meta property="og:description" content="სერტიფიცირებული სამრეწველო ალპინისტებისთვის — შეავსეთ განაცხადი და დაემატეთ ORITOKI-ის სპეციალისტების ბაზას." />
+  <meta property="og:description" content="სერტიფიცირებული სასიმაღლო სამუშაოების სპეციალისტებისთვის — შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას." />
   <meta property="og:image" content="https://oritoki.ge/images/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="შემოგვიერთდი — ორითოკი" />
-  <meta name="twitter:description" content="სერტიფიცირებული სამრეწველო ალპინისტებისთვის — შეავსეთ განაცხადი და დაემატეთ ORITOKI-ის სპეციალისტების ბაზას." />
+  <meta name="twitter:description" content="სერტიფიცირებული სასიმაღლო სამუშაოების სპეციალისტებისთვის — შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას." />
   <meta name="twitter:image" content="https://oritoki.ge/images/og-image.jpg" />
 
   <!-- Google Analytics — set your Measurement ID in js/analytics.js -->
@@ -193,6 +193,29 @@
       transition: transform .46s cubic-bezier(.34,1.28,.5,1);
     }
     @media (prefers-reduced-motion: reduce) { .cb-icon .cb-gate { transition: none; } }
+
+    /* The opening line stays on ONE line, so it reads as a single statement of who the page is
+       for rather than as a stack. It is therefore not given a size — it is given the size that
+       fits: the width it has to fit into, divided by the line's own width in ems.
+
+       That width is taken from the CONTAINER, not the viewport. 100vw counts the scrollbar the
+       page nearly always has, so a vw sum comes out about 15px optimistic and the line goes over
+       the edge by exactly that much; cqw is the box's real inline size, scrollbar or not.
+
+       One divisor per language, because the two lines are nothing like the same length: measured
+       in the browser, the Georgian runs 36.4em in Mtavruli and the English 24.3em in capitals.
+       Sized off the longer of them the English would sit two-thirds the size it can afford, so
+       each language is sized off its own. The spare tenths are slack, so a font that renders a
+       hair wider than measured still cannot push the line over. The rem caps are ceilings only —
+       the sizes the line was written at before it had to fit.
+
+       applyLanguage stamps the language on <html>, so each rule switches itself on. A browser too
+       old for cqw drops both declarations and falls back to the text-2xl/sm:text-3xl in the
+       markup, which wraps but reads. */
+    #joinIntro { container-type: inline-size; }
+    #joinLead { white-space: nowrap; line-height: 1.3; }
+    html[lang="ka"] #joinLead { font-size: min(1.25rem,  calc(100cqw / 36.6)); }
+    html[lang="en"] #joinLead { font-size: min(1.875rem, calc(100cqw / 24.6)); }
   </style>
 </head>
 
@@ -222,14 +245,14 @@
     <!-- Left-aligned, not centred: centring gave all three lines different left edges, since they
          are different lengths. They now share one edge, which is also the edge the form below
          starts at. -->
-    <div class="max-w-3xl mx-auto px-5 py-14 sm:py-20 text-left">
+    <div id="joinIntro" class="max-w-3xl mx-auto px-5 py-14 sm:py-20 text-left">
       <!-- Written in the register the certifying bodies use on their own pages: it states who the
            page is for instead of asking a rhetorical question, names the actual certifications
            (the form lists them, so the opening line should too), and promises only what we can
            keep. All three lines share one left edge — a centred headline over left-aligned body
            text sets up two axes and reads as a brochure rather than as a trade page. -->
-      <p class="text-2xl sm:text-3xl font-600 text-accent" data-ka="სერტიფიცირებული სამრეწველო ალპინისტებისთვის">For certified rope access technicians</p>
-      <p class="mt-4 text-mute leading-relaxed" data-ka="შეავსეთ განაცხადი და დაემატეთ ORITOKI-ის სპეციალისტების ბაზას — IRATA, SPRAT ან სხვა აღიარებული სერტიფიკატით.">Complete the application to join the ORITOKI specialists register — with IRATA, SPRAT or another recognised certification.</p>
+      <p id="joinLead" class="uppercase text-2xl sm:text-3xl font-600 text-accent" data-ka="ᲡᲔᲠᲢᲘᲤᲘᲪᲘᲠᲔᲑᲣᲚᲘ ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘᲡᲗᲕᲘᲡ">For certified rope access technicians</p>
+      <p class="mt-4 text-mute leading-relaxed" data-ka="შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას — IRATA, SPRAT ან სხვა აღიარებული სერტიფიკატით.">Complete the application to join the ORITOKI specialists register — with IRATA, SPRAT or another recognised certification.</p>
       <p class="mt-2 text-mute leading-relaxed" data-ka="დაგიკავშირდებით, როცა პროექტი ან ვაკანსია თქვენს კვალიფიკაციას შეესაბამება.">We contact you when a project or vacancy matches your qualifications.</p>
     </div>
   </section>
@@ -347,7 +370,7 @@
               <input class="inp flex-1 min-w-0" type="tel" name="phone" required placeholder="5xx xx xx xx" data-ka-placeholder="5xx xx xx xx" />
             </div>
           </div>
-          <div><label class="lbl req" data-ka="ელ. ფოსტა">Email</label><input class="inp" type="email" name="email" required placeholder="you@example.com" data-ka-placeholder="you@example.com" /></div>
+          <div><label class="lbl" data-ka="ელ. ფოსტა">Email</label><input class="inp" type="email" name="email" placeholder="you@example.com" data-ka-placeholder="you@example.com" /></div>
           <div><label class="lbl" data-ka="საცხოვრებელი ქალაქი">City of residence</label><input class="inp" type="text" name="city" placeholder="..." data-ka-placeholder="ქალაქი" /></div>
           <div><label class="lbl" data-ka="ქვეყანა">Country</label>
             <select class="inp" name="country">
@@ -468,9 +491,9 @@
         </div>
         <div id="certOther" class="hidden mt-3"><input class="inp" type="text" name="cert_other" placeholder="..." data-ka-placeholder="მიუთითეთ სხვა სერტიფიკატი" /></div>
         <div class="mt-6">
-          <label class="lbl req" data-ka="სერტიფიკატის ატვირთვა">Upload certificate</label>
+          <label class="lbl" data-ka="სერტიფიკატის ატვირთვა">Upload certificate</label>
           <p class="mb-2 text-sm text-mute" data-ka="PDF / JPG / PNG — მაქსიმუმ 10 MB">PDF / JPG / PNG — max 10 MB</p>
-          <input class="inp text-sm text-mute file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-600 file:text-white file:cursor-pointer hover:file:bg-accent/90" type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" required />
+          <input class="inp text-sm text-mute file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-600 file:text-white file:cursor-pointer hover:file:bg-accent/90" type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" />
         </div>
       </div>
 
@@ -663,7 +686,9 @@
         first_name: form.first_name.value.trim(),
         last_name:  form.last_name.value.trim(),
         phone:      (form.phone_code.value + " " + form.phone.value.trim()).trim(),
-        email:      form.email.value.trim(),
+        /* Optional now, so an unfilled box is recorded as nothing rather than as an empty
+           string — the column is nullable in supabase-setup.sql to match. */
+        email:      form.email.value.trim() || null,
         city:       form.city.value.trim(),
         country:    form.country.value.trim(),
         certifications:   withOther(checkedValues("certifications"), "__other__", "cert_other"),

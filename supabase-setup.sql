@@ -18,7 +18,9 @@ create table if not exists public.specialist_applications (
   first_name        text not null,
   last_name         text not null,
   phone             text not null,
-  email             text not null,
+  -- optional on the form: the phone number is the one way of reaching an applicant that is asked
+  -- for, and join.html sends null rather than '' when the box is left empty
+  email             text,
   city              text,
   country           text,
   certifications    text[] not null default '{}',
