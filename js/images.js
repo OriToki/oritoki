@@ -40,12 +40,13 @@ var galleryImages = [
   /* Real photographs from the company's own jobs. They were shot upright on a phone and the
      carousel shows a landscape frame, so each was cut to the band its subject is actually in
      rather than to the middle of the frame. */
-  { file: "window-cleaning.jpg", full: "full/window-cleaning.jpg", en: "Window cleaning",        ka: "მინების წმენდა" },
+  { file: "facade-tower.jpg",    full: "full/facade-tower.jpg",    en: "Facade cleaning",         ka: "ფასადის წმენდა" },
+  { file: "window-cleaning.jpg", full: "full/window-cleaning.jpg", en: "Window cleaning",         ka: "მინების წმენდა" },
   { file: "waterproofing.jpg",   full: "full/waterproofing.jpg",   en: "Waterproofing & sealing", ka: "ჰიდროიზოლაცია" },
   { file: "rock-slope.jpg",      full: "full/rock-slope.jpg",      en: "Rock & slope protection", ka: "კლდეები, ფერდობები და გარემო" },
   { file: "telecom-mast.jpg",    full: "full/telecom-mast.jpg",    en: "Telecom mast works",      ka: "ელექტროობა და ტელეკომუნიკაცია" },
+  { file: "chimney-flue.jpg",    full: "full/chimney-flue.jpg",    en: "Chimney & flue installation", ka: "საკვამურის მონტაჟი" },
   /* Placeholders, waiting for a real photograph each. Delete a line as its photo arrives. */
-  { file: "sample-1.svg", en: "Facade cleaning",        ka: "ფასადის წმენდა" },
   { file: "sample-2.svg", en: "Painting at height",     ka: "შეღებვა სიმაღლეზე" },
   { file: "sample-5.svg", en: "Sign installation",      ka: "რეკლამის მონტაჟი" },
   { file: "sample-6.svg", en: "Roof maintenance",       ka: "სახურავის მოვლა" },
