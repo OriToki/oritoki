@@ -42,7 +42,9 @@
    Ordered so the carousel opens on the strongest ones. */
 var galleryImages = [
   { file: "facade-tower.jpg",    full: "full/facade-tower.jpg",    en: "Facade cleaning",             ka: "ფასადის წმენდა" },
+  { file: "tower-corner.jpg",    full: "full/tower-corner.jpg",    en: "Tower facade cleaning",       ka: "კოშკის ფასადის წმენდა" },
   { file: "facade-glass.jpg",    full: "full/facade-glass.jpg",    en: "Glass facade cleaning",       ka: "მინის ფასადის წმენდა" },
+  { file: "highrise-facade.jpg", full: "full/highrise-facade.jpg", en: "High-rise facade",            ka: "მაღალსართულიანი ფასადი" },
   { file: "window-cleaning.jpg", full: "full/window-cleaning.jpg", en: "Window cleaning",             ka: "მინების წმენდა" },
   { file: "height-window.jpg",   full: "full/height-window.jpg",   en: "Working at height",           ka: "სამუშაო სიმაღლეზე" },
   { file: "facade-inside.jpg",   full: "full/facade-inside.jpg",   en: "Facade works",                ka: "ფასადის სამუშაოები" },
