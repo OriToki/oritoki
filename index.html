@@ -528,6 +528,15 @@
     #services article { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; }
     #services article > h3 { order: 1; margin-top: 0; margin-bottom: 12px; }
     #services .svc-ico { order: 2; }
+    /* The chevron is absolutely positioned and so takes no room, and the title was running under
+       it. A floated spacer holds that corner open instead of padding-right, which would have
+       narrowed EVERY line of the title and pushed the longer ones onto a third — and since the
+       grid stretches a row to its tallest card, one three-line title costs the whole row.
+       Only the first line gives up the width, because that is the only line the badge reaches.
+       19.2px tall (1.2rem) is less than the 24px line box, so the float cannot spill onto the
+       second line; 1.85rem wide is the badge's 19.2px of overhang past the card's p-6 padding,
+       plus about 10px so the last word does not touch it. */
+    #services article > h3::before { content: ""; float: right; width: 1.85rem; height: 1.2rem; }
     /* The same chevron the header's "WHAT WE DO" wears, for the same reason: it is the mark that
        says something unfolds below. A [+] promised a different thing — adding, or a lightbox.
        This badge is the hinge the whole gesture turns on, so it is never replaced and never
@@ -578,11 +587,17 @@
       transition: height .42s cubic-bezier(.2,.85,.25,1);
     }
     #services .svc-strip-box {
-      width: max-content; max-width: 100%;
+      /* max-width is 1px short of the strip on purpose. The strip clips (overflow: hidden is what
+         lets its height be animated), so anything that lands exactly on its edge loses its 1px
+         border to the clip — which is how the orange edge went missing down the right of a box
+         opened from the last column. */
+      width: max-content; max-width: calc(100% - 1px);
       margin-bottom: 1rem;                       /* the row gap, inside the animated height */
       padding: 1.2rem 1.6rem 1.4rem; border-radius: 1rem;
       border: 1px solid #f97316; background: rgb(var(--c-surface));
-      box-shadow: 0 18px 38px -20px rgba(20,20,42,.45);
+      /* Small enough to fall inside the strip's clip: the margin below the box is 1rem, and this
+         reaches about 10px past its edge. A deeper shadow was being cut off square. */
+      box-shadow: 0 6px 16px -10px rgba(20,20,42,.55);
       cursor: pointer;
       opacity: 0; transform: translateY(-8px);
       transition: var(--dd-fade), var(--dd-slide);
@@ -616,10 +631,6 @@
     #services .svc-strip-box.svc-photo {
       background-position: center; background-size: cover; background-repeat: no-repeat;
       border-color: rgba(255,255,255,.35);
-      /* A box sized only by its text is a letterbox, and cover would then throw most of the
-         photograph away. This is the room the picture needs to be a picture; the sources are cut
-         taller than it, so what gets trimmed is the top and bottom, never the sides. */
-      min-height: 20rem;
     }
     #services .svc-strip-box.svc-photo h3 { color: #ffffff; }
     #services .svc-strip-box.svc-photo p, #services .svc-strip-box.svc-photo li { color: rgba(255,255,255,.92); }
@@ -2235,8 +2246,10 @@
            counted from whatever is, and the box landed ~90px to the right of its card. */
         var left = card.getBoundingClientRect().left - grid.getBoundingClientRect().left;
         var w = box.offsetWidth;
-        if (left + w > grid.clientWidth) left = Math.max(0, grid.clientWidth - w);
-        box.style.marginLeft = Math.max(0, Math.round(left)) + "px";
+        if (left + w > grid.clientWidth) left = grid.clientWidth - w - 1;
+        /* Floored, never rounded: rounding up pushed the box half a pixel past the strip, and the
+           strip clips, so the right-hand border was shaved off. */
+        box.style.marginLeft = Math.max(0, Math.floor(left)) + "px";
         openW = grid.clientWidth;                        // what the two measurements above assume
 
         /* Grow from 0 to the height the content actually needs. Measured with height:auto and put
