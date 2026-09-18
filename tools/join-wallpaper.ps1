@@ -14,7 +14,7 @@
 # times the area before anything comes back.
 param(
   [int]$Seed = 21,
-  [int]$Count = 100,                  # doodles per tile — keep it in step with $Tile, see above
+  [int]$Count = 175,                  # doodles per tile — keep it in step with $Tile, see above
   [int]$Target = 66,                  # every doodle gets this visual size (geometric mean)
   [int]$MaxDim = 96,                  # ...unless a long one would overrun its cell
   [int]$Tile = 1536, [double]$Gap = 14,                  # tile side in px
@@ -22,6 +22,8 @@ param(
                                       # of the tile — 0 to turn the rule off
   [int]$Work = 130,                   # working size for the outline conversion
   [int]$Ring = 2,                     # outline thickness at working size
+  [double]$ThinInk = 15,              # line icons below this % of their own box get thickened...
+  [int]$LineBoost = 1,                # ...by this much, so the set reads at one line weight
   [int]$CloseR = 5,                   # brush that seals interior detail gaps
   [switch]$Upright,                   # draw every doodle the right way up instead of spun
   [double]$Tilt = -1,                 # >=0: tilt each doodle by at most this many degrees
@@ -141,7 +143,25 @@ foreach ($f in $files) {
     for ($y = 0; $y -lt $Work; $y++) { for ($x = 0; $x -lt $Work; $x++) {
       $c = $sq.GetPixel($x, $y); $lum = ($c.R + $c.G + $c.B) / 3
       if ($c.A -gt 60 -and $lum -lt 130) { $mask[$y*$Work + $x] = $true } } }
-    $report += "line art : $($f.Name)"
+    # The set is drawn at two weights and that only shows up at wallpaper size: the traced
+    # silhouettes come out at the $Ring thickness, while some of the supplied line icons - the
+    # satellite dish, the handshake, the paint roller, the spanner pairs - are hairlines. Laid
+    # over the page at 6% opacity a hairline simply is not there. Anything below $ThinInk of its
+    # own bounding box is grown a pixel, which is the difference between 8% coverage and 15%,
+    # and puts it in the same weight class as the rest.
+    $cnt = 0; $bx0 = $Work; $bx1 = -1; $by0 = $Work; $by1 = -1
+    for ($y = 0; $y -lt $Work; $y++) { for ($x = 0; $x -lt $Work; $x++) { if ($mask[$y*$Work + $x]) {
+      $cnt++
+      if ($x -lt $bx0) { $bx0 = $x }; if ($x -gt $bx1) { $bx1 = $x }
+      if ($y -lt $by0) { $by0 = $y }; if ($y -gt $by1) { $by1 = $y } } } }
+    $cov = 0.0
+    if ($bx1 -ge 0) { $cov = $cnt / [double](($bx1-$bx0+1) * ($by1-$by0+1)) }
+    if ($cov -gt 0 -and $cov -lt ($ThinInk / 100.0)) {
+      $mask = Grow $mask $Work $LineBoost $true
+      $report += ("line art : {0}  ({1:P0} of its box - thickened)" -f $f.Name, $cov)
+    } else {
+      $report += ("line art : {0}  ({1:P0})" -f $f.Name, $cov)
+    }
   } else {
     # solid silhouette: trace it - ring around the shape + its interior detail gaps
     $closed = Grow (Grow $ink $Work $CloseR $true) $Work $CloseR $false
@@ -181,74 +201,88 @@ $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQuality
 # Distance here is distance on a TORUS. The tile repeats, so something near the left edge is also
 # near the right one - that is where its next copy lands - and a rule that ignored the wrap would
 # happily put two of an icon at x=30 and x=1500 and call them far apart.
-function TorusD2([double]$ax, [double]$ay, [double]$bx, [double]$by, [double]$side) {
-  $dx = [math]::Abs($ax - $bx); if ($dx -gt $side/2) { $dx = $side - $dx }
-  $dy = [math]::Abs($ay - $by); if ($dy -gt $side/2) { $dy = $side - $dy }
-  return $dx*$dx + $dy*$dy
-}
-
-$placed = @()
+#
+# Written out longhand over typed arrays rather than through a helper over hashtables, and the
+# icon is chosen BEFORE the dart rather than sorting all 42 of them at every throw. The readable
+# version of this loop did not finish a 215-doodle tile in ten minutes; this one takes seconds.
+$sameMin2 = ($T * $SameSpread) * ($T * $SameSpread)
+$half = $T / 2.0
+$pIdx = New-Object int[] $Count
+$pX = New-Object double[] $Count
+$pY = New-Object double[] $Count
+$pR = New-Object double[] $Count
+$n = 0
 $perIcon = New-Object int[] $doodles.Count
-$sameMin = $T * $SameSpread
+$blocked = New-Object bool[] $doodles.Count      # nothing more of this one will fit
 $guard = 0
-while ($placed.Count -lt $Count -and $guard -lt 60000) {
-  $guard++
-  $cx = $rand.NextDouble() * $T
-  $cy = $rand.NextDouble() * $T
-  # Least-used icons first, ties broken at random. The old version drew from a bag and only
-  # checked that the last four picks were different, which is an ordering rule, not a spacing
-  # one: two copies of an icon could be five picks apart and still land side by side.
-  $order = 0..($doodles.Count-1) | Sort-Object @{ e = { $perIcon[$_] } }, @{ e = { $rand.Next() } }
-  foreach ($idx in $order) {
-    $d = $doodles[$idx].bmp
-    $real = $doodles[$idx].real
-    # Size is (a) the same visual measure for everything - the geometric mean of width and height,
-    # so a flat icon is not left looking tiny next to a tall one - times (b) how big the thing
-    # actually is in real life. A carabiner ends up smaller than the harness next to it.
-    $size = $Target * $real * (0.94 + $rand.NextDouble() * 0.12)
-    $sc = $size / [math]::Sqrt($d.Width * $d.Height)
-    $cap = $MaxDim * $real
-    if ([math]::Max($d.Width, $d.Height) * $sc -gt $cap) { $sc = $cap / [math]::Max($d.Width, $d.Height) }
-    $w = $d.Width * $sc; $h = $d.Height * $sc
-    # Doodles are not all one size, so the spacing test uses each one's own reach - half its
-    # rotated bounding box - plus a fixed gap, rather than a single distance for everything.
-    $rad = [math]::Sqrt($w*$w + $h*$h) / 2
-    $ok = $true
-    foreach ($p in $placed) {
-      $need = ($rad + $p.rad) * 0.74 + $Gap
-      if ((TorusD2 $cx $cy $p.cx $p.cy $T) -lt ($need*$need)) { $ok = $false; break }
-    }
-    # ...and this one is why the wallpaper stopped reading as the same picture over and over:
-    # two copies of the SAME icon have to be a third of the tile apart, whatever else is between.
-    if ($ok -and $sameMin -gt 0) {
-      foreach ($p in $placed) {
-        if ($p.idx -eq $idx -and (TorusD2 $cx $cy $p.cx $p.cy $T) -lt ($sameMin*$sameMin)) { $ok = $false; break }
-      }
-    }
-    if (-not $ok) { continue }
 
-    $placed += ,@{ idx = $idx; cx = $cx; cy = $cy; rad = $rad }
-    $perIcon[$idx]++
-    $spin = $rand.Next(0, 360)
-    $ang = $spin
-    if ($Upright) { $ang = 0 }
-    # A small tilt is what a hand-made wallpaper actually looks like: upright enough to read,
-    # loose enough not to look printed by a machine.
-    if ($Tilt -ge 0) { $ang = ($spin / 360.0) * 2 * $Tilt - $Tilt }
-    if ($doodles[$idx].noSpin) { $ang = 0 }
-    # Drawn nine times, so anything crossing an edge appears on the opposite one and the tile
-    # meets itself cleanly.
-    foreach ($ox in -$T, 0, $T) { foreach ($oy in -$T, 0, $T) {
-      $st = $g.Save()
-      $g.TranslateTransform([single]($cx + $ox), [single]($cy + $oy))
-      $g.RotateTransform([single]$ang)
-      $g.DrawImage($d, [single](-$w/2), [single](-$h/2), [single]$w, [single]$h)
-      $g.Restore($st) } }
-    break
+while ($n -lt $Count) {
+  # Least-used icon, at random among the ties: repetition stays even across the tile instead of a
+  # handful of icons carrying it. The old version drew from a bag and only checked that the last
+  # four picks differed, which is an ordering rule, not a spacing one - two copies of an icon
+  # could be five picks apart and still land side by side.
+  $min = [int]::MaxValue
+  for ($i = 0; $i -lt $perIcon.Length; $i++) { if (-not $blocked[$i] -and $perIcon[$i] -lt $min) { $min = $perIcon[$i] } }
+  if ($min -eq [int]::MaxValue) { break }        # every icon is blocked: the tile is full
+  $cand = New-Object System.Collections.ArrayList
+  for ($i = 0; $i -lt $perIcon.Length; $i++) { if (-not $blocked[$i] -and $perIcon[$i] -eq $min) { [void]$cand.Add($i) } }
+  $idx = $cand[$rand.Next($cand.Count)]
+
+  $d = $doodles[$idx].bmp
+  $real = $doodles[$idx].real
+  # Size is (a) the same visual measure for everything - the geometric mean of width and height,
+  # so a flat icon is not left looking tiny next to a tall one - times (b) how big the thing
+  # actually is in real life. A carabiner ends up smaller than the harness next to it.
+  $size = $Target * $real * (0.94 + $rand.NextDouble() * 0.12)
+  $sc = $size / [math]::Sqrt($d.Width * $d.Height)
+  $cap = $MaxDim * $real
+  if ([math]::Max($d.Width, $d.Height) * $sc -gt $cap) { $sc = $cap / [math]::Max($d.Width, $d.Height) }
+  $w = $d.Width * $sc; $h = $d.Height * $sc
+  # Doodles are not all one size, so the spacing test uses each one's own reach - half its
+  # rotated bounding box - plus a fixed gap, rather than a single distance for everything.
+  $rad = [math]::Sqrt($w*$w + $h*$h) / 2
+
+  $cx = 0.0; $cy = 0.0; $ok = $false
+  for ($try = 0; $try -lt 150; $try++) {
+    $guard++
+    $cx = $rand.NextDouble() * $T
+    $cy = $rand.NextDouble() * $T
+    $good = $true
+    for ($k = 0; $k -lt $n; $k++) {
+      $dx = [math]::Abs($cx - $pX[$k]); if ($dx -gt $half) { $dx = $T - $dx }
+      $dy = [math]::Abs($cy - $pY[$k]); if ($dy -gt $half) { $dy = $T - $dy }
+      $d2 = $dx*$dx + $dy*$dy
+      $need = ($rad + $pR[$k]) * 0.74 + $Gap
+      if ($d2 -lt $need*$need) { $good = $false; break }
+      # ...and this one is why the wallpaper stopped reading as the same picture over and over:
+      # two copies of the SAME icon stay a third of the tile apart, whatever else is between.
+      if ($pIdx[$k] -eq $idx -and $d2 -lt $sameMin2) { $good = $false; break }
+    }
+    if ($good) { $ok = $true; break }
   }
+  if (-not $ok) { $blocked[$idx] = $true; continue }
+
+  $pIdx[$n] = $idx; $pX[$n] = $cx; $pY[$n] = $cy; $pR[$n] = $rad; $n++
+  $perIcon[$idx]++
+
+  $spin = $rand.Next(0, 360)
+  $ang = $spin
+  if ($Upright) { $ang = 0 }
+  # A small tilt is what a hand-made wallpaper actually looks like: upright enough to read,
+  # loose enough not to look printed by a machine.
+  if ($Tilt -ge 0) { $ang = ($spin / 360.0) * 2 * $Tilt - $Tilt }
+  if ($doodles[$idx].noSpin) { $ang = 0 }
+  # Drawn nine times, so anything crossing an edge appears on the opposite one and the tile
+  # meets itself cleanly.
+  foreach ($ox in -$T, 0, $T) { foreach ($oy in -$T, 0, $T) {
+    $st = $g.Save()
+    $g.TranslateTransform([single]($cx + $ox), [single]($cy + $oy))
+    $g.RotateTransform([single]$ang)
+    $g.DrawImage($d, [single](-$w/2), [single](-$h/2), [single]$w, [single]$h)
+    $g.Restore($st) } }
 }
 $g.Dispose()
-"placed: $($placed.Count) doodles from $($doodles.Count) icons  (darts thrown: $guard)"
+"placed: $n doodles from $($doodles.Count) icons  (darts thrown: $guard)"
 $counts = $perIcon | Where-Object { $_ -gt 0 }
 "each icon used {0}-{1} times; {2} icons unused" -f ($counts | Measure-Object -Minimum).Minimum, ($counts | Measure-Object -Maximum).Maximum, (@($perIcon | Where-Object { $_ -eq 0 }).Count)
 
