@@ -1,114 +1,163 @@
-﻿# Repo root, resolved from this script's location so the tool works from any checkout.
-$REPO = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-
-# Builds a measuring grid over climber.png so the owner can mark exact rope positions.
-# Grid units are the SAME fractions the rope code uses (fraction of the figure box).
-Add-Type -AssemblyName System.Drawing
-
-$src   = "$REPO\images\climber.png"
-$out   = "C:\Users\gilmo\Downloads\climber-grid.png"
-
-$img   = [System.Drawing.Image]::FromFile($src)
-$scale = 2
-$W = $img.Width  * $scale     # 1120
-$H = $img.Height * $scale     # 1372
-$ML = 76; $MT = 76; $MR = 30; $MB = 46
-
-$bmp = New-Object System.Drawing.Bitmap(($ML + $W + $MR), ($MT + $H + $MB))
-$g   = [System.Drawing.Graphics]::FromImage($bmp)
-$g.Clear([System.Drawing.Color]::White)
-$g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
-$g.SmoothingMode     = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
-$g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::ClearTypeGridFit
-
-# figure box outline + artwork
-$g.DrawImage($img, $ML, $MT, $W, $H)
-
-$penFine = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(70,120,120,120)), 1
-$penMid  = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(150,90,90,90)), 1
-$penMaj  = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(220,20,20,20)), 2
-$fSmall  = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Regular)
-$fBig    = New-Object System.Drawing.Font("Segoe UI", 15, [System.Drawing.FontStyle]::Bold)
-$brDark  = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(20,20,20))
-$brGrey  = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(110,110,110))
-
-# ---- vertical lines (X = fraction of WIDTH) -------------------------------
-for ($i = 0; $i -le 100; $i++) {
-  $x = $ML + ($i / 100.0) * $W
-  if ($i % 10 -eq 0)    { $pen = $penMaj }
-  elseif ($i % 5 -eq 0) { $pen = $penMid }
-  else                  { $pen = $penFine }
-  $g.DrawLine($pen, [single]$x, [single]$MT, [single]$x, [single]($MT + $H))
-  if ($i % 10 -eq 0) {
-    $t = ($i / 100.0).ToString("0.00")
-    $sz = $g.MeasureString($t, $fBig)
-    $g.DrawString($t, $fBig, $brDark, [single]($x - $sz.Width / 2), [single]($MT - 30))
-  } elseif ($i % 5 -eq 0) {
-    $t = ($i / 100.0).ToString("0.00")
-    $sz = $g.MeasureString($t, $fSmall)
-    $g.DrawString($t, $fSmall, $brGrey, [single]($x - $sz.Width / 2), [single]($MT - 52))
-  }
-}
-
-# ---- horizontal lines (Y = fraction of HEIGHT) ---------------------------
-for ($i = 0; $i -le 100; $i++) {
-  $y = $MT + ($i / 100.0) * $H
-  if ($i % 10 -eq 0)    { $pen = $penMaj }
-  elseif ($i % 5 -eq 0) { $pen = $penMid }
-  else                  { $pen = $penFine }
-  $g.DrawLine($pen, [single]$ML, [single]$y, [single]($ML + $W), [single]$y)
-  if ($i % 10 -eq 0) {
-    $t = ($i / 100.0).ToString("0.00")
-    $sz = $g.MeasureString($t, $fBig)
-    $g.DrawString($t, $fBig, $brDark, [single]($ML - $sz.Width - 6), [single]($y - $sz.Height / 2))
-  } elseif ($i % 5 -eq 0) {
-    $t = ($i / 100.0).ToString("0.00")
-    $sz = $g.MeasureString($t, $fSmall)
-    $g.DrawString($t, $fSmall, $brGrey, [single]($ML - $sz.Width - 8), [single]($y - $sz.Height / 2))
-  }
-}
-
-# ---- the ropes as the site draws them RIGHT NOW --------------------------
-function PX([double]$fx) { return [single]($ML + $fx * $W) }
-function PY([double]$fy) { return [single]($MT + $fy * $H) }
-
-$penBackup = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(230,220,38,38)), 4    # red
-$penWork   = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(230,37,99,235)), 4    # blue
-$penBrake  = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(230,16,150,90)), 4    # green
-
-# backup rope: straight vertical at 0.573
-$g.DrawLine($penBackup, (PX 0.573), (PY 0), (PX 0.573), (PY 1))
-# working rope: vertical at 0.44 -> lands on the descender at 0.44 / 0.33
-$g.DrawLine($penWork, (PX 0.44), (PY 0), (PX 0.44), (PY 0.33))
-# brake strand: gripping hand 0.478/0.324 -> brake fist 0.226/0.528
-$g.DrawLine($penBrake, (PX 0.478), (PY 0.324), (PX 0.226), (PY 0.528))
-# tail: brake fist 0.165/0.585 -> ground
-$g.DrawLine($penBrake, (PX 0.165), (PY 0.585), (PX 0.165), (PY 1))
-
-# anchor dots
-$dots = @(
-  @{ x = 0.44;  y = 0.33;  c = "desc 0.44/0.33" },
-  @{ x = 0.478; y = 0.324; c = "descOut 0.478/0.324" },
-  @{ x = 0.226; y = 0.528; c = "brakeIn 0.226/0.528" },
-  @{ x = 0.165; y = 0.585; c = "brake 0.165/0.585" }
+# A measuring grid over the technician AS THE PAGE PAINTS HIM - back ropes, man-body, front
+# ropes, man-front - on WHITE, so the owner can mark exactly where a rope should enter or leave
+# him. White because that is the light theme, and a black fault is invisible on the dark one.
+#
+# The grid is in the SHIPPED layers' own pixels (760 x 856, tools/climber-compose.ps1's output),
+# which is the unit every A.* point in index.html is written in. Quote marks in these numbers
+# and they go straight into the table; quote fractions and it is anyone's guess which black line
+# was meant.
+#
+# The current attachment points are drawn on as rings, so there is something to correct rather
+# than something to invent.
+#
+# ONE THING TO KNOW BEFORE MOVING A ROPE SIDEWAYS: the two ropes are LOCKED together. They hang
+# from the two stems of the header mark, 0.17278 * markW of the strip apart - 72.6 px on this
+# frame - so moving one across moves the other by the same amount. Only their HEIGHTS are free.
+# What CAN move independently is the ASAP: it is a separate drawing, placed on the rope by
+# climber-compose.ps1, so say where the rope should be and the device follows.
+param(
+  [string]$Out = "C:\Users\gilmo\Downloads\climber-grid.png",
+  [int]$Zoom = 2,
+  [int]$Fine = 10, [int]$Mid = 50, [int]$Bold = 100,
+  # The points as index.html has them, in shipped pixels. Keep in step with A.* there.
+  [double]$WorkX = 354.7, [double]$DescY = 311.7,
+  [double]$OutX = 356.8,  [double]$OutY = 325.5,
+  [double]$InX  = 159.4,  [double]$InY  = 467.5,
+  [double]$BrkX = 145.5,  [double]$BrkY = 509.1,
+  [double]$BackX = 427.3, [double]$AsapInY = 69, [double]$AsapOutY = 122,
+  [double]$RopeW = 8.26,  # = A.ropeW (0.01087 of the strip) x 760
+  # Just the figure under the grid: no rings, no labels, no caption. For marking on a clean
+  # sheet, or for looking at the drawing itself without six magenta circles over it.
+  [switch]$Bare
 )
-$brDot = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255,140,0))
-foreach ($d in $dots) {
-  $g.FillEllipse($brDot, [single]((PX $d.x) - 6), [single]((PY $d.y) - 6), [single]12, [single]12)
+Add-Type -AssemblyName System.Drawing
+$R = (Resolve-Path (Join-Path $PSScriptRoot "..\images")).Path
+$W = 760; $H = 856
+$TOP = -140; $BOT = 990          # a little rope above and below him
+$PAD = 56                        # room for the numbers
+$CAP = if ($Bare) { 10 } else { 74 }   # ...and for the caption, when there is one
+
+# --- the figure, painted in the page's own order --------------------------------------------
+$fig = New-Object System.Drawing.Bitmap $W, ($BOT - $TOP), ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$g = [System.Drawing.Graphics]::FromImage($fig)
+$g.Clear([System.Drawing.Color]::White)
+$g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+$g.TranslateTransform(0, [single](-$TOP))
+$pOut = New-Object System.Drawing.Pen ([System.Drawing.Color]::Black), ([single]$RopeW)
+$pIn  = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(255, 213, 214, 216)), ([single]($RopeW * 0.63))
+foreach ($pen in @($pOut, $pIn)) {
+  $pen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+  $pen.EndCap   = [System.Drawing.Drawing2D.LineCap]::Round
+  $pen.LineJoin = [System.Drawing.Drawing2D.LineJoin]::Round
+}
+function Rope($pts) {
+  $a = @(); foreach ($q in $pts) { $a += New-Object System.Drawing.PointF ([single]$q[0]), ([single]$q[1]) }
+  $g.DrawLines($pOut, [System.Drawing.PointF[]]$a)
+  $g.DrawLines($pIn,  [System.Drawing.PointF[]]$a)
+}
+function Layer($n) {
+  $p = Join-Path $R $n
+  if (-not (Test-Path $p)) { throw "missing $p - run tools/climber-compose.ps1 first" }
+  $b = New-Object System.Drawing.Bitmap($p); $g.DrawImageUnscaled($b, 0, 0); $b.Dispose()
+}
+# BACK: the backup rope for its whole length - the ASAP is drawn with a hole, so the device
+# hides the rope and the hole shows it through - and the brake tail below the glove.
+Rope @(@($BackX, $TOP), @($BackX, $AsapInY), @($BackX, $AsapOutY), @($BackX, $BOT))
+Rope @(@($BrkX, $BrkY), @($BrkX, $BOT))
+Layer "man-body.png"
+# FRONT: the working rope, which runs in front of everything of his it meets, and the brake
+# strand across his lap.
+Rope @(@($WorkX, $TOP), @($WorkX, $DescY))
+Rope @(@($OutX, $OutY), @($InX, $InY))
+Layer "man-front.png"
+$g.Dispose()
+
+# --- the sheet: figure, grid, numbers ---------------------------------------------------------
+$SW = $W * $Zoom + $PAD * 2
+$SH = ($BOT - $TOP) * $Zoom + $PAD * 2 + $CAP
+$o = New-Object System.Drawing.Bitmap $SW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$go = [System.Drawing.Graphics]::FromImage($o)
+$go.Clear([System.Drawing.Color]::White)
+$go.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::NearestNeighbor
+$go.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::Half
+$go.DrawImage($fig, $PAD, $PAD, ($W * $Zoom), (($BOT - $TOP) * $Zoom))
+$fig.Dispose()
+
+function SX($ax) { return $PAD + $ax * $Zoom }
+function SY($ay) { return $PAD + ($ay - $TOP) * $Zoom }
+
+$pFine = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(38, 0, 130, 255)), 1
+$pMid  = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(85, 0, 110, 230)), 1
+$pBold = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(150, 220, 0, 0)), 1
+$f  = New-Object System.Drawing.Font "Consolas", ([single]12), ([System.Drawing.FontStyle]::Bold)
+$fs = New-Object System.Drawing.Font "Consolas", ([single]13), ([System.Drawing.FontStyle]::Bold)
+$brRed = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 190, 0, 0))
+$brBlk = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 20, 20, 20))
+
+$y0 = SY $TOP; $y1 = SY $BOT
+for ($x = 0; $x -le $W; $x += $Fine) {
+  $sx = SX $x
+  $pen = if ($x % $Bold -eq 0) { $pBold } elseif ($x % $Mid -eq 0) { $pMid } else { $pFine }
+  $go.DrawLine($pen, [single]$sx, [single]$y0, [single]$sx, [single]$y1)
+  if ($x % $Bold -eq 0) {
+    $go.DrawString("$x", $f, $brRed, [single]($sx - 13), [single]($PAD - 20))
+    $go.DrawString("$x", $f, $brRed, [single]($sx - 13), [single]($y1 + 4))
+  }
+}
+$x0 = SX 0; $x1 = SX $W
+for ($y = $TOP; $y -le $BOT; $y += $Fine) {
+  $sy = SY $y
+  $pen = if ($y % $Bold -eq 0) { $pBold } elseif ($y % $Mid -eq 0) { $pMid } else { $pFine }
+  $go.DrawLine($pen, [single]$x0, [single]$sy, [single]$x1, [single]$sy)
+  if ($y % $Bold -eq 0) {
+    $go.DrawString("$y", $f, $brRed, [single]2, [single]($sy - 9))
+    $go.DrawString("$y", $f, $brRed, [single]($x1 + 6), [single]($sy - 9))
+  }
+}
+# the figure's own box - everything outside it is off the artwork
+$pEdge = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(255, 0, 160, 0)), 2
+$go.DrawRectangle($pEdge, [single](SX 0), [single](SY 0), [single]($W * $Zoom), [single]($H * $Zoom))
+
+# --- the points as they stand -----------------------------------------------------------------
+if (-not $Bare) {
+$pRing = New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(255, 255, 0, 190)), 3
+$brLbl = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(230, 255, 255, 255))
+# last number: which side the label hangs on, so none of them runs off the sheet
+$marks = @(
+  @("A.desc     working rope ends here",  $WorkX, $DescY,    1),
+  @("A.descOut  brake strand out",        $OutX,  $OutY,    -1),
+  @("A.brakeIn  strand into the glove",   $InX,   $InY,      1),
+  @("A.brake    tail leaves the glove",   $BrkX,  $BrkY,     1),
+  @("A.asapIn   rope into the ASAP",      $BackX, $AsapInY,  1),
+  @("A.asapOut  rope out of the ASAP",    $BackX, $AsapOutY, 1)
+)
+foreach ($m in $marks) {
+  $cx = SX ([double]$m[1]); $cy = SY ([double]$m[2]); $r = 13
+  $go.DrawEllipse($pRing, [single]($cx - $r), [single]($cy - $r), [single](2 * $r), [single](2 * $r))
+  $go.DrawLine($pRing, [single]($cx - 4), [single]$cy, [single]($cx + 4), [single]$cy)
+  $go.DrawLine($pRing, [single]$cx, [single]($cy - 4), [single]$cx, [single]($cy + 4))
+  $txt = "{0}   ({1:N0},{2:N0})" -f $m[0], $m[1], $m[2]
+  $sz = $go.MeasureString($txt, $fs)
+  $lx = if ([int]$m[3] -gt 0) { $cx + $r + 8 } else { $cx - $r - 8 - $sz.Width }
+  $go.FillRectangle($brLbl, [single]($lx - 3), [single]($cy - $sz.Height / 2), [single]($sz.Width + 6), [single]$sz.Height)
+  $go.DrawString($txt, $fs, $brBlk, [single]$lx, [single]($cy - $sz.Height / 2))
+}
 }
 
-# ---- legend ---------------------------------------------------------------
-$fLeg = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
-$ly = $MT + $H + 8
-$g.DrawLine($penWork,   [single]$ML, [single]($ly + 10), [single]($ML + 40), [single]($ly + 10))
-$g.DrawString("working rope  X = 0.44 (vertical)", $fLeg, (New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(37,99,235))), [single]($ML + 48), [single]$ly)
-$g.DrawLine($penBackup, [single]($ML + 330), [single]($ly + 10), [single]($ML + 370), [single]($ly + 10))
-$g.DrawString("backup rope  X = 0.573", $fLeg, (New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(220,38,38))), [single]($ML + 378), [single]$ly)
-$g.DrawString("grid = 0.01", $fLeg, $brGrey, [single]($ML + 660), [single]$ly)
-
-$g.Dispose()
-$bmp.Save($out, [System.Drawing.Imaging.ImageFormat]::Png)
-$bmp.Dispose()
-$img.Dispose()
-"saved: $out"
-
+# --- caption ------------------------------------------------------------------------------------
+if (-not $Bare) {
+$cy0 = $SH - $CAP + 6
+$lines = @(
+  "Numbers are pixels of images/man-body.png / man-front.png (760 x 856). Green box = the artwork; rope above and below it runs off the page.",
+  "THE TWO ROPES ARE LOCKED 72.6 px APART SIDEWAYS (the header mark's two stems). Move one across and the other moves the same way; heights are free.",
+  "The ASAP is a separate drawing and is PLACED on the backup rope, so say where the rope should be and the device follows.",
+  "A point should sit INSIDE the ink that covers it - the rope end is meant to be hidden under the device or the glove, not to touch an outline."
+)
+$fc = New-Object System.Drawing.Font "Consolas", ([single]12)
+for ($i = 0; $i -lt $lines.Count; $i++) {
+  $go.DrawString($lines[$i], $fc, $brBlk, [single]$PAD, [single]($cy0 + $i * 17))
+}
+}
+$go.Dispose()
+$o.Save($Out, [System.Drawing.Imaging.ImageFormat]::Png); $o.Dispose()
+"$Out   ({0} x {1}, zoom {2}, grid {3}/{4}/{5} artwork px)" -f $SW, $SH, $Zoom, $Fine, $Mid, $Bold

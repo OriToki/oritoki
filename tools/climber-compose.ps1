@@ -54,6 +54,27 @@ param(
   # the absorber's swivel meets.
   [double]$HoleX = 17.5, [double]$HoleY = 20,
   [double]$AsapConnX = 12, [double]$AsapConnY = 75,
+  # Which labelled blob is which. climber-parts.ps1 sorts them biggest first, so the man is
+  # always 1; the rest depend on what else is on the sheet. `take.png` carries THREE absorbers
+  # of different lengths (parts 2, 3 and 4) and the ASAP (part 5).
+  [int]$ManPart = 1, [int]$SorbPart = 2, [int]$AsapPart = 3,
+  # CLEANING THE GEAR, IN THE MAN'S OWN COLOURS. The man is drawn 1097 px wide and ships at 760,
+  # so his own speckle averages away in the downscale. The gear is drawn at about a fifth of that
+  # and placed at roughly 1:1, so its speckle is shown raw - the owner called the absorber rough
+  # and dotted, and he was right. Blurring only smears it and supersampling changed nothing: the
+  # noise is in the DRAWING, not in the edge.
+  # A plain levels stretch (110/190) did clean it, and was WRONG: it drove the strap to pure
+  # black. Measured, the two palettes already agree - his harness webbing is mean L 63.1, the
+  # absorber's strap L 58.0, five levels apart. The fault was never the colour.
+  # So each pixel is snapped to the NEAREST of his four measured tones instead. That flattens
+  # the dither into flat shapes without moving the tone: black outline, webbing, highlight,
+  # white. Set $Palette to an empty array to place a piece exactly as drawn.
+  # THE REAL FIX IS UPSTREAM: gear drawn at the man's own scale (an absorber about 1000 px long
+  # rather than 369) would need none of this.
+  [int[]]$Palette = @(0, 63, 182, 255),
+  # Ship the man ALONE, with no gear placed on him. For getting the figure onto the page and
+  # onto a marking sheet before deciding where the ASAP and the absorber go.
+  [switch]$ManOnly,
   [switch]$Preview
 )
 Add-Type -AssemblyName System.Drawing
@@ -64,13 +85,39 @@ if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force }
 New-Item -ItemType Directory -Path $tmp | Out-Null
 $report = & (Join-Path $PSScriptRoot "climber-parts.ps1") -Src $Src -OutDir $tmp
 $report
-$man  = New-Object System.Drawing.Bitmap((Join-Path $tmp "part-1.png"))
-$sorb = New-Object System.Drawing.Bitmap((Join-Path $tmp "part-2.png"))
-$asap = New-Object System.Drawing.Bitmap((Join-Path $tmp "part-3.png"))
+# Snap every pixel to the nearest of the man's own tones, keeping its alpha. See $Palette above.
+# Alpha is untouched on purpose: the edge keeps whatever softness it had, and only the fill is
+# flattened. Snapping the edge as well would turn every antialiased pixel into a hard one.
+function CleanGear($src, $pal) {
+  if ($null -eq $pal -or $pal.Count -lt 2) { return $src }
+  $o = New-Object System.Drawing.Bitmap $src.Width, $src.Height, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  for ($iy = 0; $iy -lt $src.Height; $iy++) {
+    for ($ix = 0; $ix -lt $src.Width; $ix++) {
+      $p = $src.GetPixel($ix, $iy)
+      if ($p.A -eq 0) { continue }
+      $l = 0.299 * $p.R + 0.587 * $p.G + 0.114 * $p.B
+      $best = $pal[0]; $bd = [Math]::Abs($l - $pal[0])
+      foreach ($t in $pal) { $d = [Math]::Abs($l - $t); if ($d -lt $bd) { $bd = $d; $best = $t } }
+      $b = [byte]$best
+      $o.SetPixel($ix, $iy, [System.Drawing.Color]::FromArgb($p.A, $b, $b, $b))
+    }
+  }
+  $src.Dispose()
+  return $o
+}
+$man = New-Object System.Drawing.Bitmap((Join-Path $tmp "part-$ManPart.png"))
 $FW = $man.Width; $FH = $man.Height          # the frame IS the man's box
+if (-not $ManOnly) {
+  $sorb = CleanGear (New-Object System.Drawing.Bitmap((Join-Path $tmp "part-$SorbPart.png"))) $Palette
+  $asap = CleanGear (New-Object System.Drawing.Bitmap((Join-Path $tmp "part-$AsapPart.png"))) $Palette
+  "gear snapped to the man's tones: $($Palette -join ', ')"
+}
 
+"frame (the man's own box): $FW x $FH"
+if ($ManOnly) { "MAN ONLY - no absorber, no ASAP placed" }
 # --- solve the placement --------------------------------------------------------------------
 # The mark's two stems are what fixes this ($Sep). Everything else bends.
+if (-not $ManOnly) {
 # NOT $SEP: PowerShell variable names are case-insensitive, so $SEP IS the parameter $Sep, and
 # assigning to it here silently overwrote the fraction with a pixel count — which came straight
 # back out in the markLeft line printed at the end. The trap CLAUDE.md warns about.
@@ -90,11 +137,11 @@ $haveAng = [Math]::Atan2($haveDX, -$haveDY) * 180 / [Math]::PI
 $scale = $needLen / $haveLen
 $rot   = $needAng - $haveAng
 
-"frame (the man's own box): $FW x $FH"
 "rope separation needed: {0:N1} px  ->  working rope x {1:N0}, ASAP hole x {2:N1}" -f $sepPx, $DescX, $holeGX
 "absorber: {0:N1} px at {1:N2} deg  ->  {2:N1} px at {3:N2} deg   (scale {4:N3}, turn {5:N2} deg)" -f `
   $haveLen, $haveAng, $needLen, $needAng, $scale, $rot
 "ASAP box: x {0:N0}..{1:N0}  y {2:N0}..{3:N0}" -f $asapLeft, ($asapLeft + $asap.Width), $asapTop, ($asapTop + $asap.Height)
+}
 
 # --- compose at the drawing's own scale, THEN scale, THEN cut --------------------------------
 # That order matters: cutting layers after a downscale antialiases both sides of every cut
@@ -104,18 +151,23 @@ $g = [System.Drawing.Graphics]::FromImage($comp)
 $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
 $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
 $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
-# absorber first, so his gripping fist paints over it and reads as holding it
-$g.TranslateTransform([single]$RingX, [single]$RingY)
-$g.RotateTransform([single]$rot)
-$g.ScaleTransform([single]$scale, [single]$scale)
-$g.TranslateTransform([single](-$SorbClipX), [single](-$SorbClipY))
-$g.DrawImage($sorb, 0, 0, $sorb.Width, $sorb.Height)
-$g.ResetTransform()
+if (-not $ManOnly) {
+  # absorber first, so his gripping fist paints over it and reads as holding it
+  $g.TranslateTransform([single]$RingX, [single]$RingY)
+  $g.RotateTransform([single]$rot)
+  $g.ScaleTransform([single]$scale, [single]$scale)
+  $g.TranslateTransform([single](-$SorbClipX), [single](-$SorbClipY))
+  $g.DrawImage($sorb, 0, 0, $sorb.Width, $sorb.Height)
+  $g.ResetTransform()
+}
 $g.DrawImageUnscaled($man, 0, 0)
 # the ASAP last, so it closes over the absorber's swivel
-$g.DrawImageUnscaled($asap, [int][Math]::Round($asapLeft), [int][Math]::Round($asapTop))
+if (-not $ManOnly) {
+  $g.DrawImageUnscaled($asap, [int][Math]::Round($asapLeft), [int][Math]::Round($asapTop))
+}
 $g.Dispose()
-$man.Dispose(); $sorb.Dispose(); $asap.Dispose()
+$man.Dispose()
+if (-not $ManOnly) { $sorb.Dispose(); $asap.Dispose() }
 
 if ($Preview) {
   $p = "C:\Users\gilmo\Downloads\climber-composed.png"
