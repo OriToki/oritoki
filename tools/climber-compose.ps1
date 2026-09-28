@@ -205,7 +205,16 @@ $gs.Dispose(); $comp.Dispose()
 $RIG   = @(526,403, 517,413, 508,423, 501,433, 495,443, 489,453, 483,463, 480,473, 480,483,
            484,492, 515,492, 533,483, 548,473, 559,463, 564,453, 566,443, 566,433, 565,423,
            564,413, 550,403)
-$GLOVE = @(166,636, 278,636, 278,762, 166,762)
+# THE BRAKE GLOVE, with its top-right corner cut away. The owner marked in yellow how far the
+# rope should still SHOW as it comes into his hand, and put a + where it should go behind -
+# shipped (170,459) and (163,467), which is within four pixels of A.brakeIn.
+# The glove used to be the whole box, so it covered the rope from its outer edge onwards and
+# the rope disappeared about six pixels too early. The corner the rope crosses is dropped to
+# the BODY layer instead, which puts it under #ropeTop: the strand is painted over it and only
+# goes behind at the clip line, which runs through his + square to the rope.
+# Solved, not drawn: the rope's direction is (-0.7728, 0.6348), so the line through his + meets
+# the box's top edge at x 204 and its right edge at y 726.
+$GLOVE = @(166,636, 204,636, 278,726, 278,762, 166,762)
 function ScaledPoly($flat, $kk) {
   $pts = New-Object "System.Drawing.Point[]" ($flat.Count / 2)
   for ($ix = 0; $ix -lt $flat.Count; $ix += 2) {
