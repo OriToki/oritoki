@@ -11,17 +11,30 @@ They need nothing installed: they use `System.Drawing`, which ships with Windows
 
 ## Why these exist
 
-The rope-access climber that rides the scrollbar on `index.html` is drawn as SVG ropes on top of
-`images/climber.png`. Everything about the ropes — where they leave a hand, where they are cut so a
-device's outline passes in front of them — is measured **in that PNG's own pixels (560 × 686)**.
-That is the unit to think in; fractions hide which black line you are actually aiming at.
+The rope-access climber that rides the scrollbar on `index.html` is drawn as SVG ropes **between
+two layers of him** — `images/man-body.png`, then the ropes, then `man-front.png` (his descender
+and his brake glove, the only two places a front rope ends). Everything about the ropes is
+measured **in the man's own pixels**; fractions hide which black line you are actually aiming at.
 
 These scripts are how those numbers get measured and checked without guessing.
+
+## Building the climber
+
+The owner draws the figure and its hardware as **separate pieces on one transparent sheet**
+(`Desktop\try.png`). That is the whole trick: gear that is drawn into the figure has to have the
+ropes bent to reach it, and two drawings were rejected that way. Loose gear gets placed on the
+ropes instead.
+
+| Script | What it does |
+| --- | --- |
+| `climber-parts.ps1` | Labels the separate blobs of ink on the sheet and reports each one's box. Writes each part out as its own PNG with `-OutDir`. Nothing is placed. |
+| `climber-compose.ps1` | Places them and writes `images/man-body.png` + `man-front.png`. **Solves** the ASAP's position from the header mark's two rope stems, then stretches and leans the absorber to reach it, so both ropes stay plumb. Prints the numbers for `index.html`'s `A` table, and refuses to write unless restacking the two layers reproduces the composed figure exactly. |
 
 ## Measuring and checking the climber
 
 | Script | What it does |
 | --- | --- |
+| `climber-grid.ps1` | A marking sheet: the live figure with its ropes, under a grid in the shipped layers' own pixels, with the current attachment points ringed. Send it to whoever is deciding and let them mark where a rope should go. → `Downloads\climber-grid.png` |
 | `climber-grid.ps1` | Draws `climber.png` with a 0.01 grid over it, plus the ropes at their current positions. Send it to whoever is deciding, let them mark a spot. → `Downloads\climber-grid.png` |
 | `climber-zoom-descender.ps1` | Big zoom on the descender with fine gridlines, for reading off exactly where a black outline crosses the rope. |
 | `climber-zoom-glove.ps1` | The same for the brake hand, with the strand's own edges drawn as guides. |

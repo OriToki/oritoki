@@ -164,8 +164,11 @@
                                      strip. The ceiling is the header: the lettering's bottom lands
                                      at 4 + 0.685 x this, and it has to stay inside the 88px bar,
                                      so 116 leaves about 4px. Past that the header has to grow. */
-      --climber-left: 52px;         /* distance from the LEFT viewport edge — moves the
-                                       technician and both ropes together */
+      /* Distance from the LEFT viewport edge — moves the technician and both ropes together.
+         49, not 52: the mark moved 3.1px the other way when the figure was replaced (A.markLeft,
+         -0.0904 -> -0.0637), and the mark is positioned FROM the strip, so the two cancel. The
+         lockup stays on screen exactly where it was and the man shifts instead. */
+      --climber-left: 49px;
       /* How high above the window's bottom edge the technician's boots stop, at the very end of
          the page. It has to clear the HIGHER of the two rope ends and its stopper knot
          (A.ropeEndGapWork + A.knotRise in the script), so the knots hang visibly below him rather than behind his
@@ -192,20 +195,21 @@
        the whole strip has to pass BEHIND the mark on a sideways drag — both ropes and the figure.
        z-index cannot reach across a stacking context, so parked in the header (a z-50 bar under
        the z-60 strip) the ropes painted over the mark whatever z-index they were given.
-       z-4 and written last, above every layer in the strip. It was z-1 between the two rope
+       z-5 and written last, above every layer in the strip — it went up from 4 when the figure
+       became two layers and took 4 for its front piece. It was z-1 between the two rope
        layers for a while, which put the backup line behind the mark and the working line in
        front; the owner wants both behind. The working rope cannot simply drop to the back layer
        to get there — it has to stay in front of the climber or it disappears under the shock
        absorber (see #ropeFront) — so the mark goes over the top of everything instead, the
        climber included.
        pointer-events because the strip around it is click-through. */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.0904);
-                 width: calc(var(--worker-width) * 0.7153); z-index: 4; display: block;
+    #brandRope { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.0637);
+                 width: calc(var(--worker-width) * 0.7153); z-index: 5; display: block;
                  pointer-events: auto; }
     #brandRope img { display: block; width: 100%; height: auto; }
     /* The two moving pieces share #brandRope's box exactly — they are cut from the same drawing on
        the same canvas — so they need no alignment of their own, only the same left/width/top. */
-    .lock-piece { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.0904);
+    .lock-piece { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.0637);
                   width: calc(var(--worker-width) * 0.7153); height: auto;
                   z-index: 1; display: block; pointer-events: none; }
     /* Where each carabiner hangs in its hanger's eye — the owner marked both points on a grid of
@@ -249,11 +253,30 @@
        read as a highlight rather than a rope. The owner would rather they all match, and matching
        is also what keeps the knots clean: this colour is sampled off the lockup's drawn cord and
        the ropes run straight out of it, so any rope that differs shows a step where it leaves. */
-    #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
-    /* (The gripping fist is handled by cutting the ROPE, not by repainting the hand — see
-       A.fist and #fistCut in the script. Painting the hand a second time over the rope was tried
-       first and is the one thing that must not be done here: the same semi-transparent edge
-       pixels composited twice come out darker, and the hand visibly thickened.) */
+    /* THE TECHNICIAN IS TWO IMAGES and the ropes are painted BETWEEN them:
+         #climber      man-body.png   everything else            under the ropes
+         #ropeFront    the SVG ropes
+         #climberFront man-front.png  the RIG with its carabiner, and the brake glove
+       The front layer holds ONLY those two, because they are the only two places a front rope
+       ENDS — the working rope dies inside the descender, the brake strand runs out of it and
+       into the glove. Each rope simply stops a few pixels inside the ink that covers it, so
+       there is no visible end to place at any angle. That is what four clipPaths, a patch-cut
+       solver and a traced fist polygon used to be doing, all of it needed only because the
+       figure used to be one flat PNG.
+       NOTHING ELSE MAY BE LIFTED INTO THE FRONT LAYER. The owner asked for the working rope to
+       run in front of all the rest of him — the absorber and his gripping fist included — and
+       putting the fist up here is exactly the version he rejected: the rope vanished behind his
+       HAND a third of the way down instead of running on to the device.
+       The BACKUP rope needs no piece at all. It is painted in the back layer, behind the whole
+       figure, and his ASAP is drawn with a real HOLE in it, so the device hides the rope and
+       the hole lets it through. Nothing is cut and nothing is clipped.
+       Both images are the same 760x856 canvas at the same position, so they need no alignment
+       of their own — only the same transform, which draw() writes to both.
+       No drop-shadow: the body layer has piece-shaped HOLES where those two were cut out, and a
+       drop-shadow would trace the inside of every hole. */
+    #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; }
+    /* pointer-events: none so the drag still starts on the body img, where the handlers are. */
+    #climberFront { position: absolute; left: 50%; top: 0; z-index: 4; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
     body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
     body.climber-grabbing #climber { cursor: grabbing; }
     /* Set while the pointer is over a rope above or below him — the ropes act as the scrollbar's
@@ -274,7 +297,8 @@
        width that the wordmark hangs to the LEFT of the ropes (plus a couple of px of margin), or
        the "t" runs off the screen — 72 x 0.1362 = 9.8, so 22 leaves 12.2px. */
     @media (max-width: 640px) {
-      :root { --climber-left: 22px; --worker-width: 86px; }   /* phones: the 68px bar allows 86 */
+      :root { --climber-left: 20px; --worker-width: 86px; }   /* phones: the 68px bar allows 86;
+                                       20 is 22 less the same 0.0267-of-the-strip the mark moved */
       #header { height: 68px; }          /* shorter bar on phones — the lockup's knots end at 63 */
       #langToggle button { padding: 4px 8px; }
       #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
@@ -830,10 +854,9 @@
     <svg id="ropeBack" preserveAspectRatio="none" aria-hidden="true">
       <!-- No braid pattern: the lockup's cord is a flat light core in a black outline, and the
            rope is drawn the same way in plain strokes (see .rope-in / .rope-out). -->
-      <!-- The last stretch of the working rope, kept in the BACK layer so its tip disappears
-           BEHIND the descender instead of lying on top of it. The front segment above stops
-           flush at the device's edge; this one carries the rope on under it. -->
-      <path class="rope-out" id="rWtipO"></path><path class="rope-in" id="rWtipI"></path>  <!-- working rope tip, behind the descender -->
+      <!-- (There used to be a third segment here, the working rope's tip, carried on in this
+           layer so it died behind the descender. The device is its own layer over the ropes
+           now, so the front segment ends inside it and there is nothing left to hide.) -->
       <path class="rope-out" id="rWloO"></path><path class="rope-in" id="rWloI"></path>    <!-- working rope: brake hand → ground -->
       <!-- Stopper knot at the end of each rope. Both ropes stop well above the bottom of the
            window rather than running off it, and each one finishes in a barrel knot with a
@@ -866,54 +889,21 @@
          the lettering. -->
     <img class="lock-piece" id="lockBarLow" src="images/logo-barlow.png?v=17" alt="" draggable="false" />
     <img class="lock-piece" id="caraWork" src="images/logo-work.png?v=17" alt="" draggable="false" />
-    <img id="climber" src="images/climber.png?v=25" alt="" draggable="false" />
+    <img id="climber" src="images/man-body.png?v=4" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <!-- Each rope that runs into one of his devices is CUT along that device's black
-             outline, so the outline reads as passing in front of the rope instead of the rope
-             ending on top of it. JS re-cuts it as the climber slides (see drawRopes).
-             Both strands are cut this way. The brake strand is the easy one: both of ITS ends are
-             anchored to the body, so it never turns relative to the artwork and the cut always
-             meets it at the same angle. The working rope's far end is the anchor at the top of the
-             page and it swings through ~125°, which is why an early version of its cut failed —
-             but that version had no endpoint at all, so the tip you saw was wherever the rope
-             happened to meet the line, and it slid right off the device. It has both now: it ends
-             at A.desc, just past the line, and the cut only shaves the overshoot off flat. -->
-        <clipPath id="brakeCut"><path id="brakeCutP"></path></clipPath>
-        <clipPath id="workCut"><path id="workCutP"></path></clipPath>
-        <clipPath id="descOutCut"><path id="descOutCutP"></path></clipPath>
-        <!-- The GRIPPING FIST, as a hole rather than a line. The other three cuts trim an END off a
-             rope along one outline; this one the rope passes straight THROUGH, in at the knuckles
-             and out at the wrist, so a half-plane cannot do it — it takes the hand's whole
-             silhouette. Built from A.fist in drawRopes. -->
-        <clipPath id="fistCut"><path id="fistCutP"></path></clipPath>
-      </defs>
-      <!-- The upper working rope lives in the FRONT layer on purpose: coming down it must pass
-           IN FRONT of the backup device's shock absorber and land ON TOP of the descender,
-           the way the original artwork has it. Drawn behind the figure it disappeared under
-           the absorber instead. Its x (0.44) clears the helmet and the gripping fist, so
-           being in front covers nothing it shouldn't. -->
-      <!-- Cut along the descender's top outline, like the strand below — so the DEVICE reads as
-           being in front of the rope and the rope as running on behind it, which is the owner's
-           ask and how the artwork is drawn. The cut that used to make this rope's tip crawl across
-           the device as he swung was a cut ON ITS OWN: the rope ran far past the device and the tip
-           you saw was wherever it happened to meet the line. It has a real endpoint at A.desc now,
-           a hair past the line, so the crossing cannot wander — the clip only shaves the round cap
-           off and leaves a flat end lying along the outline. See drawRopes. -->
-      <!-- Two clips on this rope, so it is wrapped: an element takes ONE clip-path and a group's
-           clip intersects with its children's (the brake strand below is wrapped for the same
-           reason). The group carries the FIST, which the rope passes behind; the paths carry the
-           descender, where it ends. -->
-      <g clip-path="url(#fistCut)">
-        <path class="rope-out" id="rWupO" clip-path="url(#workCut)"></path><path class="rope-in" id="rWupI" clip-path="url(#workCut)"></path>  <!-- working rope: ceiling → descender, over the absorber -->
-      </g>
-      <!-- The brake strand is cut at BOTH ends, so the group carries the second clip: an element
-           takes one clip-path, and a group's clip intersects with its children's. Top end = the
-           descender's mouth (descOutCut), bottom end = the glove's outline (brakeCut). -->
-      <g clip-path="url(#descOutCut)">
-        <path class="rope-out" id="rBrkO" clip-path="url(#brakeCut)"></path><path class="rope-in" id="rBrkI" clip-path="url(#brakeCut)"></path>  <!-- working rope brake strand: descender → brake hand -->
-      </g>
+      <!-- No clipPaths. Both of these ropes END INSIDE the thing they run into — the working
+           rope a few pixels down in the descender, the brake strand in the descender at one end
+           and in the glove at the other — and #climberFront is painted over them, so the device
+           and the hand cover the end wherever the swing puts it. -->
+      <!-- The working rope lives in the FRONT layer on purpose, and the owner was explicit about
+           it: coming down it passes IN FRONT of everything of his it meets — the absorber and
+           his gripping fist included — and only the descender takes its tip. -->
+      <path class="rope-out" id="rWupO"></path><path class="rope-in" id="rWupI"></path>  <!-- working rope: ceiling → descender, over the absorber -->
+      <path class="rope-out" id="rBrkO"></path><path class="rope-in" id="rBrkI"></path>  <!-- working rope brake strand: descender → brake hand -->
     </svg>
+    <!-- The descender with its carabiner, and the brake glove — the pieces that paint OVER the
+         ropes, so each rope can die inside them. Same canvas and transform as #climber. -->
+    <img id="climberFront" src="images/man-front.png?v=4" alt="" draggable="false" />
     <!-- ORITOKI: "or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
          standing in for each dotted i, and the rope running on out of each knot. ONE image, the
          owner's finished drawing cropped to its own ink by tools/logo-mark.ps1 and otherwise
@@ -1658,24 +1648,21 @@
       var svgBack = document.getElementById("ropeBack"), svgFront = document.getElementById("ropeFront");
       var rBackO = document.getElementById("rBackO"), rBackI = document.getElementById("rBackI");
       var rWupO = document.getElementById("rWupO"), rWupI = document.getElementById("rWupI");
-      var rWtipO = document.getElementById("rWtipO"), rWtipI = document.getElementById("rWtipI");
-      var brkP = document.getElementById("brakeCutP");   // cut along the glove's outline
-      var wrkP = document.getElementById("workCutP");    // ...along the descender's top outline
-      var dscOutP = document.getElementById("descOutCutP"); // ...and along its mouth, where the
-                                                         // brake strand comes back out
-      var fistP = document.getElementById("fistCutP");   // ...and the hole the rope runs behind:
-                                                         // the whole gripping hand (see A.fist)
       var rWloO = document.getElementById("rWloO"), rWloI = document.getElementById("rWloI");
       var rKnotBO = document.getElementById("rKnotBO"), rKnotBI = document.getElementById("rKnotBI");
       var rKnotWO = document.getElementById("rKnotWO"), rKnotWI = document.getElementById("rKnotWI");
       var rBrkO = document.getElementById("rBrkO"), rBrkI = document.getElementById("rBrkI");
-      var hasRopes = !!(svgBack && svgFront && rBackO && rWupO && rWtipO && rWloO && rBrkO && rKnotBO && rKnotWO);
-      /* climber.png is the technician ALONE — no ropes are drawn into it, so every rope here
-         is free geometry. The two vertical x's are therefore set to the fractions of the two
-         rope stems in the header logo (0.481 / 0.573), which is what makes them continue out
-         of the two i's with no kink; both still pass correctly through his devices (the cam
-         sits at ~0.575, so 0.573 threads it better than the old 0.56 did). The body-relative
-         points below are the original, tuned-to-this-artwork values. */
+      // The layer painted over the ropes. It carries the same transform as #climber.
+      var climberFront = document.getElementById("climberFront");
+      var hasRopes = !!(svgBack && svgFront && rBackO && rWupO && rWloO && rBrkO && rKnotBO && rKnotWO);
+      /* The figure carries no ropes of its own, so every rope here is free geometry.
+         EVERY POINT BELOW IS A PIXEL OF images/man-*.png (760 x 856), divided by 760 or 856 —
+         and those come from tools/climber-compose.ps1, which prints them at the end of a run.
+         Re-read them if the figure is ever recomposed; do not nudge them by eye.
+         THE ONE THING THAT CANNOT MOVE is the gap between the two ropes: they hang from the two
+         stems of the header mark, 0.12359 of the strip apart. The compose script SOLVES the
+         ASAP's position from that and stretches the absorber to reach it, which is why for the
+         first time both ropes are dead plumb and neither device had to be shoved sideways. */
       var A = {
         // Rope thickness, as a fraction of the strip's width — the one place it is set. Everything
         // sized off the rope (its two strokes, the stopper knots) is derived from this, so the
@@ -1714,170 +1701,70 @@
                                         own proportion is what makes the two read as one cord;
                                         guessing a heavier outline to "compensate" is what made
                                         the rope darker and harder than the knot it leaves. */
-        /* The backup rope hangs STRAIGHT DOWN: backupX and camX are equal, the same way workTopX
-           and desc.x are, and that is what keeps each rope vertical.
-           Getting here moved the artwork. The logo fixes how far apart the two anchors are — the
-           big O sits centred over the small o, which fixes the words, which fixes their anchors —
-           and the anchors are the tops of the ropes. 6.0px apart, where the two devices he wears
-           were drawn 12.9px apart. The working rope could not give ground, so the backup device
-           swung across his chest to meet its rope: tools/move-backup-device.ps1, which rotates the
-           device, its carabiner and the absorber about the point where the absorber meets the
-           sling. They sit on transparent background in climber.png, so none of him was repainted. */
-        /* BOTH ropes hang plumb. The mark is hung by the WORKING stem (see A.markLeft), which
-           fixes where the backup stem lands — 0.5445 — and camX is then set equal to it so the
-           backup runs dead vertical too.
-           The price is that camX is no longer where his cam device is drawn: the device sits 6.0px
-           to the LEFT of the rope now, because the mark's two stems are 12.1px apart where his two
-           devices are 6.0px apart and only one of those distances can win. The owner asked for both
-           ropes plumb first and said the device would be put back under its rope afterwards —
-           tools/move-backup-device.ps1 is what moves it, the same way it was moved once before, and
-           camX goes back to naming the device when that is done.
-           4.1px of that 6.0 came from making the backup plumb; the other 1.9 came from sliding the
-           whole lower anchor right (tools/logo-layers.ps1 -LowShiftX), which the owner asked for so
-           the backup rope clears the fist gripping the descender — it was passing 0.75px from the
-           glove's edge. */
-        backupX: 0.5634,             // backup rope, top — and its whole line, since camX matches
-        camX: 0.5634,                // = backupX, so the rope is vertical (see above: the DEVICE
-                                     // it is named after is 4.1px left of this, still to be moved)
-        camY: 0.1218,                // and how far down the figure that is — kept for the drag
-                                     // track; the rope itself now bends at asapIn / asapOut
+        /* BOTH ropes hang dead plumb, and for once nothing had to be bent to manage it. The mark
+           is hung by the WORKING stem (see A.markLeft), which fixes where the backup stem lands;
+           camX is set equal to it, and the ASAP was PLACED on that line — the owner drew the
+           device as a separate piece, so tools/climber-compose.ps1 solves its position from the
+           stems and lengthens the absorber to reach it. Every figure before this one had its
+           devices drawn in, so the ropes had to lean or the hardware had to be shoved across
+           his chest. */
+        backupX: 0.5903,             // backup rope, top — and its whole line, since camX matches
+        camX: 0.5903,                // = backupX; = shipped x 448.6, the middle of the ASAP's hole
+        camY: 0.1424,                // and how far down the figure that is — kept for the drag
+                                     // track; the rope itself bends at asapIn / asapOut
         /* WHERE THE BACKUP ROPE MEETS THE ASAP. It does not simply bend AT the device — the device
            HOLDS it, so it bends TWICE: once going in at the top, once coming out at the bottom, and
-           in between it runs straight down the device's own channel. The ASAP sits a few degrees
-           off vertical, so that middle stretch is off vertical too, and swinging him turns all
-           three segments about their own ends. Both points are the owner's marks, read off a grid
-           of the live page.
-           They are the channel line carried through the same placement as the drawing itself, so
-           they cannot drift away from it — tools/climber-asap.ps1 prints them, and re-running it
-           after moving the device reprints them. Do not nudge these by hand. */
-        asapIn:  { x: 0.5663, y: 0.0962 },   // = (317.1, 66.0) of the 560x686 artwork
-        asapOut: { x: 0.5620, y: 0.1530 },   // = (314.7, 105.0)
-        /* The working rope's top. This USED to equal desc.x (both 0.44), which is what held the
-           rope perfectly vertical — the owner drew that line on the measuring grid and had
-           rejected an earlier leaning pair (0.399 → 0.42) to get it.
-           The new lockup forces it off vertical. Its two stems are 0.1531 of the mark apart,
-           against 0.0891 on the mark it replaced, so at a size that fits the bar they are 11.7px
-           apart where the ropes are 6.0px apart. One of the two ropes has to take that 5.7px, and
-           it is this one: the backup rope has to stay plumb through the cam on his chest, while
-           this one already swings through a wide arc into the descender. The lean shows only at
-           the top of the page, where the rope is short — about 3.5° there, under 0.5° once he is
-           down the page. Shrinking the mark to 39px instead would keep both ropes exactly as they
-           were; the owner chose to keep the mark's size. */
+           in between it runs straight down through it. Swinging him turns all three segments about
+           their own ends, which is what a rope in a fall arrester does.
+           THE DEVICE HAS A REAL HOLE IN IT — the owner drew it that way — and the rope is painted
+           in the BACK layer, behind the whole figure. So the ASAP hides the rope over its own
+           body and the hole lets it show through, with nothing cut and nothing clipped. These two
+           points are just the device's top and bottom edges (shipped y 67 and 124), a few pixels
+           in, so neither bend ever shows. */
+        asapIn:  { x: 0.5903, y: 0.0809 },   // = (448.6, 69) of the 760x856 artwork
+        asapOut: { x: 0.5903, y: 0.1424 },   // = (448.6, 122)
         /* The MAIN WORKING rope hangs plumb: its top and the descender it runs into share an x, so
-           at rest it is dead vertical. That is what the mark is positioned by now. */
-        workTopX: 0.44,              // = A.desc.x, and A.markLeft is solved from it
-        // The climber is ONE flat PNG, so a rope can only be wholly in front of it or wholly
-        // behind it — "the device's outline in front of the rope" is therefore done by CUTTING
-        // the visible rope along that outline (the clipPaths above). Every cut is two points
-        // in climber.png's OWN pixels (560x686), which is how the owner measures them; only the
-        // LINE through them matters, since drawRopes extends it past the strip either way.
-        //
-        // The descender's top outline: the owner read it off the artwork as y 219 at the rope's
-        // right edge, 224 at its middle, 229 at its left edge (the rope spans x 240.8..252, i.e.
-        // 0.44 of the width ± half a stroke). It does three jobs: it is where the working rope is
-        // CUT so the device covers it, it places A.desc (the rope's end and pivot, at its middle),
-        // and it places the top of the hidden rWtip segment.
-        cutWork:  { x1: 240.8, y1: 229, x2: 252, y2: 219 },
-        // Brake strand at the glove. The owner put the contour at 0.23 across / 0.53 down of
-        // the figure = pixel (128.8, 363.6), so the cut runs through that point, along the
-        // outline's own slope. (Walking the strand for "the first black pixel" lands ~7px
-        // earlier, on the outer lip of the same outline — and 15px before THAT is the harness
-        // strap, which the strand crosses over a gap of transparent pixels. Both are decoys.)
-        cutBrake: { x1: 124.05, y1: 360.35, x2: 133.55, y2: 366.85 },
-        /* THE GRIPPING FIST — the hand that holds the rope just above the descender, in the
-           artwork's own 560 x 686 pixels, going clockwise from its top-left.
-           At rest the working rope runs plumb at 0.44 (= 246 artwork px) and passes to the LEFT of
-           this hand, which is why the rope could live wholly in front of the figure. Drag him LEFT
-           and it stops clearing it: the anchor stays up in the mark while his body travels, so the
-           rope swings across and lies over his knuckles. The owner asked for it to go BEHIND the
-           hand, the way it goes behind the lettering.
-           It cannot do that by z-order — the figure is one flat PNG, and this rope has to stay in
-           FRONT of it or it disappears under the shock absorber (see #ropeFront). So the rope is
-           cut instead, which is how every other device in this artwork gets in front of it.
-           The other obvious move — painting the hand again on top of the rope, out of the same
-           file — was tried and must not be: the same antialiased edge pixels composited twice come
-           out darker, and the hand measurably thickened (9% of its pixels changed, the worst by
-           39%). Cutting the rope leaves the drawing untouched.
-           Read off the artwork row by row (ink runs at alpha >= 40, x 246..312, y 181..244) and
-           then pulled about 1px INSIDE that outline. Inside is the safe side: a point outside the
-           hand opens a gap in the rope against transparent background, while a point inside only
-           lets the rope run a fraction further under the hand's own black outline, which is where
-           it should be running anyway. The interior is solid ink all the way across, so there are
-           no transparent pockets for the rope to vanish into. */
-        // Re-traced on the new 700x731 drawing: the gripping glove's ink runs x 322..384,
-        // y 191..250, and it grips the lanyard just above the descender.
-        fist: [[259,191],[264,187],[272,186],[286,188],[291,192],[294,197],[297,203],[299,212],
-               [300,222],[299,231],[296,239],[288,244],[274,243],[264,232],[258,218],[256,204]],
-        /* The descender's MOUTH, where the brake strand comes back out between his hands. The
-           owner drew this one in red on a printed grid of the live page ("between hands.png");
-           read back off it, the stroke runs from device (383.1, 537.0) to (390.6, 533.4) at 4x,
-           which is these two artwork pixels. It passes within 1.5px of A.descOut, as it should —
-           that is the same point, marked a second time and from the other side.
-           It meets the strand at only 19°, on purpose: a rope leaving a device is cut by the
-           device's edge, and that edge lies almost along the rope here. Both ends of this strand
-           are anchored to the body, so that angle never changes and a shallow cut is safe. */
-        cutDescOut: { x1: 253.3, y1: 232.7, x2: 264.1, y2: 227.5 },
-        /* Where the working rope meets the descender, and the point it pivots about when he
-           swings. It sits ON the cutWork outline above: at the rope's x (0.44 = px 246.4) that line
-           is at y 224.0, so 0.3265 = 224.0/686. Keep the two in step — move the outline and this
-           has to follow, or the rope stops short of the device or laps over it. It read 0.36 once,
-           a good 23px further down, back when the rope had no endpoint at all and the clip was
-           doing the whole job. */
-        desc:   { x: 0.44, y: 0.3265 },
-        /* How far the rope runs on PAST A.desc before the clip shaves it off flat along the
-           descender's top outline, in rope widths. It only has to be enough that the cut takes the
-           whole width of the rope and its round cap: A.desc sits at the MIDDLE of that outline, and
-           the outline drops another 5 artwork px (0.87 CSS px) across to the rope's left edge, so
-           anything over about one rope width will do. Three gives it room at a slanted crossing,
-           and applyCut's patch is 22px deep, so there is no risk of the overshoot outrunning it. */
-        descTuck: 3,
-        descTipY: 0.40,              // the tip then runs on to here in the BACK layer, hidden
-                                     // by the device (the artwork is solid all the way down
-                                     // this column, so nothing of it shows)
-        // Where the brake strand LEAVES the descender, between the two hands — the owner's mark,
-        // 0.47 across / 0.33 down of the figure (pixel 263.2 / 226.4). It used to keep a ROUNDED
-        // head here, on the theory that a round end reads as a rope's own end. It does — and that
-        // was the fault: the rope is not ending here, it is coming out of a device, so the end has
-        // to be the DEVICE's edge. Cut along A.cutDescOut now, like the other end at the glove.
-        descOut:{ x: 0.47, y: 0.33 },
-        // Two separate points, both taken from the owner's pixel-marked screenshot: the strand
-        // stops where the rope enters the top of the glove, and the tail restarts where it
-        // leaves the bottom of it. Keeping them independent is what lets the glove read as
-        // gripping the rope rather than the rope passing over it.
-        // Measured off the glove in climber.png (it sits at x 75..145, y 351..413 of the 560x686
-        // artwork): the rope enters the fist on the thumb side at the top-right and leaves it
-        // on the little-finger side at the bottom, so the two segments read as ONE rope running
-        // through the hand rather than two pieces parked either side of it.
-        // The brake glove's own ink on the new drawing sits at x 130..195, y 370..435.
-        brakeIn:{ x: 0.226, y: 0.528 },
-        brake:  { x: 0.165, y: 0.585 },
-        /* How far the tail runs back up INTO the fist so the glove hides its end, and (below) how
-           far the brake strand overshoots the descender's mouth and how much of it is black there.
-           All three are FRACTIONS OF THE STRIP, not pixels. They were pixels, measured while the
-           strip was 97 wide, and when the strip grew they were multiplied by the new width and
-           threw two ropes clean off the page — 4 became 464. These are those same pixels over 97. */
-        brakeTailUp: 0.0412,         // = 4px at a 97px strip; the glove is ~12px across there, so
-                                     // the lead-in is well inside it and nowhere near out the far
-                                     // side of the fist.
-        /* The strand's top end used to stop just short of descOut with a ROUNDED black cap, and
-           that cap is what made it read as a rope lying on the device rather than one coming out
-           of it. It runs PAST the device's mouth now and is cut flat along it (A.cutDescOut), the
-           same treatment as the other end at the glove.
-           Both are measured from where the strand crosses the mouth, which drawRopes solves for —
-           see tCut there.
-           brakeTopOver: how far ABOVE the cut the OUTLINE starts, along the strand. The cut meets
-           the strand at only 19°, so a full rope width needs 1.41/sin19° = 4.3px of overshoot to
-           be crossed; 6 leaves margin.
-           brakeTopBand: how far BELOW the cut the CORE starts, so the first stretch of rope out of
-           the device is solid black. That black edge along the cut is the band the owner drew in
-           red — the device's own outline closing over the rope. Without it the cut would expose
-           the light core and the rope would read as sliced off rather than emerging.
-           1.8 along the rope is 1.8 x sin19° = 0.6px measured across the cut, which is what the
-           owner's stroke measures and what the artwork's own outlines are. */
-        brakeTopOver: 0.0619,        // = 6px at a 97px strip
-        brakeTopBand: 0.0186,        // = 1.8px at a 97px strip
-                                     // (the lower end needs no trim — cutBrake does it)
-        workGroundX: 0.165,          // the tail hangs straight down from the exit point
+           at rest it is dead vertical. That is what the mark is positioned by. */
+        workTopX: 0.4667,            // = A.desc.x, and A.markLeft is solved from it
+        /* EVERY ROPE END IS BURIED, and that is the whole of what four clipPaths, a patch-cut
+           solver and a hand-traced fist polygon used to do. #climberFront is painted OVER the
+           ropes, so each rope simply STOPS a few pixels inside the device or the glove it runs
+           into and the artwork covers the end. There is no visible end to place, so none of it
+           can wander as he swings — which is what every one of those cuts was fighting, and it
+           is also the end of the black spike that the brake strand's top used to draw.
+           So each point below sits INSIDE the ink that covers it, not on its outline. Inside is
+           the safe side: a few pixels too deep costs a few pixels of rope, a pixel too shallow
+           shows a round cap sitting on the device. Both were checked against man-front.png's
+           own alpha, and each has better than a rope's width of solid ink all round it. */
+        /* Where the working rope dies inside the descender. Its x IS the plumb line, and it sits
+           in the RIG's LEFT half on purpose: that way the rope and the absorber diverge on the
+           way up instead of crowding his gripping fist together. It is also the rope's PIVOT —
+           swing him and the rope turns about it rather than sliding along the device. */
+        desc:   { x: 0.4667, y: 0.3641 },   // = (355, 312) of the 760x856 artwork
+        // Where the brake strand leaves the descender. Buried in the device; it then runs on
+        // behind the device's carabiner (in the front layer too) and comes into the open at his
+        // waist, which is what reads as the rope coming out from under the hardware.
+        descOut:{ x: 0.4695, y: 0.3803 },   // = (357, 326)
+        // Two separate points in the brake glove (its ink runs x 121..184, y 447..520): the
+        // strand ENTERS the fist high on the wrist side and the tail LEAVES it at the heel of
+        // the hand, so the two read as ONE rope running through the hand rather than two pieces
+        // parked either side of it. The glove is in the front layer and covers both ends.
+        brakeIn:{ x: 0.2097, y: 0.5461 },   // = (159, 468)
+        brake:  { x: 0.1914, y: 0.5947 },   // = (145, 509)
+        /* How far the hanging tail runs back up INTO the fist before it turns and drops, so the
+           glove hides the path's round cap. A FRACTION OF THE STRIP, not pixels: it was pixels,
+           measured while the strip was 97 wide, and when the strip grew it was multiplied by the
+           new width and threw the rope clean off the page — 4 became 464. */
+        brakeTailUp: 0.0412,         // = 4px at a 97px strip, = 31 artwork px back up a glove
+                                     // that is 63 across, so it stays well inside it
+        /* (A.brakeTopOver and A.brakeTopBand were here. They trimmed the strand's top end against
+           the descender's mouth, back when that end was CUT rather than buried: the outline ran
+           past the cut and the core stopped short of it, and that short core drew as a black
+           thorn growing out of the rope — the owner circled it and it had to be set to zero.
+           None of it exists now. The strand's top is simply inside the device and the device is
+           painted over it, which is the reading the band was after in the first place.) */
+        workGroundX: 0.1914,         // = A.brake.x: the tail hangs straight down from the glove,
+                                     // and this is where the click-the-rope track looks for it
         // The ropes are as long as the PAGE: their ends are pinned this far above the end of the
         // document, so they run off the bottom of the screen the whole way down and only show
         // their ends — each finished with a stopper knot and a short tail — once you reach the
@@ -1898,18 +1785,18 @@
            this aspect is 69.4 wide = 0.7153 of a 97px strip. markLeft then follows from the WORKING
            stem, which is pinned to A.desc.x so that rope runs plumb into his descender:
            markLeft = desc.x - stemWorkX * markW. The backup stem lands where it lands, and A.camX
-           is set to meet it so that rope is plumb as well.
+           is set to meet it — and this time the ASAP was PLACED on that line rather than the rope
+           being bent to reach it, because the owner drew the device as a separate piece.
            markLeft is now 0.0016 of the strip SHORT of that identity, and deliberately: stemWorkX
            was re-centred on the cord (see below) and solving markLeft from the new value would
            simply slide the MARK the same 0.18px right and put the rope back off-centre. What was
            asked for was the rope moved, not the drawing, so the mark stays where the owner has
            been looking at it and the rope's top takes the correction. The cost is that the working
-           rope is 0.18px off plumb over its whole run - a thousandth of the lean the descender
-           tuck already puts on it (see A.descTuck).
+           rope is 0.18px off plumb over its whole run - a fifth of a pixel across the header.
            UPPER stem = MAIN WORKING rope, LOWER stem = BACKUP — the owner's call. */
         brandTop: 4,                 // where the lockup sits, matching #brandRope's own top
         markW: 0.7153,               // of the strip  \ keep in step with #brandRope
-        markLeft: -0.0904,           // of the strip  /   ~ A.desc.x - stemWorkX * markW (see above)
+        markLeft: -0.0637,           // of the strip  /   ~ A.desc.x - stemWorkX * markW (see above)
         markAspect: 1160 / 1059,     // the artwork's own height / width
         /* The RIGHT-HAND strand under each knot — the rope. The left one is the knot's leftover
            tail and stops there, so hanging the rope off the midpoint of the pair (as this first
@@ -1943,7 +1830,8 @@
         // Low on the page the rope is long, so he can be thrown clean off the left edge.
         pullAngle: 0.62,             // sin(38°)
         pullGain: 0.95,              // how closely he follows the cursor while dragged
-        hangY: 0.34                  // where on the figure the rope carries him (his descender)
+        hangY: 0.364                 // where on the figure the rope carries him (= A.desc.y, his
+                                     // descender — keep the two in step)
       };
       var wrapEl = document.getElementById("ropeClimber");
       // The two carabiners, and where each is held. sizeRopes fills these in; drawRopes turns each
@@ -2010,56 +1898,12 @@
           var lx = fx * Wn - pivX, ly = fy * Hn - pivY;
           return { x: pivX + lx * cosR - ly * sinR + sway, y: top + pivY + lx * sinR + ly * cosR };
         }
-        function pt(fx, fy) { var p = bodyXY(fx, fy); return p.x.toFixed(1) + " " + p.y.toFixed(1); }
-        // climber.png pixel → strip coordinate, through the same body transform. The cut lines are
-        // measured on the artwork itself, which is the only place their exact position is legible.
-        // 700x731 since the figure was replaced (Desktop\man mana.png, scaled from 1227x1281);
-        // it was 560x686, and every A.* fraction below had to be re-read off the new drawing.
-        function art(x, y) { return bodyXY(x / 560, y / 686); }
-        /* Cut a rope along a device's outline, so the outline reads as passing in front of it.
-           The cut is a PATCH, not a half-plane: a box hugging the line c (two artwork pixels),
-           reaching CUT_ALONG each way along it and CUT_DEEP behind it, removed from an otherwise
-           untouched clip by the even-odd rule.
-           It used to be the whole half-plane, extended 4000px each way, and that was fine only
-           while the rope came down more or less square to the line. Dragged hard sideways, the
-           rope meets it at a shallow angle and crosses the EXTENDED line a long way off to one
-           side — and everything past the crossing went, so most of the rope simply vanished.
-           A patch can only ever take the few pixels around the device it belongs to. */
-        // Also fractions of the strip, and for the same reason — a patch that no longer reaches round
-        // the rope stops hiding what it was cut to hide.
-        var CUT_ALONG = 0.1443 * Wn, CUT_DEEP = 0.2268 * Wn;   // = 14 and 22 at a 97px strip
-        function applyCut(clip, c, kx, ky) {
-          if (!clip) return;
-          var p1 = art(c.x1, c.y1), p2 = art(c.x2, c.y2);
-          var x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
-          var dx = x2 - x1, dy = y2 - y1, L = Math.sqrt(dx * dx + dy * dy) || 1;
-          var ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
-          if ((kx - x1) * nx + (ky - y1) * ny > 0) { nx = -nx; ny = -ny; }   // face the cut side
-          var q1x = x1 - ux * CUT_ALONG, q1y = y1 - uy * CUT_ALONG;
-          var q2x = x2 + ux * CUT_ALONG, q2y = y2 + uy * CUT_ALONG;
-          clip.setAttribute("clip-rule", "evenodd");
-          clip.setAttribute("d",
-            "M -4000 -4000 H 8000 V 8000 H -8000 Z" +          // everything...
-            " M " + q1x.toFixed(1) + " " + q1y.toFixed(1) +    // ...minus the patch
-            " L " + q2x.toFixed(1) + " " + q2y.toFixed(1) +
-            " L " + (q2x + nx * CUT_DEEP).toFixed(1) + " " + (q2y + ny * CUT_DEEP).toFixed(1) +
-            " L " + (q1x + nx * CUT_DEEP).toFixed(1) + " " + (q1y + ny * CUT_DEEP).toFixed(1) + " Z");
-        }
-        /* The same evenodd trick as applyCut, but with a WHOLE OUTLINE for the patch instead of a
-           quad off a line — for a part of him the rope goes behind and comes back out of, rather
-           than ends at. The points are artwork pixels and go through art(), so the hole travels
-           with the body: it sways, leans and rises with him exactly as the drawing does, and never
-           has to be re-measured. */
-        function applyHole(clip, pts) {
-          if (!clip) return;
-          var d = "M -4000 -4000 H 8000 V 8000 H -8000 Z";
-          for (var i = 0; i < pts.length; i++) {
-            var p = art(pts[i][0], pts[i][1]);
-            d += (i ? " L " : " M ") + p.x.toFixed(1) + " " + p.y.toFixed(1);
-          }
-          clip.setAttribute("clip-rule", "evenodd");
-          clip.setAttribute("d", d + " Z");
-        }
+        /* (Two helpers used to live here, applyCut and applyHole, with four clipPaths for them to
+           write: a patch cut out of each rope along a device's outline, and the gripping fist as
+           a whole traced polygon. They are gone. The descender and the glove are their own layer
+           over the ropes now, so an end that is buried is simply covered — see #climber in the
+           CSS. Do not bring the cuts back to fix a rope that shows: take the END deeper into the
+           ink instead, which is one number in A.) */
         var desc = bodyXY(A.desc.x, A.desc.y);
         // The backup carabiner up in the mark faces where its rope actually goes — the ASAP's
         // mouth, not the device's centre. Aim it anywhere else and the drawn cord leaves the knot
@@ -2206,45 +2050,16 @@
            Instead the CORE starts further back than the outline and covers it. The core then pokes
            a hair past the outline into the drawn cord, which is the same colour, so nothing shows.
            Keep the two setAttribute calls separate — setSeg would give both strands one path. */
-        /* The far end runs a little PAST A.desc and is shaved off flat along the descender's own
-           top outline by the clip (see applyCut below and A.descTuck). Both strands end together
-           there: the cut edge lies on the outline, the artwork's black outline carries straight on
-           below it, and the rope reads as running on BEHIND the device instead of stopping on top
-           of it. The owner drew that missing stretch of outline on a grid in red.
-           THE OVERSHOOT GOES INTO THE DEVICE, NOT ALONG THE ROPE. A.desc is a point on the device
-           and turns with it, but the rope's DIRECTION swings independently — so an overshoot
-           measured along the rope walked the end around the device as he was dragged, and
-           somewhere in the middle of the pull it walked off the edge and the tip stood out in the
-           open. Measured square to the device's own outline instead, the end goes the same
-           distance into the same edge at every angle.
-           ...but the overshoot is a SEPARATE SEGMENT, not a new endpoint for the whole rope, and
-           that is what keeps the rope plumb. The outline is slanted, so square into it means 3.3px
-           SIDEWAYS as well as down; aiming the one long line at that moved end tipped the entire
-           rope 1.7°. So the path is knot -> A.desc -> into the device: the first leg is the rope
-           you see, the second is the buried stub, and the corner between them sits ON A.desc,
-           which is the middle of the outline, so the clip takes it off with the stub. */
-        var c1 = art(A.cutWork.x1, A.cutWork.y1), c2 = art(A.cutWork.x2, A.cutWork.y2);
-        var cdx = c2.x - c1.x, cdy = c2.y - c1.y, cdl = Math.sqrt(cdx * cdx + cdy * cdy) || 1;
-        var cnx = -(cdy / cdl), cny = (cdx / cdl);
-        if ((knotW.x - c1.x) * cnx + (knotW.y - c1.y) * cny > 0) { cnx = -cnx; cny = -cny; }
-        var depth = Wn * A.ropeW * A.descTuck;
-        var wMid = " L " + dscEnd.x.toFixed(1) + " " + dscEnd.y.toFixed(1);
-        var wEnd = " L " + (dscEnd.x + cnx * depth).toFixed(1) + " " + (dscEnd.y + cny * depth).toFixed(1);
+        /* One straight leg, knot → A.desc, and it is the whole rope. A.desc is far enough inside
+           the descender that the artwork covers the round cap, so there is no stub, no overshoot
+           and no angle test — the three things the cut needed and never got right. If the cap
+           ever shows, take A.desc deeper into the device rather than trimming it. */
+        var wEnd = " L " + dscEnd.x.toFixed(1) + " " + dscEnd.y.toFixed(1);
         rWupO.setAttribute("d",
-          "M " + knotW.x.toFixed(1) + " " + knotW.y.toFixed(1) + wMid + wEnd);
+          "M " + knotW.x.toFixed(1) + " " + knotW.y.toFixed(1) + wEnd);
         rWupI.setAttribute("d",
           "M " + (knotW.x - (kdx / kdl) * capBack).toFixed(1) + " " +
-                 (knotW.y - (kdy / kdl) * capBack).toFixed(1) + wMid + wEnd);
-        /* The cut itself. knotW is the point on the side that STAYS — it is the rope's other end,
-           far above the device, so it can never fall on the wrong side of the line however he
-           swings. */
-        applyCut(wrkP, A.cutWork, knotW.x, knotW.y);
-        // ...and the hand it passes behind. Always applied — at rest the rope is clear of the hand
-        // and the hole simply has nothing in it; it earns its keep once he is dragged sideways.
-        applyHole(fistP, A.fist);
-        // ...and its TIP, behind the figure: starts above the cut so no seam shows between the
-        // two layers, and dies under the descender.
-        setSeg(rWtipO, rWtipI, "M " + pt(A.desc.x, (A.cutWork.y2 / 686) - 0.01) + " L " + pt(A.desc.x, A.descTipY));
+                 (knotW.y - (kdy / kdl) * capBack).toFixed(1) + wEnd);
         // WORKING rope, behind: brake hand → its knot (shrinks as he descends). It leaves the
         // fist along his body, so the hand keeps its grip through the whole swing, and its free
         // end trails on its own spring — a slightly different one from the backup rope's, so the
@@ -2269,41 +2084,18 @@
                  (handY + (tuy / tul) * (A.brakeTailUp * Wn)).toFixed(1) +
           " L " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workEnd.x, workEnd.y));
         setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workEnd.x, workEnd.y, workEnd.y - A.knotRise, trueEndW));
-        // WORKING rope brake strand, in front: gripping hand → brake hand, trimmed at both
-        // ends so the hands appear to hold it instead of the rope lying across them.
-        var pa = bodyXY(A.descOut.x, A.descOut.y), ax = pa.x, ay = pa.y;
-        var pb = bodyXY(A.brakeIn.x, A.brakeIn.y), bx = pb.x, by = pb.y;
-        var vx = bx - ax, vy = by - ay, len = Math.sqrt(vx * vx + vy * vy) || 1;
-        /* The strand runs past BOTH ends of its visible stretch and is cut flat at each: into the
-           fist along the glove's outline (A.cutBrake), and back into the descender along its mouth
-           (A.cutDescOut). Neither end is a rounded cap any more — a rope running through a hand
-           and out of a device does not end at either place.
-           The two strands are not the same length at the top. The OUTLINE goes right up past the
-           mouth, the CORE stops brakeTopBand short of it, so the last stretch before the cut is
-           solid black: that is the device's edge closing over the rope, the band the owner marked.
-           Both are cut on the same line, so it ends as a straight black diagonal.
-           Keep-side for each cut is the OTHER end of the strand — the one point that is always
-           safely on the side that stays. */
-        var ux = vx / len, uy = vy / len;
-        /* Both ends of the top are measured from where the strand's axis actually CROSSES the
-           mouth, not from descOut. They are not the same point — descOut sits a little past the
-           line — and at a 19° crossing that little turns into 1.6px along the rope, which is most
-           of the band. Solved, not assumed: the axis is a + t*u, the mouth is m1 + r*m, and
-           crossing one with the other leaves t. */
-        var m1 = art(A.cutDescOut.x1, A.cutDescOut.y1), m2 = art(A.cutDescOut.x2, A.cutDescOut.y2);
-        var mdx = m2.x - m1.x, mdy = m2.y - m1.y;
-        var mden = ux * mdy - uy * mdx;
-        var tCut = mden ? ((m1.x - ax) * mdy - (m1.y - ay) * mdx) / mden : 0;
-        rBrkO.setAttribute("d",
-          "M " + (ax + ux * (tCut - A.brakeTopOver * Wn)).toFixed(1) + " " +
-                 (ay + uy * (tCut - A.brakeTopOver * Wn)).toFixed(1) +
-          " L " + bx.toFixed(1) + " " + by.toFixed(1));
-        rBrkI.setAttribute("d",
-          "M " + (ax + ux * (tCut + A.brakeTopBand * Wn)).toFixed(1) + " " +
-                 (ay + uy * (tCut + A.brakeTopBand * Wn)).toFixed(1) +
-          " L " + bx.toFixed(1) + " " + by.toFixed(1));
-        applyCut(brkP, A.cutBrake, ax, ay);
-        applyCut(dscOutP, A.cutDescOut, bx, by);
+        /* WORKING rope brake strand, in front: out of the descender, across his lap, into the
+           brake glove. Both of its ends are BODY points buried in ink — A.descOut inside the RIG,
+           A.brakeIn inside the glove — so the strand never turns relative to the artwork and both
+           round caps stay covered by #climberFront. It used to need a cut at each end, solved
+           against the device's mouth and the glove's outline, for exactly the effect the layer
+           now gives for nothing — and the black spike that the top cut kept drawing goes with
+           them, because there is no cut left to leave one. */
+        var pa = bodyXY(A.descOut.x, A.descOut.y);
+        var pb = bodyXY(A.brakeIn.x, A.brakeIn.y);
+        setSeg(rBrkO, rBrkI,
+          "M " + pa.x.toFixed(1) + " " + pa.y.toFixed(1) +
+          " L " + pb.x.toFixed(1) + " " + pb.y.toFixed(1));
       }
 
       var targetY = 0, currentY = 0, targetRot = 0, currentRot = 0, targetSway = 0, currentSway = 0;
@@ -2339,7 +2131,12 @@
       var currentRise = 0;
       function draw() {
         currentRise = pendRise();
-        climber.style.transform = "translate(-50%,0) translate3d(" + currentSway.toFixed(2) + "px," + (currentY - currentRise).toFixed(2) + "px,0) rotate(" + currentRot.toFixed(2) + "deg)";
+        // One transform, both layers. They are the same canvas at the same place, so anything
+        // that moves one and not the other tears the figure apart — the descender would stay
+        // put while his body swung out from under it.
+        var tf = "translate(-50%,0) translate3d(" + currentSway.toFixed(2) + "px," + (currentY - currentRise).toFixed(2) + "px,0) rotate(" + currentRot.toFixed(2) + "deg)";
+        climber.style.transform = tf;
+        if (climberFront) climberFront.style.transform = tf;
         drawRopes();
       }
       /* The sway is a damped PENDULUM, not a lerp: a spring pulls it back towards its target and

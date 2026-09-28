@@ -69,22 +69,41 @@ reaches cloned captions.
 
 **The rope-access climber is the most intricate part of the site** (all of it inline in
 `index.html`, near the bottom). He rides the scroll like a scrollbar thumb, on ropes drawn as SVG
-over `images/climber.png`. What matters when touching it:
+between two layers of him. What matters when touching it:
 
-- **Measure in the artwork's own pixels.** Rope attachment points and the lines the ropes are cut
-  along are read off `climber.png` at its native 560 × 686. Fractions hide *which* black line you
-  are aiming at; several wrong guesses came from that. `tools/climber-grid.ps1` and the zoom scripts
-  exist to take those measurements, and `tools/climber-preview.ps1` repaints what the browser draws
-  so a change can be checked by looking at it rather than by reasoning about it.
-- **The figure is one flat PNG**, so a rope is either wholly in front of it or wholly behind. A
-  device's outline is made to pass in front of a rope by *cutting* the visible rope along that
-  outline (`clip-path`, `applyCut`) and continuing it in the back layer.
-- **A REPLACEMENT DRAWING WAS TRIED AND REJECTED.** `Desktop\use it.png` (and `chack it.png` before
-  it) was cut into body/front layers so the ropes could be painted *between* them and every rope
-  end simply buried under the ink that covers it — no cuts at all. It rendered, and the owner
-  turned it down: the linework read worse to him and the hardware would not sit right. Everything
-  here was reverted to this flat figure by hand, because the working state had never been
-  committed. **Do not restart that without being asked**, and if it does come back, commit first.
+- **The figure is COMPOSED, not cut up.** The owner drew `Desktop\try.png` as three separate
+  pieces on one transparent canvas — the man with his descender, the absorber with its carabiner
+  and swivel, and the ASAP **with a real hole in it**. `tools/climber-parts.ps1` labels them,
+  `tools/climber-compose.ps1` places them and writes `images/man-body.png` + `man-front.png`
+  (760 × 856). **This is why it finally works.** Two finished drawings with their gear drawn in
+  were cut up before this and both were rejected: when the hardware is fixed in the drawing, the
+  ropes have to be bent to reach it. With the gear separate, the ASAP is *placed* on the rope and
+  the absorber is stretched and leaned to reach the ASAP.
+- **The one thing nothing can change** is the gap between the two ropes: they hang from the two
+  stems of the header mark, 0.12359 of the strip apart. `climber-compose.ps1` **solves** the
+  ASAP's position from that (`$SEP`), so both ropes are dead plumb and neither device was shoved
+  sideways — a first.
+- **Two layers, and only two pieces in the front one:** `man-body.png` under the ropes,
+  `man-front.png` (the RIG with its carabiner, and the brake glove) over them. Those are the only
+  places a front rope ENDS. **Nothing else may be lifted into the front layer** — the owner asked
+  for the working rope to run in front of all the rest of him, absorber and gripping fist
+  included, and putting the fist up there is the version he rejected: the rope vanished behind
+  his hand a third of the way down instead of running on to the device.
+- **So every rope end is BURIED** a few pixels inside the ink that covers it, and there is no
+  visible end to place at any angle. That replaced four `clipPath`s, a patch-cut solver and a
+  hand-traced fist polygon — and with them the black spike the brake strand's cut kept drawing.
+  **If an end ever shows, take the point deeper into the ink; do not bring the cuts back.**
+- **The backup rope needs no piece at all.** It is painted in the back layer, behind everything,
+  and the ASAP's hole lets it show through. Nothing cut, nothing clipped.
+- **Measure in the shipped layers' own pixels** (760 × 856) or in the man's own (1097 × 1236,
+  which is what `climber-compose.ps1` takes and prints). Fractions hide *which* black line you
+  are aiming at; several wrong guesses came from that. `tools/climber-grid.ps1` draws a marking
+  sheet of the live figure, and scratchpad `readmarks.ps1` reads the owner's coloured rings back
+  off it by diffing — reading a 9 px ring by eye off a sheet shown at a third of its size is how
+  you end up ten pixels out.
+- **`images/climber.png` is the previous, flat figure** and nothing loads it any more. It is kept
+  because two replacements were reverted onto it by hand when the working state had never been
+  committed. **Commit before replacing the figure again.**
 - **Every body-anchored point goes through `bodyXY()`**, which applies the same sway *and lean*
   about the same pivot the browser uses on the image (`transform-origin: 50% 8%`). Translating alone
   makes the ropes drift out of his hands as soon as he leans.
