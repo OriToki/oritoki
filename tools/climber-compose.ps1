@@ -199,8 +199,9 @@ $gs.Dispose(); $comp.Dispose()
 # in red and said a sleeve was being treated as part of the device.
 # The carabiner belongs in the body layer, which is also right: the rope comes out of the
 # descender and passes IN FRONT of the carabiner that hangs it on the harness.
-$RIG   = @(519,395, 506,407, 501,419, 501,431, 494,443, 488,455, 482,467, 479,479, 481,491,
-           533,491, 548,479, 559,467, 566,455, 569,443, 571,431, 571,419, 566,407, 543,395)
+$RIG   = @(526,403, 517,413, 508,423, 501,433, 495,443, 489,453, 483,463, 480,473, 480,483,
+           484,492, 515,492, 533,483, 548,473, 559,463, 564,453, 566,443, 566,433, 565,423,
+           564,413, 550,403)
 $GLOVE = @(166,636, 278,636, 278,762, 166,762)
 function ScaledPoly($flat, $kk) {
   $pts = New-Object "System.Drawing.Point[]" ($flat.Count / 2)
