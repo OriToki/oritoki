@@ -41,20 +41,18 @@
    actually in rather than to the middle of the frame; `full` is always the whole picture.
    Ordered so the carousel opens on the strongest ones. */
 var galleryImages = [
-  { file: "facade-tower.jpg",    full: "full/facade-tower.jpg",    en: "Facade cleaning",             ka: "ფასადის წმენდა" },
+  { file: "vardzia-cliff.jpg",     full: "full/vardzia-cliff.jpg",     en: "Climbing the Vardzia cliff",       ka: "კლდეზე მუშაობა — ვარძია" },
+  { file: "vardzia-monastery.jpg", full: "full/vardzia-monastery.jpg", en: "Rope access at Vardzia monastery", ka: "სამუშაო ვარძიის კლდის ეკლესიაზე" },
+  { file: "ridge-rigging.jpg",     full: "full/ridge-rigging.jpg",     en: "Rope rigging on a mountain ridge", ka: "თოკის სისტემა მთის ქედზე" },
+  { file: "window-inside.jpg",     full: "full/window-inside.jpg",     en: "Window cleaning, city view",       ka: "მინის წმენდა — ქალაქის ხედი" },
+  { file: "window-inside-2.jpg",   full: "full/window-inside-2.jpg",   en: "High-rise window cleaning",        ka: "მაღალსართულიანი მინის წმენდა" },
   { file: "tower-corner.jpg",    full: "full/tower-corner.jpg",    en: "Tower facade cleaning",       ka: "კოშკის ფასადის წმენდა" },
-  { file: "facade-glass.jpg",    full: "full/facade-glass.jpg",    en: "Glass facade cleaning",       ka: "მინის ფასადის წმენდა" },
   { file: "highrise-facade.jpg", full: "full/highrise-facade.jpg", en: "High-rise facade",            ka: "მაღალსართულიანი ფასადი" },
   { file: "window-cleaning.jpg", full: "full/window-cleaning.jpg", en: "Window cleaning",             ka: "მინების წმენდა" },
-  { file: "height-window.jpg",   full: "full/height-window.jpg",   en: "Working at height",           ka: "სამუშაო სიმაღლეზე" },
-  { file: "facade-inside.jpg",   full: "full/facade-inside.jpg",   en: "Facade works",                ka: "ფასადის სამუშაოები" },
-  { file: "vardzia-rock.jpg",    full: "full/vardzia-rock.jpg",    en: "Rock stabilization — Vardzia", ka: "კლდის გამაგრება — ვარძია" },
   { file: "rock-slope.jpg",      full: "full/rock-slope.jpg",      en: "Rock & slope protection",     ka: "კლდეები, ფერდობები და გარემო" },
   { file: "bridge-clean.jpg",    full: "full/bridge-clean.jpg",    en: "Bridge cleaning",             ka: "ხიდის წმენდა" },
   { file: "structure-work.jpg",  full: "full/structure-work.jpg",  en: "Work on structures",          ka: "კონსტრუქციებზე მუშაობა" },
-  { file: "install-height.jpg",  full: "full/install-height.jpg",  en: "Installation at height",      ka: "სამონტაჟო სამუშაოები სიმაღლეზე" },
   { file: "telecom-mast.jpg",    full: "full/telecom-mast.jpg",    en: "Telecom mast works",          ka: "ელექტროობა და ტელეკომუნიკაცია" },
   { file: "waterproofing.jpg",   full: "full/waterproofing.jpg",   en: "Waterproofing & sealing",     ka: "ჰიდროიზოლაცია" },
   { file: "chimney-flue.jpg",    full: "full/chimney-flue.jpg",    en: "Chimney & flue installation", ka: "საკვამურის მონტაჟი" },
-  { file: "team-portrait.jpg",   full: "full/team-portrait.jpg",   en: "Our team",                    ka: "ჩვენი გუნდი" },
 ];

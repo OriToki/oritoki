@@ -18,18 +18,27 @@
 
   <!-- Share cards (see the same block in index.html for why these are written out in Georgian). -->
   <link rel="canonical" href="https://oritoki.ge/join.html" />
+
+  <!-- Browser tab and home-screen icon: the company mark, cropped to its ink and centred in a
+       square so it fills the 16px the tab gives it. Built by tools/logo-full.ps1 alongside the
+       footer logo, from the same file, so the two can never drift apart. -->
+  <link rel="icon" type="image/png" sizes="16x16" href="images/icon-16.png?v=4" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/icon-32.png?v=4" />
+  <link rel="icon" type="image/png" sizes="48x48" href="images/icon-48.png?v=4" />
+  <link rel="icon" type="image/png" sizes="192x192" href="images/icon.png?v=4" />
+  <link rel="apple-touch-icon" href="images/icon.png?v=4" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="ORITOKI" />
   <meta property="og:locale" content="ka_GE" />
   <meta property="og:url" content="https://oritoki.ge/join.html" />
   <meta property="og:title" content="შემოგვიერთდი — ორითოკი" />
-  <meta property="og:description" content="სერტიფიცირებული სასიმაღლო სამუშაოების სპეციალისტებისთვის — შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას." />
+  <meta property="og:description" content="სასიმაღლო სამუშაოების სპეციალისტებისთვის — შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას." />
   <meta property="og:image" content="https://oritoki.ge/images/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="შემოგვიერთდი — ორითოკი" />
-  <meta name="twitter:description" content="სერტიფიცირებული სასიმაღლო სამუშაოების სპეციალისტებისთვის — შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას." />
+  <meta name="twitter:description" content="სასიმაღლო სამუშაოების სპეციალისტებისთვის — შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას." />
   <meta name="twitter:image" content="https://oritoki.ge/images/og-image.jpg" />
 
   <!-- Google Analytics — set your Measurement ID in js/analytics.js -->
@@ -125,44 +134,40 @@
     html.dark .chip input:checked + span { background:#f97316; border-color:#f97316; color:#fff; }
 
     /* Gear + trade doodles fill the margins AROUND the centered form, WhatsApp-wallpaper style:
-       one flat colour with a faint, endlessly repeating pattern. The 768px tile is baked from
-       the owner's own icon set — the kit (helmet, carabiners, pulleys, ascenders, descenders,
-       rope, harness, lanyards, anchors, ice axe, headlamp) and the trades (facade work,
-       buildings, plant, mast, dish, turbines, AC unit, roller, drill, spanners, inspection,
-       cleaning). The solid-silhouette icons are traced to outlines first, so every doodle is in
-       one line style. Sizes are measured on the geometric mean of width and height (so a flat
-       icon like the headlamp is not left looking tiny next to a tall one) and then multiplied by
-       how big the thing IS IN REAL LIFE: a carabiner comes out smaller than the harness beside
-       it, an ice axe longer than a pulley, a pylon larger than either. The spread is compressed
-       to about 0.7–1.4x, since the literal 1:300 of carabiner to pylon would be unusable.
-       Positions are a free scatter with a minimum spacing, NOT a grid, and no two copies of one
-       icon are allowed within a third of the tile of each other — measured with the wrap, since
-       something near the left edge is also near the right one.
-       Shapes crossing an edge are
-       drawn again on the opposite one, which is what makes the tile repeat with no seam. Two
-       bakes of the same tile: dark ink for the light theme, light ink for the dark one.
+       one flat colour with a faint, endlessly repeating pattern. The tile is baked by
+       tools/join-wallpaper.ps1 from the owner's 60-icon high-resolution set (Desktop\icons in
+       high rez) — the kit (helmets, carabiners, pulleys, ascenders, descenders, rope, harness,
+       lanyards, anchors, ice axe, headlamp, knots), the people (technicians on rope, on facades,
+       inspecting, abseiling) and the places (buildings, plant, mast, dish, turbines).
 
-       THE TILE IS 1536 SHOWN AT 768. It was 768 shown at 384, and what looked like one icon
-       over and over was mostly the tile itself coming round: the whole pattern was back every
-       384px across AND down, three times in a phone's height. Same icons, same size on screen,
-       four times the ground before anything repeats.
+       IT IS COPYING A MEASURED TARGET, not an impression. The owner's reference is the WhatsApp
+       chat wallpaper; autocorrelation puts its tile at 810px with a correlation of 1.000, its ink
+       at 17.5% of the tile and its icons at 8.9% of the tile side, all of them upright. The
+       generator prints those same three figures for every run, because at 6% opacity the eye
+       cannot judge density and every pass that tried to got it wrong.
 
-       185 doodles on it, not the 100 that matching the old count on paper would have given. The
-       arithmetic said 100 was the same density and it plainly was not — measured as ink per
-       displayed pixel, v8 came to 7.8 and 100 doodles to 3.6. Measure, do not divide. This tile
-       is 8.2, and the hairline icons (dish, handshake, roller, spanner pairs) are thickened a
-       pixel so they carry at 6% opacity like the rest.
-       (The older join-doodles-*.png / -v3 … -v11 sets are superseded and can be deleted.) */
+       THE TILE IS 1536 SHOWN AT 768 — close to the reference's 810 — so the pattern travels a long
+       way before it comes round. It was 768 shown at 384 once, and what read as one icon over and
+       over was mostly the tile itself repeating three times in a phone's height.
+
+       Icons are all ONE visual size here (geometric mean of the box, ±6% jitter). An earlier tile
+       scaled each by how big the thing is in real life; the reference does not do that, and
+       matching it reads better than the conceit. Solid-silhouette icons are traced to outlines
+       first so the set is in one line style, one icon supplied white-on-black is detected by its
+       border and flipped, positions are a free scatter with a nesting test rather than a grid, no
+       two copies of an icon fall within 0.28 of the tile of each other (measured with the wrap),
+       and anything crossing an edge is drawn again on the opposite one so the tile is seamless.
+       Two bakes of the same layer: dark ink for the light theme, light ink for the dark one. */
     html:not(.dark) body {
       background-color: #f0f0ec;
-      background-image: url('images/join-doodles-light-v12.png?v=11');
+      background-image: url('images/join-doodles-light-v14.png?v=19');
       background-repeat: repeat;
       background-size: 768px 768px;
       background-attachment: fixed;
     }
     html.dark body {
       background-color: #121314;
-      background-image: url('images/join-doodles-dark-v12.png?v=11');
+      background-image: url('images/join-doodles-dark-v14.png?v=19');
       background-repeat: repeat;
       background-size: 768px 768px;
       background-attachment: fixed;
@@ -236,12 +241,14 @@
 
   <!-- ============================ HEADER ============================ -->
   <header class="sticky top-0 z-40 bg-surface/85 backdrop-blur border-b border-line">
-    <div class="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between gap-2 sm:gap-3">
-      <!-- The emblem is out until the new logo arrives. The name carries the link on its own in
-           the meantime, on phones too — with the mark gone, max-sm:hidden would have left this
-           link with nothing inside it to click. images/emblem.png is still in the repo. -->
-      <a href="index.html" class="flex items-center gap-2 min-w-0" aria-label="Oritoki — home">
-        <span class="font-display font-700 tracking-wide text-light text-lg" data-ka="ორითოკი">Oritoki</span>
+    <div class="max-w-5xl mx-auto px-5 h-24 sm:h-28 flex items-center justify-between gap-2 sm:gap-3">
+      <!-- The company mark, in place of the name it used to spell out. Same file the footer uses
+           (tools/logo-full.ps1) — the owner's logo with its cream ground keyed out and cropped to
+           its ink, so it sits on the bar in either theme. Height is tied to the bar rather than
+           set in pixels, and the width follows, because the mark is nearly square. -->
+      <a href="index.html" class="flex items-center min-w-0" aria-label="Oritoki — home">
+        <img src="images/logo-full.png?v=3" alt="Oritoki" width="560" height="557"
+             class="h-[4.5rem] sm:h-24 w-auto" draggable="false" />
       </a>
       <div class="flex items-center gap-2 sm:gap-3">
         <a href="index.html" class="inline-flex items-center gap-1.5 text-sm font-600 text-mute hover:text-accent transition"><i class="fa-solid fa-arrow-left text-xs"></i><span data-ka="მთავარი">Home</span></a>
@@ -260,15 +267,14 @@
     <!-- Left-aligned, not centred: centring gave all three lines different left edges, since they
          are different lengths. They now share one edge, which is also the edge the form below
          starts at. -->
-    <div id="joinIntro" class="max-w-3xl mx-auto px-5 py-14 sm:py-20 text-left">
+    <div id="joinIntro" class="max-w-3xl mx-auto px-5 py-14 sm:py-20 text-center">
       <!-- Written in the register the certifying bodies use on their own pages: it states who the
            page is for instead of asking a rhetorical question, names the actual certifications
            (the form lists them, so the opening line should too), and promises only what we can
-           keep. All three lines share one left edge — a centred headline over left-aligned body
-           text sets up two axes and reads as a brochure rather than as a trade page. -->
-      <p id="joinLead" class="text-2xl sm:text-3xl font-600 text-accent" data-ka="ᲡᲔᲠᲢᲘᲤᲘᲪᲘᲠᲔᲑᲣᲚᲘ ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘᲡᲗᲕᲘᲡ">For certified rope access technicians</p>
+           keep. All three lines are centred as one block, on the page's own axis. -->
+      <p id="joinLead" class="text-2xl sm:text-3xl font-600 text-accent" data-ka="ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘᲡᲗᲕᲘᲡ!">For rope access technicians!</p>
       <p class="mt-4 text-mute leading-relaxed" data-ka="შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას — IRATA, SPRAT ან სხვა აღიარებული სერტიფიკატით.">Complete the application to join the ORITOKI specialists register — with IRATA, SPRAT or another recognised certification.</p>
-      <p class="mt-2 text-mute leading-relaxed" data-ka="დაგიკავშირდებით, როცა პროექტი ან ვაკანსია თქვენს კვალიფიკაციას შეესაბამება.">We contact you when a project or vacancy matches your qualifications.</p>
+      <p class="mt-2 text-mute leading-relaxed" data-ka="დაგიკავშირდებით, როცა პროექტი თქვენს კვალიფიკაციას შეესაბამება.">We contact you when a project matches your qualifications.</p>
     </div>
   </section>
 

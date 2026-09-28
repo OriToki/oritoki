@@ -26,6 +26,12 @@
        data-ka trick: the Georgian is written into the tags directly, since the site opens in
        Georgian. URLs must be absolute for the crawlers to resolve them. -->
   <link rel="canonical" href="https://oritoki.ge/" />
+
+  <!-- Browser tab and home-screen icon: the company mark, cropped to its ink and centred in a
+       square so it fills the 16px the tab gives it. Built by tools/logo-full.ps1 alongside the
+       footer logo, from the same file, so the two can never drift apart. -->
+  <link rel="icon" type="image/png" href="images/icon.png?v=3" />
+  <link rel="apple-touch-icon" href="images/icon.png?v=3" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="ORITOKI" />
   <meta property="og:locale" content="ka_GE" />
@@ -146,7 +152,18 @@
     :root {
       /* This one width drives the technician and the rope spacing together: the two rope
          x-positions are fractions of it, so shrinking him pulls the ropes closer as well. */
-      --worker-width: 97px;         /* technician width (desktop); ropes scale with it */
+      /* 190, not 116. Measured, not chosen: the technician was rendered at 116 / 150 / 190 / 240
+         with the PNG rebuilt to match each width exactly - one file pixel per screen pixel, so
+         nothing was left for the browser to resample - and the four were compared at the same
+         magnification. 116 is mush and no amount of sharpening or resolution fixes it, because
+         the drawing simply carries more detail than 116 pixels can hold; the quality steps up at
+         190 and is clean at 240. (scratchpad/sizetest.ps1 reruns the whole comparison.) */
+      --worker-width: 116px;        /* technician width (desktop); EVERYTHING scales with it — the
+                                     lockup, both anchors, the ropes and their pivots are all
+                                     fractions of it, so this one number is the size of the whole
+                                     strip. The ceiling is the header: the lettering's bottom lands
+                                     at 4 + 0.685 x this, and it has to stay inside the 88px bar,
+                                     so 116 leaves about 4px. Past that the header has to grow. */
       --climber-left: 52px;         /* distance from the LEFT viewport edge — moves the
                                        technician and both ropes together */
       /* How high above the window's bottom edge the technician's boots stop, at the very end of
@@ -155,53 +172,48 @@
          feet. Everywhere above the footer the ropes just run off the screen. */
       --climber-bottom-gap: 78px;
     }
-    /* Brand lockup. Its size and position are tied to the strip, not typed in: the asset is
-       67.27 display px wide where the strip is 97 (0.6936), and its left rope stem sits at 0.8380
-       of its own width. Line those two facts up with the strip's working rope (0.44) and the left
-       offset falls out as 0.8380x0.6936 - 0.44 = 0.1412 of the strip. Touch neither number by
-       hand: tools/logo-wordmark.ps1 prints both when it re-bakes the asset. The offset is the
-       whole of `left` because the strip it now sits in already starts at --climber-left.
+    /* Brand lockup — "or" over "tok", with a bolt hanger + locking carabiner + knot + rope
+       standing in for each dotted i. ONE image: the owner's finished drawing, cropped to its own
+       ink by tools/logo-mark.ps1 and otherwise untouched.
+       It was four layers cut out of that drawing for a while, so the carabiners could swivel with
+       the ropes. Do not go back to that without reading what it cost: there is no seam in the
+       picture to cut along — a flood fill from the letter "o" and from a bolt head return the
+       identical 661,403-pixel region, because every element's black outline runs into its
+       neighbour's — so the pieces had to be placed by fitting them back against the finished
+       drawing, and a fit can be right on every piece and still stack them wrong. It ended with a
+       rope loop lying on top of a carabiner instead of threaded through it.
+       Size and position are tied to the strip, not typed in. Its two rope stems sit at 0.7388 and
+       0.8850 of its own width; the page's two ropes have to come out of exactly those. The mark is
+       sized to clear the 88px bar (76px tall = 0.7153 of a 97px strip), then hung so its WORKING
+       stem lands on A.desc.x — that rope runs plumb into his descender. The backup stem then lands
+       where it lands (A.backupX), and A.camX is set to meet it so that rope hangs plumb too. The
+       offset is the whole of `left` because the strip it sits in already starts at --climber-left.
        It lives INSIDE #ropeClimber rather than in the header, and that placement is the point:
-       it is what sorts the two ropes over the lettering. Dragged far to the left both ropes
-       sweep across the words, and the owner wants them to read differently — the BACKUP rope
-       (in #ropeBack) passing BEHIND the letters, the WORKING rope (in #ropeFront) crossing in
-       front. That needs the words BETWEEN those two layers, and z-index cannot reach across a
-       stacking context: parked in the header, the whole z-50 bar sits under the z-60 strip, so
-       both ropes painted over the words whatever z-index they were given.
-       Same z-1 as #ropeBack and the anchors, ordered between them in the markup: after the back
-       ropes (so the backup rope goes behind the letters) and before the anchors (so each
-       carabiner still sits ON the word it dots, the way it always has).
+       the whole strip has to pass BEHIND the mark on a sideways drag — both ropes and the figure.
+       z-index cannot reach across a stacking context, so parked in the header (a z-50 bar under
+       the z-60 strip) the ropes painted over the mark whatever z-index they were given.
+       z-4 and written last, above every layer in the strip. It was z-1 between the two rope
+       layers for a while, which put the backup line behind the mark and the working line in
+       front; the owner wants both behind. The working rope cannot simply drop to the back layer
+       to get there — it has to stay in front of the climber or it disappears under the shock
+       absorber (see #ropeFront) — so the mark goes over the top of everything instead, the
+       climber included.
        pointer-events because the strip around it is click-through. */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.1412);
-                 width: calc(var(--worker-width) * 0.6936); z-index: 1; display: block;
+    #brandRope { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.0904);
+                 width: calc(var(--worker-width) * 0.7153); z-index: 4; display: block;
                  pointer-events: auto; }
-    /* Anchor pieces. All four share z-1 with the back ropes, so a rope's first pixels tuck behind
-       its knot. Dropping them BELOW that layer was tried, so that on a long sideways drag the
-       backup rope would cross in front of the working rope's carabiner instead of disappearing
-       behind it; it fixed that crossing but read worse overall, and the owner asked for it back.
-       Since they all share a z-index, the LETTERING splits them by markup order instead (see
-       #brandRope): the backup pair is written before the words and the working pair after, so
-       each anchor sorts over the lettering the same way its own rope does — the knot under the
-       carabiner is the top of that rope, and it looked broken sweeping over a letter the rope
-       itself had just passed under.
-       The hanging piece turns about the point where the carabiner's bar passes through the
-       hanger's eye: 41.5% across the anchor's width, and 22 of its 866 rows down — keep this
-       in step with A.anchorPivotX / Y, which is the same point in the script's own units. */
-    .anchor-bolt, .anchor-hang { position: absolute; z-index: 1; height: auto; pointer-events: none; }
-    .anchor-hang { transform-origin: 41.5% 16.6%; }
     #brandRope img { display: block; width: 100%; height: auto; }
-    #brandRope .ink-white { display: none; }
-    /* White over the hero photo and everywhere in dark mode, dark ink on the light bar — the two
-       are the same lettering, baked from one path (tools/logo-wordmark.ps1). The light bar had
-       white letters held together by a hairline outline for a while, so the wordmark would be
-       made of the same stuff as the carabiners rather than a black slab beside them; at this
-       weight that is not the trade any more — a Roman "O" IS a hairline — and white-on-beige on a
-       0.3px edge was barely readable at 1x. */
-    /* Keyed off body, not off #header: the lockup is no longer inside the bar (see #brandRope
-       above), and it sits BEFORE the header in the markup, so no sibling selector reaches it
-       either. onHeaderScroll sets .header-scrolled on body in step with #header.scrolled. */
-    body:not(.header-scrolled) #brandRope .ink-dark, html.dark #brandRope .ink-dark { display: none; }
-    body:not(.header-scrolled) #brandRope .ink-white, html.dark #brandRope .ink-white { display: block; }
+    /* The two moving pieces share #brandRope's box exactly — they are cut from the same drawing on
+       the same canvas — so they need no alignment of their own, only the same left/width/top. */
+    .lock-piece { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.0904);
+                  width: calc(var(--worker-width) * 0.7153); height: auto;
+                  z-index: 1; display: block; pointer-events: none; }
+    /* Where each carabiner hangs in its hanger's eye — the owner marked both points on a grid of
+       the live page. Turning about anything else drags the carabiner out from under its hanger and
+       the two stop reading as one piece of hardware.
+       Keep in step with A.pivotWork / A.pivotBack, which is the same point in the script. */
+    #caraWork { transform-origin: 73.75% 12.66%; }
+    #caraBack { transform-origin: 90.78% 53.56%; }
 
     /* ABOVE the z-50 header on purpose: the ropes run from off the top of the screen, and behind
        the header their whole upper stretch vanished the moment the bar turned solid on scroll.
@@ -210,22 +222,38 @@
        service modal (z-120) and the search panel (z-130), which must cover everything. */
     #ropeClimber { position: fixed; left: var(--climber-left); top: 0; height: 100vh; width: var(--worker-width); z-index: 60; pointer-events: none; transition: opacity .25s ease; }
     #ropeBack, #ropeFront { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-    #ropeBack  { z-index: 1; }   /* rope parts that pass behind the body — and behind the wordmark */
-    #ropeFront { z-index: 3; }   /* the brake strand, in front of the lap — and of the wordmark */
+    #ropeBack  { z-index: 1; }   /* rope parts that pass behind the body */
+    #ropeFront { z-index: 3; }   /* the working rope and the brake strand, in front of the body */
+                                 /* both are under the z-4 lockup; see #brandRope */
     /* Braided-rope look matching the reference: light core + dark outline. Solid strokes give one
        constant colour (no shimmer, now that horizontal sway is disabled). */
-    /* Colours and widths are SAMPLED from the logo's rope at the size it actually renders.
-       The logo rope is 51px wide in the artwork — 10px black edge, a 31px white core filled
-       with a black diamond weave, 10px black edge. Scaled to ~3px on the page that resolves
-       to exactly three pixels: rgb(101,100,101) / rgb(195,195,195) / rgb(94,94,94). Using
-       near-black + near-white here instead is what made this rope read as a bright bar next
-       to the logo's. Widths come from JS (--rope-w) so the match holds at any strip size. */
-    .rope-out { fill: none; stroke: #616161; stroke-width: var(--rope-w, 3.06); stroke-linecap: round; stroke-linejoin: round; }
-    .rope-in  { fill: none; stroke: url(#ropeWeave) #c3c3c3; stroke-width: var(--rope-core, 2.75); stroke-linecap: round; stroke-linejoin: round; }
-    /* The brake strand lives in the second SVG (#ropeFront), which can't reach #ropeBack's
-       pattern — point it at its own local copy so it keeps the dark weave, like the tail. */
-    #ropeFront .rope-in { stroke: url(#ropeWeaveF) #c3c3c3; }
+    /* Colours SAMPLED off the lockup's own cord, so the rope is the same cord the knot is tied
+       in: a FLAT light core, rgb(213,214,216), inside a PURE BLACK outline. rope-out is that
+       outline and rope-in the core; their widths come from JS (--rope-w / --rope-core) so
+       the match holds at any strip size.
+       Re-sampled on the layers that ship (logo-work.png / logo-back.png, 400px canvas), on the
+       straight run of cord just below each knot — the very pixels the SVG rope continues from.
+       Rows 165-170 x294-297 of the working cord read 214,215,217; rows 344-349 x363-366 of the
+       backup cord read 212,213,215. The outline there is 0,0,0 at full alpha, not the rgb(11) it
+       was set to. Both old values came off the PREVIOUS 1059-wide drawing and were a step out on
+       this one: a core of 200 against the drawing's 214 is a visibly darker rope leaving a lighter
+       knot, which is what the owner was seeing at the join. Sample again if the mark is redrawn.
+       The core carried the KNOT's braid as an SVG pattern for a while. That was wrong: the knot
+       is banded, but the cord hanging out of it is not — it is plain all the way down. Scanning
+       the join showed it plainly, the artwork side an unbroken light run and the SVG side going
+       fully black wherever a band crossed. So no pattern here at all. */
+    .rope-out { fill: none; stroke: #000000; stroke-width: var(--rope-w, 1.63); stroke-linecap: round; stroke-linejoin: round; }
+    .rope-in  { fill: none; stroke: #d5d6d8; stroke-width: var(--rope-core, 1.03); stroke-linecap: round; stroke-linejoin: round; }
+    /* EVERY rope is this one colour. The brake strand, its tail below the fist and that tail's
+       stopper knot were a step darker for a while, because crossing his white sleeve the same grey
+       read as a highlight rather than a rope. The owner would rather they all match, and matching
+       is also what keeps the knots clean: this colour is sampled off the lockup's drawn cord and
+       the ropes run straight out of it, so any rope that differs shows a step where it leaves. */
     #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+    /* (The gripping fist is handled by cutting the ROPE, not by repainting the hand — see
+       A.fist and #fistCut in the script. Painting the hand a second time over the rope was tried
+       first and is the one thing that must not be done here: the same semi-transparent edge
+       pixels composited twice come out darker, and the hand visibly thickened.) */
     body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
     body.climber-grabbing #climber { cursor: grabbing; }
     /* Set while the pointer is over a rope above or below him — the ropes act as the scrollbar's
@@ -239,13 +267,14 @@
        on a parent is a group, and no child can opt back out of it. */
     #ropeClimber > * { transition: opacity .25s ease; }
     body.menu-open #ropeClimber > :not(#brandRope) { opacity: 0; visibility: hidden; }
+    /* (#brandRope is the only child that stays — it is brand furniture, not part of the rappel.) */
     @media (prefers-reduced-motion: reduce) { #climber { transition: none !important; } }
     /* Mobile: a narrower strip, set through the SAME two variables so the lockup, the ropes and
-       the technician all move together. --climber-left cannot go below the 0.2528 of the strip's
+       the technician all move together. --climber-left cannot go below the 0.1362 of the strip's
        width that the wordmark hangs to the LEFT of the ropes (plus a couple of px of margin), or
-       the "t" runs off the screen — 72 x 0.2528 = 18.2, so 22 leaves 3.8px. */
+       the "t" runs off the screen — 72 x 0.1362 = 9.8, so 22 leaves 12.2px. */
     @media (max-width: 640px) {
-      :root { --climber-left: 22px; --worker-width: 72px; }
+      :root { --climber-left: 22px; --worker-width: 86px; }   /* phones: the 68px bar allows 86 */
       #header { height: 68px; }          /* shorter bar on phones — the lockup's knots end at 63 */
       #langToggle button { padding: 4px 8px; }
       #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
@@ -325,7 +354,7 @@
         position: relative;
         margin: 1.5rem -1.25rem 0;         /* full-bleed past the wrapper's px-5 */
         padding: 1.5rem 1.25rem 4rem;      /* breathing room, incl. the removed bottom pad */
-        background: url('images/about.jpg?v=3') center / cover no-repeat;
+        background: url('images/about.jpg?v=4') center / cover no-repeat;
       }
       #aboutBody::before {
         content: "";
@@ -400,6 +429,16 @@
        (this rule comes after the ≤1279px block so it wins over that inset). */
     @media (max-width: 640px) {
       #nav { top: 68px; }
+    }
+
+    /* Tap-to-call number shown right after CONTACT on the desktop bar, and again in the mobile
+       drawer. On desktop it renders like any nav link (colour follows the bar state); the phone
+       icon keeps its accent colour. In the drawer it takes the drawer's own light colour and a
+       slightly larger number. */
+    #nav .nav-phone { display: inline-flex; }
+    @media (max-width: 1279px) {
+      #nav .nav-phone { color: rgb(var(--c-light)); }
+      #nav .nav-phone span { font-size: 15px; }
     }
 
     /* Language + theme controls relocated into the mobile drawer (JS moves the nodes).
@@ -509,7 +548,7 @@
          these, not against its parent. Sized against the parent, the photo and the box it sits
          in each waited on the other and the result came out well short of the room available —
          570px tall in a 900px window. */
-      --lb-x: 5rem; --lb-y: 4.5rem; --lb-cap: 2.6rem;
+      --lb-x: 5rem; --lb-y: 4.5rem; --lb-cap: 0rem;   /* caption removed — the photo reclaims its space */
       position: fixed; inset: 0; z-index: 200;
       display: flex; align-items: center; justify-content: center;
       padding: var(--lb-y) var(--lb-x);
@@ -789,19 +828,8 @@
          ropes off the top/bottom of the image out to the page edges, so they run continuously
          as he rappels. Their x-positions and thickness match where the ropes leave the image. -->
     <svg id="ropeBack" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <!-- The braid. Copying the artwork's weave at its own scale — a diamond lattice
-             repeating every 0.66px — gave a tile smaller than a pixel: the browser averaged it
-             away and the ropes came out as flat grey threads, while the knots beside them showed
-             real dark marks. So the braid is drawn at a size a 1.55px rope can actually hold:
-             one family of diagonal bars, spaced about a rope-and-a-quarter apart, which is the
-             same rhythm the knots read at. Sized from JS off A.ropeW (see sizeRopes) so it
-             tracks the rope at any strip width. -->
-        <pattern id="ropeWeave" patternUnits="userSpaceOnUse" width=".75" height=".75" patternTransform="rotate(20)">
-          <rect width=".75" height=".75" fill="#eeeeee"/>
-          <path d="M.375 0V.75M0 .375H.75" stroke="#151515" stroke-width=".19"/>
-        </pattern>
-      </defs>
+      <!-- No braid pattern: the lockup's cord is a flat light core in a black outline, and the
+           rope is drawn the same way in plain strokes (see .rope-in / .rope-out). -->
       <!-- The last stretch of the working rope, kept in the BACK layer so its tip disappears
            BEHIND the descender instead of lying on top of it. The front segment above stops
            flush at the device's edge; this one carries the rope on under it. -->
@@ -814,61 +842,97 @@
       <path class="rope-out" id="rBackO"></path><path class="rope-in" id="rBackI"></path>    <!-- backup rope BELOW the cam: the loose end, behind him -->
       <path class="rope-out" id="rKnotBO"></path><path class="rope-in" id="rKnotBI"></path>  <!-- backup rope's knot -->
     </svg>
-    <!-- The BACKUP anchor sits with its own rope, ahead of the lettering: its knot is the top of
-         that rope, so it has to sort the way the rope does or a long sideways drag splits one
-         line in two — knot over the letters, rope under them. Its bolt hanger comes with it to
-         keep the pair in the order they were drawn in (hanger first, then the carabiner whose bar
-         passes through its eye). Neither piece touches a letter at rest; it only shows on a
-         drag. The WORKING anchor stays on the far side of the lettering, below. -->
-    <img class="anchor-bolt" id="boltBack" src="images/anchor-bolt.png" alt="" draggable="false" />
-    <img class="anchor-hang" id="hangBack" src="images/anchor-hang.png" alt="" draggable="false" />
-    <!-- ORITOKI: "Or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
-         standing in for each dotted i, and the rope running on out of each knot. Those two rope
-         stems land exactly on the two fractions of the strip where the ropes below are drawn
-         (A.workTopX / A.backupX), which is what lets the SVG ropes continue out of the knots
-         with no seam; #brandRope's width/left maths is what holds that alignment at any size.
-         It is a header element by rights — it is only parked here, after everything that belongs
-         to the backup rope and before everything that belongs to the working one, because that
-         is the one place in the document where the whole backup line passes behind the letters
-         while the working line crosses in front of them.
-         Two bakes, and only the LETTERING changes with the theme. -->
-    <a href="#home" id="brandRope" aria-label="Oritoki — home">
-      <img class="ink-dark" src="images/logo-word-dark.png?v=2" alt="Oritoki" draggable="false" />
-      <img class="ink-white" src="images/logo-word-white.png?v=2" alt="" aria-hidden="true" draggable="false" />
-    </a>
-    <img class="anchor-bolt" id="boltWork" src="images/anchor-bolt.png" alt="" draggable="false" />
-    <img class="anchor-hang" id="hangWork" src="images/anchor-hang.png" alt="" draggable="false" />
-    <img id="climber" src="images/climber.png?v=13" alt="" draggable="false" />
+    <!-- The two carabiner-and-knot assemblies, cut out of the mark by tools/logo-split.ps1 so each
+         can turn with its rope. They are UNDER #brandRope, which carries the rest of the drawing —
+         the lettering and both bolt hangers — and that order is the whole trick: in this drawing a
+         hanger is in front of its carabiner and the letters are in front of both, so a carabiner
+         that turns simply slides under them and nothing has to be re-cut to follow it.
+         The cut is exact, not fitted: every pixel here is a pixel of the owner's drawing, and
+         logo-split checks that the three stacked with no rotation reproduce it before it writes
+         them (0 pixels differ). Do not rebuild these by fitting separate pieces back together —
+         that is what once left a rope loop lying on top of a carabiner instead of through it. -->
+    <!-- The order IS the hardware. A bolt hanger is bolted flat to the wall and its carabiner hangs
+         in FRONT of the plate, so the plate goes underneath everything; only the hanger's diagonal
+         bar stays on top, with the lettering, because the ring passes through the eye that bar
+         closes. And the MAIN WORKING rope is the one in front: it runs from the upper knot down
+         past the lower anchor on its way to the technician, so its carabiner and knot are painted
+         last of the three. Same z-index, so it is the DOM order that decides. -->
+    <img class="lock-piece" id="lockPlate" src="images/logo-plate.png?v=18" alt="" draggable="false" />
+    <img class="lock-piece" id="caraBack" src="images/logo-back.png?v=17" alt="" draggable="false" />
+    <!-- The LOWER hanger's diagonal bar, on its own between the two carabiners. It has to be over
+         its own carabiner, because that ring passes through the eye the bar closes, and under the
+         upper one, whose rope and knot run down past this anchor on the way to the technician. One
+         layer could not do both. The upper hanger's bar has no such conflict and rides along with
+         the lettering. -->
+    <img class="lock-piece" id="lockBarLow" src="images/logo-barlow.png?v=17" alt="" draggable="false" />
+    <img class="lock-piece" id="caraWork" src="images/logo-work.png?v=17" alt="" draggable="false" />
+    <img id="climber" src="images/climber.png?v=25" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
-      <!-- A LOCAL copy of the weave: Chrome won't apply #ropeBack's pattern to a path in this
-           second SVG (it falls back to the flat #c3c3c3, so the brake strand lost its dark weave
-           while the tail kept it). Same tile, own id, referenced by #ropeFront .rope-in below. -->
       <defs>
-        <pattern id="ropeWeaveF" patternUnits="userSpaceOnUse" width=".75" height=".75" patternTransform="rotate(20)">
-          <rect width=".75" height=".75" fill="#eeeeee"/>
-          <path d="M.375 0V.75M0 .375H.75" stroke="#151515" stroke-width=".19"/>
-        </pattern>
         <!-- Each rope that runs into one of his devices is CUT along that device's black
              outline, so the outline reads as passing in front of the rope instead of the rope
              ending on top of it. JS re-cuts it as the climber slides (see drawRopes).
-             Only the brake strand is cut this way. It can be, because both of ITS ends are
+             Both strands are cut this way. The brake strand is the easy one: both of ITS ends are
              anchored to the body, so it never turns relative to the artwork and the cut always
-             meets it at the same angle. The working rope above cannot: its far end is the anchor
-             at the top of the page, it swings through ~125°, and a half-plane cut gave it a tip
-             that slid right off the device. That one ends at a point instead. -->
+             meets it at the same angle. The working rope's far end is the anchor at the top of the
+             page and it swings through ~125°, which is why an early version of its cut failed —
+             but that version had no endpoint at all, so the tip you saw was wherever the rope
+             happened to meet the line, and it slid right off the device. It has both now: it ends
+             at A.desc, just past the line, and the cut only shaves the overshoot off flat. -->
         <clipPath id="brakeCut"><path id="brakeCutP"></path></clipPath>
+        <clipPath id="workCut"><path id="workCutP"></path></clipPath>
+        <clipPath id="descOutCut"><path id="descOutCutP"></path></clipPath>
+        <!-- The GRIPPING FIST, as a hole rather than a line. The other three cuts trim an END off a
+             rope along one outline; this one the rope passes straight THROUGH, in at the knuckles
+             and out at the wrist, so a half-plane cannot do it — it takes the hand's whole
+             silhouette. Built from A.fist in drawRopes. -->
+        <clipPath id="fistCut"><path id="fistCutP"></path></clipPath>
       </defs>
       <!-- The upper working rope lives in the FRONT layer on purpose: coming down it must pass
            IN FRONT of the backup device's shock absorber and land ON TOP of the descender,
            the way the original artwork has it. Drawn behind the figure it disappeared under
            the absorber instead. Its x (0.44) clears the helmet and the gripping fist, so
            being in front covers nothing it shouldn't. -->
-      <!-- No clip on this one: it ends ON the descender's outline (A.desc) and pivots there, so
-           there is nothing past the device to hide. It used to be cut like the strand below, and
-           that cut is what made its tip crawl across the device as he swung — see drawRopes. -->
-      <path class="rope-out" id="rWupO"></path><path class="rope-in" id="rWupI"></path>  <!-- working rope: ceiling → descender, over the absorber -->
-      <path class="rope-out" id="rBrkO" clip-path="url(#brakeCut)"></path><path class="rope-in" id="rBrkI" clip-path="url(#brakeCut)"></path>  <!-- working rope brake strand: descender → brake hand -->
+      <!-- Cut along the descender's top outline, like the strand below — so the DEVICE reads as
+           being in front of the rope and the rope as running on behind it, which is the owner's
+           ask and how the artwork is drawn. The cut that used to make this rope's tip crawl across
+           the device as he swung was a cut ON ITS OWN: the rope ran far past the device and the tip
+           you saw was wherever it happened to meet the line. It has a real endpoint at A.desc now,
+           a hair past the line, so the crossing cannot wander — the clip only shaves the round cap
+           off and leaves a flat end lying along the outline. See drawRopes. -->
+      <!-- Two clips on this rope, so it is wrapped: an element takes ONE clip-path and a group's
+           clip intersects with its children's (the brake strand below is wrapped for the same
+           reason). The group carries the FIST, which the rope passes behind; the paths carry the
+           descender, where it ends. -->
+      <g clip-path="url(#fistCut)">
+        <path class="rope-out" id="rWupO" clip-path="url(#workCut)"></path><path class="rope-in" id="rWupI" clip-path="url(#workCut)"></path>  <!-- working rope: ceiling → descender, over the absorber -->
+      </g>
+      <!-- The brake strand is cut at BOTH ends, so the group carries the second clip: an element
+           takes one clip-path, and a group's clip intersects with its children's. Top end = the
+           descender's mouth (descOutCut), bottom end = the glove's outline (brakeCut). -->
+      <g clip-path="url(#descOutCut)">
+        <path class="rope-out" id="rBrkO" clip-path="url(#brakeCut)"></path><path class="rope-in" id="rBrkI" clip-path="url(#brakeCut)"></path>  <!-- working rope brake strand: descender → brake hand -->
+      </g>
     </svg>
+    <!-- ORITOKI: "or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
+         standing in for each dotted i, and the rope running on out of each knot. ONE image, the
+         owner's finished drawing cropped to its own ink by tools/logo-mark.ps1 and otherwise
+         untouched. It used to be four layers cut out of that drawing so the carabiners could
+         swivel with the ropes, and that cut is where every placement fault in this mark came from:
+         the pieces had to be found by fitting them back against the finished picture, and a fit
+         can be right on each piece and still stack them wrong — it left a rope loop lying on top
+         of a carabiner instead of threaded through it. Drawn as drawn there is nothing to get
+         wrong. The carabiners no longer turn; the ropes still swing, and they leave the knots at
+         A.stemWork / A.stemBack, which is where the drawing puts them.
+         Written LAST so everything in the strip passes behind it — both ropes and the figure. The
+         working rope is what forces that: it has to stay in FRONT of the climber (drawn behind him
+         it vanishes under the shock absorber, see #ropeFront above), so if it is also to go behind
+         the mark, the mark has to be above the climber too. Only at the very end of a drag does
+         that show, and then only as the top corner of his helmet slipping under the "t".
+         One bake — the drawing is white-on-transparent and reads on either theme. -->
+    <a href="#home" id="brandRope" aria-label="Oritoki — home">
+      <img src="images/logo-rest.png?v=17" alt="Oritoki" draggable="false" />
+    </a>
   </div>
 
 
@@ -919,6 +983,10 @@
         </div>
         <a href="#gallery"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲒᲐᲚᲔᲠᲔᲐ</span></span></span></a>
         <a href="#contact"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲙᲝᲜᲢᲐᲥᲢᲘ">CONTACT</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲙᲝᲜᲢᲐᲥᲢᲘ</span></span></span></a>
+        <!-- Tap-to-call number, right after CONTACT — shown on the desktop bar and again in the
+             mobile drawer (see #nav .nav-phone in the CSS). The phone icon stays accent-orange;
+             the number follows the nav's colour for the current bar state. -->
+        <a href="tel:+995571253530" class="nav-link nav-phone inline-flex items-center gap-2.5 hover:opacity-80 transition" aria-label="Call +995 571 25 35 30"><span dir="ltr">+995 571 25 35 30</span></a>
       </nav>
 
       <!-- Right group (actions). On desktop it mirrors the brand (flex-1) so the nav
@@ -986,7 +1054,7 @@
         </h1>
 
         <!-- Supporting description -->
-        <p class="reveal hero-shadow mt-5 max-w-xl text-sm sm:text-base text-white leading-relaxed" data-ka="ვახორციელებთ სამრეწველო ალპინიზმის მომსახურებას ობიექტებზე, სადაც ტრადიციული მეთოდებით სამუშაოს შესრულება არაეფექტური ან შეუძლებელია">We provide industrial rope-access services on structures where traditional methods make the work ineffective or impossible</p>
+        <p class="reveal hero-shadow mt-5 max-w-xl text-sm sm:text-base text-white leading-relaxed" data-ka="გთავაზობთ თოკზე დაფუძნებული სისტემებით მომსახურებას ობიექტებზე, სადაც ტრადიციული მეთოდებით სამუშაოს შესრულება არაეფექტური ან შეუძლებელია">We provide rope access services on structures where traditional methods make the work ineffective or impossible</p>
 
         <!-- CTA (outline, white) -->
         <div class="reveal mt-8">
@@ -1009,39 +1077,37 @@
   <div class="flex flex-col">
   <!-- ============================ ABOUT ============================ -->
   <section id="about" class="order-1 py-20 bg-panel border-y border-line">
-    <div class="max-w-7xl mx-auto px-5 grid gap-8 lg:grid-cols-2 lg:gap-x-12 lg:gap-y-0 lg:items-stretch">
+    <div class="max-w-7xl mx-auto px-5 grid gap-8 lg:grid-cols-2 lg:gap-x-12 lg:items-stretch">
       <!-- Photo: after the text on mobile (order-2); right column on desktop.
            On mobile it is hidden and the same image is used as the section
-           background instead (hero-style) — see the #about mobile CSS. -->
-      <div id="aboutPhoto" class="reveal relative order-2 lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2">
-        <img src="images/about.jpg?v=3" alt="Oritoki rope-access technicians working on a glass high-rise" class="w-full h-full min-h-[520px] object-cover rounded-2xl border border-line" />
+           background instead (hero-style) — see the #about mobile CSS.
+           The photo cell STRETCHES to the text column's height (lg:items-stretch), so when the
+           longer Georgian copy makes the text taller the photo grows with it and no gap opens
+           beside it. The <img> is absolutely positioned, so it fills that height via object-cover
+           instead of dictating the row height itself; the rounding + border move to this clipping
+           wrapper. On mobile the wrapper is hidden, so it needs no aspect box of its own. -->
+      <div id="aboutPhoto" class="reveal relative order-2 lg:order-none lg:col-start-2 lg:row-start-1 overflow-hidden rounded-2xl border border-line">
+        <img src="images/about.jpg?v=4" alt="Oritoki rope-access technicians working on a glass high-rise" class="absolute inset-0 w-full h-full object-cover" />
       </div>
       <!-- Text: first on mobile (order-1); left column on desktop -->
       <div class="reveal order-1 lg:order-none lg:col-start-1 lg:row-start-1">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲡᲘᲛᲐᲦᲚᲔ ᲩᲕᲔᲜᲘ ᲡᲐᲛᲣᲨᲐᲝ ᲡᲘᲕᲠᲪᲔᲐ, ᲣᲡᲐᲤᲠᲗᲮᲝᲔᲑᲐ ᲞᲠᲘᲝᲠᲘᲢᲔᲢᲘ">HEIGHT IS OUR WORKSPACE, SAFETY OUR PRIORITY</h2>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲡᲘᲛᲐᲦᲚᲔ ᲩᲕᲔᲜᲘ ᲡᲐᲛᲣᲨᲐᲝ ᲡᲘᲕᲠᲪᲔᲐ, ᲣᲡᲐᲤᲠᲗᲮᲝᲔᲑᲐ — ᲞᲠᲘᲝᲠᲘᲢᲔᲢᲘ">HEIGHT IS OUR WORKSPACE, SAFETY — OUR PRIORITY</h2>
         <div id="aboutBody">
-        <p class="mt-5 text-mute leading-relaxed" data-ka="შპს „ორითოკი“ არის სამრეწველო ალპინიზმის კომპანია, რომელიც უზრუნველყოფს სასიმაღლო სამუშაოების უსაფრთხო, სწრაფ და ეფექტურ შესრულებას იქ, სადაც ხარაჩოების, ამწეების ან სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელი ან არაეფექტურია.">
-          Oritoki LTD is an industrial rope-access company that delivers safe, fast and
-          effective works at height where the use of scaffolding, cranes or other
-          traditional methods is impossible or ineffective.
+        <p class="mt-5 text-mute leading-relaxed" data-ka="შპს „ორითოკი“ არის სასიმაღლო სამუშაოების კომპანია, რომელიც უსაფრთხოდ, სწრაფად და ეფექტურად მუშაობს იქ, სადაც ხარაჩოების, ამწეების ან სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელი ან არაეფექტურია.">
+          Oritoki Ltd. is a rope access company providing safe, fast and efficient solutions in
+          locations where scaffolding, cranes or other traditional access methods are impractical
+          or ineffective.
         </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი გუნდი აერთიანებს მრავალწლიანი პრაქტიკული გამოცდილების მქონე მთამსვლელებს, მეკლდეურებსა და სასიმაღლო სამუშაოების სერტიფიცირებულ სპეციალისტებს.">
-          Our team brings together mountaineers, rock climbers and certified works-at-height
-          specialists with many years of hands-on experience.
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი გუნდი აერთიანებს მრავალწლიანი გამოცდილების მქონე მთამსვლელებს, მეკლდეურებსა და სასიმაღლო სამუშაოების სპეციალისტებს.">
+          Our team consists of experienced mountaineers, rock climbers and rope access technicians.
         </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="ამ სფეროში უკვე 18 წელზე მეტია ვოპერირებთ. წლების მანძილზე დაგროვილი ტექნიკური ცოდნა და საერთაშორისო გამოცდილება გვაძლევს საშუალებას, რომ უმაღლესი სიზუსტითა და უსაფრთხოებით შევასრულოთ ნებისმიერი სირთულის პროექტი.">
-          We have been operating in this field for over 18 years. The technical knowledge and
-          international experience accumulated over the years allow us to carry out projects of
-          any complexity with the highest precision and safety.
+        <p class="mt-4 text-mute leading-relaxed" data-ka="15 წელზე მეტი გამოცდილება, დაგროვილი ტექნიკური ცოდნა და საერთაშორისო პრაქტიკა გვაძლევს შესაძლებლობას, რთული და არასტანდარტული პროექტებიც მაღალი სიზუსტითა და უსაფრთხოების სტანდარტების დაცვით შევასრულოთ.">
+          With over 15 years of experience, extensive technical knowledge and international
+          practice, we are equipped to carry out complex and non-standard projects with a high
+          level of precision and in accordance with established safety standards.
         </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი საქმიანობა ეფუძნება IRATA, SPRAT, IFMGA Rope Access საერთაშორისო სტანდარტებს, რაც უზრუნველყოფს უსაფრთხოების, ხარისხისა და პროფესიონალიზმის უმაღლეს დონეს.">
-          Our work is based on the IRATA, SPRAT and IFMGA international rope-access
-          standards, ensuring the highest level of safety, quality and professionalism.
-        </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენთვის მთავარი ღირებულებებია უსაფრთხოება, პასუხისმგებლობა, სიზუსტე და მომხმარებლის ნდობა. თითოეულ სამუშაოს ვასრულებთ თანამედროვე აღჭურვილობით, საერთაშორისო სტანდარტების დაცვით და შედეგზე პასუხისმგებლობით.">
-          Our core values are safety, responsibility, precision and client trust. We carry
-          out every job with modern equipment, in compliance with international
-          standards, and with accountability for the result.
+        <p class="mt-4 text-mute leading-relaxed" data-ka="გუნდის წევრები ფლობენ IRATA, SPRAT და IFMGA Rope Access-ის საერთაშორისო სერტიფიკატებს.">
+          Our team members hold internationally recognized IRATA, SPRAT and IFMGA Rope Access certifications.
         </p>
         </div>
       </div>
@@ -1056,16 +1122,16 @@
 
       <!-- All service categories (glass first, styled like the rest) -->
       <div id="svcGrid" class="mt-10 grid gap-4 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
-        <article id="svc-glass" data-bg="images/svc-modal-bg.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
+        <article id="svc-glass" data-bg="images/svc-modal-bg.jpg?v=2" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="მაღალსართულიანი შენობების წმენდა, ჰერმეტიზაცია და მოვლა.">High-rise building cleaning, sealing and maintenance.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის ფასადების წმენდა">Glass facade cleaning</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფანჯრების გარედან წმენდა">Exterior window cleaning</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის მონტაჟი და დემონტაჟი">Glass installation &amp; removal</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფანჯრების წმენდა">Window cleaning</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადების წმენდა">Facade cleaning</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის მონტაჟი და დემონტაჟი">Glass installation &amp; removal</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დაზიანებული მინის შეცვლა">Replacement of damaged glass</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის სილიკონის შეცვლა და ჰერმეტიზაცია">Facade silicone replacement &amp; sealing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის კონსტრუქციების მონტაჟი">Glass structures installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სილიკონის შეცვლა და ჰერმეტიზაცია">Silicone replacement &amp; sealing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების მონტაჟი">Structures installation</span></li>
           </ul>
         </article>
         <article id="svc-buildings" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
@@ -1073,11 +1139,11 @@
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="შენობების მოვლა">Building Maintenance</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ტექნიკური მომსახურება, რემონტი და პრევენციული ინსპექტირება.">Technical maintenance, repairs and preventive inspection.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადების წმენდა და რეცხვა">Facade cleaning &amp; washing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის ელემენტების შეკეთება">Facade element repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="შენობების ტექნიკური მომსახურება">Building technical maintenance</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="წვიმის წყლის სისტემების (ღარები, მილები) მონტაჟი და შეკეთება">Rainwater systems (gutters, pipes) — install &amp; repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="წვიმის წყლის სისტემების (ღარები, მილები) მონტაჟი/დემონტაჟი, შეკეთება">Rainwater systems (gutters, pipes) — install/dismantle, repair</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ვენტილაციის სისტემების მონტაჟი და დემონტაჟი">Ventilation systems — install &amp; dismantle</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის ელემენტების შეკეთება">Facade element repair</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადების წმენდა და რეცხვა">Facade cleaning &amp; washing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო- და ჰიდროიზოლაცია">Thermal insulation &amp; waterproofing</span></li>
           </ul>
         </article>
 
@@ -1087,22 +1153,22 @@
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკაბელო სისტემების, განათებისა და ანძების მონტაჟი.">Cabling systems, lighting and mast installation.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="განათებებისა და პროჟექტორების მონტაჟი და შეცვლა">Lighting &amp; floodlights — install &amp; replace</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონდიციონერის გარე აგრეგატის მონტაჟი და სერვისი">Air-conditioner outdoor unit installation &amp; servicing</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტენებისა და სატელეკომუნიკაციო მოწყობილობების მონტაჟი">Antennas &amp; telecom equipment installation</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ელვისდამცავი სისტემების მონტაჟი">Lightning-protection systems</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების, კამერებისა და სენსორების მონტაჟი">Security systems, cameras &amp; sensors</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კაბელებისა და საკაბელო არხების მონტაჟი">Cables &amp; cable-tray installation</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მზის პანელების მონტაჟი">Solar panel installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონდიციონერის გარე აგრეგატის მონტაჟი და სერვისი">Air-conditioner outdoor unit installation &amp; servicing</span></li>
           </ul>
         </article>
 
         <article id="svc-signage" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="რეკლამები">Advertising &amp; Signage</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების ინსტალაცია.">Installation of banners, billboards and advertising structures.</p>
+          <!-- No summary on this one: its first sub-service already says the same thing, so in the
+               opened strip the line read twice. open() clones "p" only if the card has one. -->
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბანერების მონტაჟი და დემონტაჟი">Banner install &amp; dismantle</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სარეკლამო კონსტრუქციების მონტაჟი">Advertising-structure installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების მონტაჟი და დემონტაჟი">Banners, billboards &amp; advertising structures — install &amp; dismantle</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="აბრებისა და LED აბრების მონტაჟი">Signs &amp; LED signs installation</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დროშების მონტაჟი">Flag installation</span></li>
           </ul>
@@ -1113,7 +1179,7 @@
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ღებვა და დაცვა">Painting &amp; Protection</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა.">Treatment and painting of facades and metal structures.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების ღებვა">Structure painting</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა">Treatment &amp; painting of facades and metal structures</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტიკოროზიული სამუშაოები">Anti-corrosion works</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დამცავი საფარების დატანა">Protective coatings</span></li>
           </ul>
@@ -1161,8 +1227,10 @@
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინსპექტირება">Inspection</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება.">Structural diagnostics, ultrasonic and visual inspection.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ვიზუალური და კონსტრუქციული ინსპექტირება">Visual &amp; structural inspection</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების ინსპექტირება">Safety-system inspection</span></li>          </ul>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება">Structural diagnostics, ultrasonic &amp; visual inspection</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო და ჰიდრო იზოლაციის სისტემების ინსპექტირება">Thermal &amp; waterproofing insulation system inspection</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების ინსპექტირება">Safety-system inspection</span></li>
+          </ul>
         </article>
 
         <article id="svc-film" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
@@ -1182,9 +1250,9 @@
           <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</h3>
           <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამაშველო ოპერაციები">Rescue operations</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="საგნების უსაფრთხო ჩამოხსნა, აწევა და ჩამოშვება">Safe removal, lifting &amp; lowering of objects</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რთულად მისადგომ ადგილებზე წვდომა">Access to hard-to-reach locations</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ავარიული სამუშაოები">Emergency works</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="საგნების უსაფრთხო ჩამოხსნა, აწევა და ჩამოშვება">Safe removal, lifting &amp; lowering of objects</span></li>
             <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ინდივიდუალური სასიმაღლო გადაწყვეტილებები">Custom works-at-height solutions</span></li>
           </ul>
         </article>
@@ -1222,7 +1290,6 @@
       <button type="button" class="lb-btn lb-next" aria-label="Next photo"><i class="fa-solid fa-chevron-right"></i></button>
       <figure class="lb-figure">
         <img id="lbImg" alt="" />
-        <figcaption id="lbCap" class="lb-cap"></figcaption>
       </figure>
     </div>
   </section>
@@ -1251,6 +1318,15 @@
               <a data-si="email" href="mailto:info@oritoki.ge" class="text-lg text-mute hover:text-accent transition">info@oritoki.ge</a>
             </div>
           </div>
+          <!-- Social links sit here, under the e-mail, rather than in the footer: they are a way
+               of reaching the company, so they belong with the phone and the address. Each one is
+               still filled from js/site-config.js (data-si), and any account left blank there is
+               hidden by applySiteInfo — which is why TikTok does not show. -->
+          <div class="flex gap-3">
+            <a data-si="facebook" href="https://www.facebook.com/profile.php?id=61591512283062" target="_blank" rel="noopener" aria-label="Facebook" class="h-10 w-10 rounded-lg border border-line flex items-center justify-center text-mute hover:text-[#1877F2] hover:border-[#1877F2] transition"><i class="fa-brands fa-facebook-f"></i></a>
+            <a data-si="instagram" href="https://www.instagram.com/oritoki.ge/" target="_blank" rel="noopener" aria-label="Instagram" class="h-10 w-10 rounded-lg border border-line flex items-center justify-center text-mute hover:text-[#E4405F] hover:border-[#E4405F] transition"><i class="fa-brands fa-instagram"></i></a>
+            <a data-si="tiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok" class="h-10 w-10 rounded-lg border border-line flex items-center justify-center text-mute hover:text-[#FE2C55] hover:border-[#FE2C55] transition"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
         </div>
 
         <!-- Join CTA relocated to the footer (Professional Standards column). -->
@@ -1263,18 +1339,22 @@
   <footer class="bg-panel border-t border-line">
     <div class="footer-grid max-w-7xl mx-auto px-5 py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1.3fr]">
       <div>
-        <div class="text-sm text-mute leading-relaxed space-y-1.5">
+        <!-- The company mark, over the legal details. This is the FLAT logo (tools/logo-full.ps1
+             keys the cream ground out of the owner's file and crops it to its ink) — not the
+             header's five-layer version, which only exists because the technician rappels out of
+             it and needed the hardware drawn differently. Sized as a share of the footer column
+             rather than in pixels, so it keeps its proportion as the column narrows. -->
+        <a href="#home" class="block mb-6" aria-label="Oritoki — home">
+          <img src="images/logo-full.png?v=3" alt="Oritoki" width="560" height="557"
+               class="w-[32%] max-w-[104px] h-auto" draggable="false" />
+        </a>
+        <div class="text-sm text-mute leading-relaxed space-y-2">
           <p data-ka="შპს ორითოკი">Oritoki LLC</p>
           <p data-ka="საიდენტიფიკაციო კოდი: 402372918">Identification Code: 402372918</p>
           <p data-si="address" data-ka="მისამართი: ე. ნინოშვილის ქ. 13, ბ. 23B, თბილისი, საქართველო">Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia</p>
           <p><span data-ka="ელ. ფოსტა:">Email:</span> <a data-si="email" href="mailto:info@oritoki.ge" class="hover:text-accent transition">info@oritoki.ge</a></p>
         </div>
-        <!-- Social icons — sit directly under the email -->
-        <div class="mt-4 flex gap-3">
-          <a data-si="facebook" href="https://www.facebook.com/profile.php?id=61591512283062" target="_blank" rel="noopener" aria-label="Facebook" class="h-10 w-10 rounded-lg border border-line bg-surface flex items-center justify-center text-mute hover:text-[#1877F2] hover:border-[#1877F2] transition"><i class="fa-brands fa-facebook-f"></i></a>
-          <a data-si="instagram" href="https://www.instagram.com/oritoki.ge/" target="_blank" rel="noopener" aria-label="Instagram" class="h-10 w-10 rounded-lg border border-line bg-surface flex items-center justify-center text-mute hover:text-[#E4405F] hover:border-[#E4405F] transition"><i class="fa-brands fa-instagram"></i></a>
-          <a data-si="tiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok" class="h-10 w-10 rounded-lg border border-line bg-surface flex items-center justify-center text-mute hover:text-[#FE2C55] hover:border-[#FE2C55] transition"><i class="fa-brands fa-tiktok"></i></a>
-        </div>
+        <!-- The social links live in the contact section, under the e-mail. -->
       </div>
       <div>
         <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="ნავიგაცია">Navigation</h4>
@@ -1287,14 +1367,14 @@
           <li><a href="#contact" class="hover:text-accent transition" data-ka="კონტაქტი">Contact</a></li>
         </ul>
       </div>
-      <div>
+      <div class="flex flex-col">
         <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="პროფესიული სტანდარტები">Professional Standards</h4>
-        <div class="flex flex-wrap gap-2.5">
+        <div class="flex flex-wrap gap-2">
           <a href="https://irata.org/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>IRATA</a>
           <a href="https://sprat.org/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>SPRAT</a>
           <a href="https://ifmga.net/about-ifmga/committees/rope-access" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>IFMGA Rope Access</a>
         </div>
-        <div class="mt-6">
+        <div class="mt-6 lg:mt-auto">
           <p class="text-sm text-accent" data-ka="ხართ სასიმაღლო სამუშაოს სპეციალისტი?">Are you a rope-access technician?</p>
           <div class="mt-2 flex items-center gap-3">
             <i class="fa-solid fa-handshake-simple text-accent text-[1.05rem] leading-none shrink-0"></i>
@@ -1304,7 +1384,7 @@
       </div>
     </div>
     <div class="border-t border-line">
-      <div class="max-w-7xl mx-auto px-5 py-5 text-sm text-mute max-sm:text-center">
+      <div class="max-w-7xl mx-auto px-5 py-6 text-sm text-mute max-sm:text-center">
         © <span id="year"></span> <span data-ka="შპს ორითოკი">Oritoki LTD</span>. <span data-ka="ყველა უფლება დაცულია.">All rights reserved.</span>
       </div>
     </div>
@@ -1332,10 +1412,12 @@
         /* data-i is what the lightbox opens on. It has to live in the markup rather than in a
            closure, because Swiper's loop mode CLONES these slides at init and a click can land
            on a clone — the attribute is copied with it, a listener would not be. */
+        /* No visible caption — the owner wants the gallery photos to carry no titles. The English
+           name still rides along as the img alt (accessibility / SEO), and it drives the lightbox's
+           accessible label, but nothing is painted over the photo. */
         slide.innerHTML =
           '<div class="gallery-card" data-i="' + i + '">' +
             '<img src="images/gallery/' + img.file + '" alt="' + img.en + '" loading="lazy" />' +
-            '<div class="slide-caption" data-ka="' + img.ka + '">' + img.en + '</div>' +
           '</div>';
         wrapper.appendChild(slide);
       });
@@ -1365,7 +1447,6 @@
       var pics = window.galleryImages;
       if (!lb || !wrapper || !Array.isArray(pics) || !pics.length) return;
       var lbImg = document.getElementById("lbImg");
-      var lbCap = document.getElementById("lbCap");
       var at = -1;
       if (pics.length < 2) lb.classList.add("lb-single");
 
@@ -1376,11 +1457,6 @@
         lbImg.removeAttribute("style");
         lbImg.alt = p.en;
         lbImg.src = "images/gallery/" + (p.full || p.file);
-        /* The caption keeps data-ka/data-en, so switching language with a photo open moves it
-           too — applyLanguage walks every [data-ka] on the page. */
-        lbCap.dataset.en = p.en;
-        lbCap.dataset.ka = p.ka;
-        lbCap.textContent = document.documentElement.lang === "ka" ? p.ka : p.en;
       }
 
       lbImg.addEventListener("load", function () {
@@ -1584,6 +1660,11 @@
       var rWupO = document.getElementById("rWupO"), rWupI = document.getElementById("rWupI");
       var rWtipO = document.getElementById("rWtipO"), rWtipI = document.getElementById("rWtipI");
       var brkP = document.getElementById("brakeCutP");   // cut along the glove's outline
+      var wrkP = document.getElementById("workCutP");    // ...along the descender's top outline
+      var dscOutP = document.getElementById("descOutCutP"); // ...and along its mouth, where the
+                                                         // brake strand comes back out
+      var fistP = document.getElementById("fistCutP");   // ...and the hole the rope runs behind:
+                                                         // the whole gripping hand (see A.fist)
       var rWloO = document.getElementById("rWloO"), rWloI = document.getElementById("rWloI");
       var rKnotBO = document.getElementById("rKnotBO"), rKnotBI = document.getElementById("rKnotBI");
       var rKnotWO = document.getElementById("rKnotWO"), rKnotWI = document.getElementById("rKnotWI");
@@ -1599,24 +1680,40 @@
         // Rope thickness, as a fraction of the strip's width — the one place it is set. Everything
         // sized off the rope (its two strokes, the stopper knots) is derived from this, so the
         // whole rig stays in proportion when it changes.
-        /* Rope and hardware are at life size, measured off the gear drawn on the man himself: his
-           descender is 55px tall in climber.png's own 560x686 and a descender is about 130mm, so
-           one of those pixels is 2.4mm — and the strip, 97px wide for the figure's 560, puts one
-           displayed pixel at 13.9mm.
-           The two cannot both be exact. ropeW is anchorW x 0.1435, the rope's width across the
-           anchor artwork, and that ratio is what keeps the drawn rope and the SVG one the same
-           cord — but the artwork draws a slightly thin rope for its carabiner. Hold the carabiner
-           at a true 57mm and the rope comes out 8.2mm; hold the rope at a true 11mm and the
-           carabiner comes out 77mm. These sit between: a 69mm carabiner and a 10mm rope, both
-           within a fifth of the real thing. */
-        ropeW: 0.0074,               // 0.72px — a 10mm rope
-        // The weave, taken from the anchor artwork so the rope and the knot it comes out of are
-        // the same cord. In that drawing the rope is 41px wide and the lattice repeats every
-        // 14px measured across the lines, which are 5px thick — so as fractions of the rope:
-        // tile 14*sqrt2/41, line 5/(14*sqrt2). Two families crossing at 45°, black on near-white.
-        weaveT: 0.483,               // tile, in rope widths
-        weaveL: 0.253,               // line thickness, as a fraction of the tile
-        weaveAng: 45,
+        /* ONE STRAND of the lockup's cord, OUTLINE INCLUDED — this is rope-out, the whole cord.
+           Two traps here, both of which this got wrong in turn:
+           1. Below each knot the drawing shows TWO strands side by side — the knot's leftover
+              tail on the left, the rope carrying on on the right. Measuring across the pair gave
+              a rope twice as thick as it should be. On the 400px layers that ship, the tail has
+              ended by row 167 (working) / 346 (backup); those are the rows to read.
+           2. The strand is drawn as a light core INSIDE a heavy black outline, and measuring only
+              the core left the outline about a quarter of its proper weight.
+           MEASURED TWO WAYS on the shipped 400px layers, and the two agree:
+           - in the artwork's own pixels, alpha-weighted across rows 167-169 / 346-348, one strand
+             is 7.8px wide — black 1.45, core 4.86, black 1.45. Core share 0.630. The mark is shown
+             400 -> 82.97 CSS px (0.7153 of a 116px strip), so that is 1.61 CSS px on screen.
+           - on a white lab render with the SVG ropes hidden, the drawn cord's ink comes to 0.775
+             CSS px. Ink survives the browser's resampling (blur moves darkness about, it does not
+             add or remove it), so it is the one figure that can be compared across a bitmap and a
+             stroke: 2*black + 0.161*core = 0.775 at core share 0.630 gives a strand of 1.64.
+           1.63 CSS px is the pair of them, /116 = 0.01405. The old 0.0129 came off the PREVIOUS
+           1059-wide drawing and left the rope a fifth thin — a step where it leaves the knot. */
+        ropeW: 0.01405,              // 1.63px at a 116px strip — a whole strand, outline included
+        ropeCore: 0.630,             /* the light core's share of the whole strand — 4.86 of 7.8
+                                        drawing px, which puts 0.30 CSS px of black each side, the
+                                        drawn cord's own outline weight.
+                                        This was 0.50, and a comment beside it argued for 0.77, on
+                                        the theory that the drawing is SHOWN five times smaller
+                                        than it is drawn so its outlines resample into a soft edge
+                                        while an SVG stroke stays hard black. The soft edge is
+                                        real but it is not extra weight: the mark is drawn at 400
+                                        and shown at 83, and at the device scales that matter the
+                                        browser is UPSCALING that bitmap, which spreads each edge
+                                        over about 1.7 device px and lowers its peak without
+                                        changing how much black is there. Matching the drawing's
+                                        own proportion is what makes the two read as one cord;
+                                        guessing a heavier outline to "compensate" is what made
+                                        the rope darker and harder than the knot it leaves. */
         /* The backup rope hangs STRAIGHT DOWN: backupX and camX are equal, the same way workTopX
            and desc.x are, and that is what keeps each rope vertical.
            Getting here moved the artwork. The logo fixes how far apart the two anchors are — the
@@ -1626,28 +1723,60 @@
            swung across his chest to meet its rope: tools/move-backup-device.ps1, which rotates the
            device, its carabiner and the absorber about the point where the absorber meets the
            sling. They sit on transparent background in climber.png, so none of him was repainted. */
-        backupX: 0.5018,             // backup rope, top \ equal, so the rope is vertical
-        camX: 0.5018,                // ...through his cam /
-        camY: 0.1218,                // and how far down the figure that is — the rope bends
-                                     // there, fixed above it, free below
-        // Both taken from the line the owner drew on the measuring grid (images/climber.png
-        // with 0.01 gridlines): the working rope clears the helmet on its RIGHT and drops
-        // PERFECTLY VERTICALLY into the gripping hand — it does not lean in towards the
-        // descender the way the old 0.399 → 0.42 pair made it. Keeping workTopX and desc.x
-        // equal is what holds it vertical, so change them together.
-        workTopX: 0.44,              // clears the helmet (its right edge is 0.412) and lands
-                                     // just left of the fist at 0.478
+        /* BOTH ropes hang plumb. The mark is hung by the WORKING stem (see A.markLeft), which
+           fixes where the backup stem lands — 0.5445 — and camX is then set equal to it so the
+           backup runs dead vertical too.
+           The price is that camX is no longer where his cam device is drawn: the device sits 6.0px
+           to the LEFT of the rope now, because the mark's two stems are 12.1px apart where his two
+           devices are 6.0px apart and only one of those distances can win. The owner asked for both
+           ropes plumb first and said the device would be put back under its rope afterwards —
+           tools/move-backup-device.ps1 is what moves it, the same way it was moved once before, and
+           camX goes back to naming the device when that is done.
+           4.1px of that 6.0 came from making the backup plumb; the other 1.9 came from sliding the
+           whole lower anchor right (tools/logo-layers.ps1 -LowShiftX), which the owner asked for so
+           the backup rope clears the fist gripping the descender — it was passing 0.75px from the
+           glove's edge. */
+        backupX: 0.5634,             // backup rope, top — and its whole line, since camX matches
+        camX: 0.5634,                // = backupX, so the rope is vertical (see above: the DEVICE
+                                     // it is named after is 4.1px left of this, still to be moved)
+        camY: 0.1218,                // and how far down the figure that is — kept for the drag
+                                     // track; the rope itself now bends at asapIn / asapOut
+        /* WHERE THE BACKUP ROPE MEETS THE ASAP. It does not simply bend AT the device — the device
+           HOLDS it, so it bends TWICE: once going in at the top, once coming out at the bottom, and
+           in between it runs straight down the device's own channel. The ASAP sits a few degrees
+           off vertical, so that middle stretch is off vertical too, and swinging him turns all
+           three segments about their own ends. Both points are the owner's marks, read off a grid
+           of the live page.
+           They are the channel line carried through the same placement as the drawing itself, so
+           they cannot drift away from it — tools/climber-asap.ps1 prints them, and re-running it
+           after moving the device reprints them. Do not nudge these by hand. */
+        asapIn:  { x: 0.5663, y: 0.0962 },   // = (317.1, 66.0) of the 560x686 artwork
+        asapOut: { x: 0.5620, y: 0.1530 },   // = (314.7, 105.0)
+        /* The working rope's top. This USED to equal desc.x (both 0.44), which is what held the
+           rope perfectly vertical — the owner drew that line on the measuring grid and had
+           rejected an earlier leaning pair (0.399 → 0.42) to get it.
+           The new lockup forces it off vertical. Its two stems are 0.1531 of the mark apart,
+           against 0.0891 on the mark it replaced, so at a size that fits the bar they are 11.7px
+           apart where the ropes are 6.0px apart. One of the two ropes has to take that 5.7px, and
+           it is this one: the backup rope has to stay plumb through the cam on his chest, while
+           this one already swings through a wide arc into the descender. The lean shows only at
+           the top of the page, where the rope is short — about 3.5° there, under 0.5° once he is
+           down the page. Shrinking the mark to 39px instead would keep both ropes exactly as they
+           were; the owner chose to keep the mark's size. */
+        /* The MAIN WORKING rope hangs plumb: its top and the descender it runs into share an x, so
+           at rest it is dead vertical. That is what the mark is positioned by now. */
+        workTopX: 0.44,              // = A.desc.x, and A.markLeft is solved from it
         // The climber is ONE flat PNG, so a rope can only be wholly in front of it or wholly
         // behind it — "the device's outline in front of the rope" is therefore done by CUTTING
-        // the visible rope along that outline (the clipPaths above). Both cuts are two points
+        // the visible rope along that outline (the clipPaths above). Every cut is two points
         // in climber.png's OWN pixels (560x686), which is how the owner measures them; only the
         // LINE through them matters, since drawRopes extends it past the strip either way.
         //
         // The descender's top outline: the owner read it off the artwork as y 219 at the rope's
         // right edge, 224 at its middle, 229 at its left edge (the rope spans x 240.8..252, i.e.
-        // 0.44 of the width ± half a stroke). No longer a CUT — the working rope ends on this
-        // line now (see A.desc) instead of being clipped by it — but it is still the line, so it
-        // still places both A.desc and the top of the hidden rWtip segment.
+        // 0.44 of the width ± half a stroke). It does three jobs: it is where the working rope is
+        // CUT so the device covers it, it places A.desc (the rope's end and pivot, at its middle),
+        // and it places the top of the hidden rWtip segment.
         cutWork:  { x1: 240.8, y1: 229, x2: 252, y2: 219 },
         // Brake strand at the glove. The owner put the contour at 0.23 across / 0.53 down of
         // the figure = pixel (128.8, 363.6), so the cut runs through that point, along the
@@ -1655,20 +1784,61 @@
         // earlier, on the outer lip of the same outline — and 15px before THAT is the harness
         // strap, which the strand crosses over a gap of transparent pixels. Both are decoys.)
         cutBrake: { x1: 124.05, y1: 360.35, x2: 133.55, y2: 366.85 },
-        /* Where the working rope meets the descender — and, since the rope now ENDS here rather
-           than running on under a clip, the point it pivots about when he swings. It sits ON the
-           cutWork outline below: at the rope's x (0.44 = px 246.4) that line is at y 224.0, so
-           0.3265 = 224.0/686. Keep the two in step — move the outline and this has to follow, or
-           the rope stops short of the device or laps over it. It used to read 0.36, a good 23px
-           further down, because back then everything past the outline was clipped away. */
+        /* THE GRIPPING FIST — the hand that holds the rope just above the descender, in the
+           artwork's own 560 x 686 pixels, going clockwise from its top-left.
+           At rest the working rope runs plumb at 0.44 (= 246 artwork px) and passes to the LEFT of
+           this hand, which is why the rope could live wholly in front of the figure. Drag him LEFT
+           and it stops clearing it: the anchor stays up in the mark while his body travels, so the
+           rope swings across and lies over his knuckles. The owner asked for it to go BEHIND the
+           hand, the way it goes behind the lettering.
+           It cannot do that by z-order — the figure is one flat PNG, and this rope has to stay in
+           FRONT of it or it disappears under the shock absorber (see #ropeFront). So the rope is
+           cut instead, which is how every other device in this artwork gets in front of it.
+           The other obvious move — painting the hand again on top of the rope, out of the same
+           file — was tried and must not be: the same antialiased edge pixels composited twice come
+           out darker, and the hand measurably thickened (9% of its pixels changed, the worst by
+           39%). Cutting the rope leaves the drawing untouched.
+           Read off the artwork row by row (ink runs at alpha >= 40, x 246..312, y 181..244) and
+           then pulled about 1px INSIDE that outline. Inside is the safe side: a point outside the
+           hand opens a gap in the rope against transparent background, while a point inside only
+           lets the rope run a fraction further under the hand's own black outline, which is where
+           it should be running anyway. The interior is solid ink all the way across, so there are
+           no transparent pockets for the rope to vanish into. */
+        // Re-traced on the new 700x731 drawing: the gripping glove's ink runs x 322..384,
+        // y 191..250, and it grips the lanyard just above the descender.
+        fist: [[259,191],[264,187],[272,186],[286,188],[291,192],[294,197],[297,203],[299,212],
+               [300,222],[299,231],[296,239],[288,244],[274,243],[264,232],[258,218],[256,204]],
+        /* The descender's MOUTH, where the brake strand comes back out between his hands. The
+           owner drew this one in red on a printed grid of the live page ("between hands.png");
+           read back off it, the stroke runs from device (383.1, 537.0) to (390.6, 533.4) at 4x,
+           which is these two artwork pixels. It passes within 1.5px of A.descOut, as it should —
+           that is the same point, marked a second time and from the other side.
+           It meets the strand at only 19°, on purpose: a rope leaving a device is cut by the
+           device's edge, and that edge lies almost along the rope here. Both ends of this strand
+           are anchored to the body, so that angle never changes and a shallow cut is safe. */
+        cutDescOut: { x1: 253.3, y1: 232.7, x2: 264.1, y2: 227.5 },
+        /* Where the working rope meets the descender, and the point it pivots about when he
+           swings. It sits ON the cutWork outline above: at the rope's x (0.44 = px 246.4) that line
+           is at y 224.0, so 0.3265 = 224.0/686. Keep the two in step — move the outline and this
+           has to follow, or the rope stops short of the device or laps over it. It read 0.36 once,
+           a good 23px further down, back when the rope had no endpoint at all and the clip was
+           doing the whole job. */
         desc:   { x: 0.44, y: 0.3265 },
+        /* How far the rope runs on PAST A.desc before the clip shaves it off flat along the
+           descender's top outline, in rope widths. It only has to be enough that the cut takes the
+           whole width of the rope and its round cap: A.desc sits at the MIDDLE of that outline, and
+           the outline drops another 5 artwork px (0.87 CSS px) across to the rope's left edge, so
+           anything over about one rope width will do. Three gives it room at a slanted crossing,
+           and applyCut's patch is 22px deep, so there is no risk of the overshoot outrunning it. */
+        descTuck: 3,
         descTipY: 0.40,              // the tip then runs on to here in the BACK layer, hidden
                                      // by the device (the artwork is solid all the way down
                                      // this column, so nothing of it shows)
         // Where the brake strand LEAVES the descender, between the two hands — the owner's mark,
-        // 0.47 across / 0.33 down of the figure (pixel 263.2 / 226.4). This end keeps its ROUNDED
-        // head on purpose (unlike the glove end, which is cut along the outline): it reads as
-        // the rope's own end coming out of the device.
+        // 0.47 across / 0.33 down of the figure (pixel 263.2 / 226.4). It used to keep a ROUNDED
+        // head here, on the theory that a round end reads as a rope's own end. It does — and that
+        // was the fault: the rope is not ending here, it is coming out of a device, so the end has
+        // to be the DEVICE's edge. Cut along A.cutDescOut now, like the other end at the glove.
         descOut:{ x: 0.47, y: 0.33 },
         // Two separate points, both taken from the owner's pixel-marked screenshot: the strand
         // stops where the rope enters the top of the glove, and the tail restarts where it
@@ -1678,10 +1848,35 @@
         // artwork): the rope enters the fist on the thumb side at the top-right and leaves it
         // on the little-finger side at the bottom, so the two segments read as ONE rope running
         // through the hand rather than two pieces parked either side of it.
-        brakeIn:{ x: 0.226, y: 0.528 },// enters the fist — thumb side (owner's yellow mark)
-        brake:  { x: 0.165, y: 0.585 },// leaves the fist — little-finger side (owner's rose mark)
-        brakeTrimTop: 1,             // small pull-back at the gripping hand
-                                     // (the lower end needs no trim any more — cutBrake does it)
+        // The brake glove's own ink on the new drawing sits at x 130..195, y 370..435.
+        brakeIn:{ x: 0.226, y: 0.528 },
+        brake:  { x: 0.165, y: 0.585 },
+        /* How far the tail runs back up INTO the fist so the glove hides its end, and (below) how
+           far the brake strand overshoots the descender's mouth and how much of it is black there.
+           All three are FRACTIONS OF THE STRIP, not pixels. They were pixels, measured while the
+           strip was 97 wide, and when the strip grew they were multiplied by the new width and
+           threw two ropes clean off the page — 4 became 464. These are those same pixels over 97. */
+        brakeTailUp: 0.0412,         // = 4px at a 97px strip; the glove is ~12px across there, so
+                                     // the lead-in is well inside it and nowhere near out the far
+                                     // side of the fist.
+        /* The strand's top end used to stop just short of descOut with a ROUNDED black cap, and
+           that cap is what made it read as a rope lying on the device rather than one coming out
+           of it. It runs PAST the device's mouth now and is cut flat along it (A.cutDescOut), the
+           same treatment as the other end at the glove.
+           Both are measured from where the strand crosses the mouth, which drawRopes solves for —
+           see tCut there.
+           brakeTopOver: how far ABOVE the cut the OUTLINE starts, along the strand. The cut meets
+           the strand at only 19°, so a full rope width needs 1.41/sin19° = 4.3px of overshoot to
+           be crossed; 6 leaves margin.
+           brakeTopBand: how far BELOW the cut the CORE starts, so the first stretch of rope out of
+           the device is solid black. That black edge along the cut is the band the owner drew in
+           red — the device's own outline closing over the rope. Without it the cut would expose
+           the light core and the rope would read as sliced off rather than emerging.
+           1.8 along the rope is 1.8 x sin19° = 0.6px measured across the cut, which is what the
+           owner's stroke measures and what the artwork's own outlines are. */
+        brakeTopOver: 0.0619,        // = 6px at a 97px strip
+        brakeTopBand: 0.0186,        // = 1.8px at a 97px strip
+                                     // (the lower end needs no trim — cutBrake does it)
         workGroundX: 0.165,          // the tail hangs straight down from the exit point
         // The ropes are as long as the PAGE: their ends are pinned this far above the end of the
         // document, so they run off the bottom of the screen the whole way down and only show
@@ -1693,38 +1888,55 @@
         // look diagrammatic rather than real.
         ropeEndGapBackup: 32,
         ropeEndGapWork: 58,
-        /* The anchors. Everything here is a fraction of the ANCHOR'S WIDTH, measured on the
-           source drawing (284px across), so the whole assembly scales as one piece:
-             ropeX   where the rope runs across it — this is what lines up with the rope below
-             pivot   the hanger's clip point, which the carabiner turns about
-             hangTop where the hanging piece starts, relative to the bolt's top
-           anchorW itself is not free: at 0.1113 of the strip the anchor's own rope comes out at
-           exactly the width the page draws (1.55px), so knot and rope meet with no step. */
-        anchorW: 0.0515,             // 5.0px — a 69mm carabiner; see ropeW above
-        anchorRopeX: 0.419,
-        // The carabiner hangs where its top bar passes through the hanger's eye — source pixel
-        // (118, 168) of the 284px drawing, marked on the grid by the owner. Turning it about any
-        // other point drags the carabiner out from under its plate, and the two read as separate
-        // pieces of hardware.
-        anchorPivotX: 0.415, anchorPivotY: 0.592,
-        anchorHangLen: 3.563,        // 1012 of 284 — the end of the drawn tail, where the SVG rope
-                                     // picks the line up
-        /* Each anchor hangs level with the TOP of its own word: the carabiner's top edge lines up
-           with the cap, the bolt hanger sits above it like a dot, and the knot and rope run down
-           past the letters. Standing them on the baselines instead, as they were, put the whole
-           anchor low and the rope started somewhere around the letters' feet — the owner's
-           screenshot has them up at the top, and that is also where an anchor belongs: bolted
-           high, with everything else hanging from it.
-           These are fractions of the STRIP's width, not pixels, because the wordmark is sized
-           from the strip too — as plain px the anchors came adrift from the lettering as soon as
-           the phone breakpoint made the strip narrower. logo-wordmark.ps1 prints where each line's
-           ink starts (8.25 and 46.00 in a 76.18-wide lockup); with the lockup at 0.7854 of the
-           strip that is 0.0851 and 0.4743 of the strip below its top edge. */
+        /* The lockup, and the two points where its drawn cords end and the page's ropes take over.
+           The mark is ONE image now, so there is no hardware geometry here at all — no pivot to
+           turn about, no hanger to slot a carabiner under. Just the mark's box and two stems on it.
+           markW / markLeft MUST match #brandRope's width / left in the CSS, and the stems are
+           fractions of that box. All of them come from tools/logo-mark.ps1, which measures them off
+           the drawing; if the mark is ever redrawn, re-run it rather than nudging these.
+           markW is set by the HEADER: the mark has to clear the 88px bar, so 76px tall, which at
+           this aspect is 69.4 wide = 0.7153 of a 97px strip. markLeft then follows from the WORKING
+           stem, which is pinned to A.desc.x so that rope runs plumb into his descender:
+           markLeft = desc.x - stemWorkX * markW. The backup stem lands where it lands, and A.camX
+           is set to meet it so that rope is plumb as well.
+           markLeft is now 0.0016 of the strip SHORT of that identity, and deliberately: stemWorkX
+           was re-centred on the cord (see below) and solving markLeft from the new value would
+           simply slide the MARK the same 0.18px right and put the rope back off-centre. What was
+           asked for was the rope moved, not the drawing, so the mark stays where the owner has
+           been looking at it and the rope's top takes the correction. The cost is that the working
+           rope is 0.18px off plumb over its whole run - a thousandth of the lean the descender
+           tuck already puts on it (see A.descTuck).
+           UPPER stem = MAIN WORKING rope, LOWER stem = BACKUP — the owner's call. */
         brandTop: 4,                 // where the lockup sits, matching #brandRope's own top
-        capBack: 0.0851,             // the "Or" cap top  \ of the strip's width, below brandTop
-        capWork: 0.4743,             // the "tok" cap top /
-        carabTop: 0.438,             // the carabiner's top, in anchor widths down the asset —
-                                     // 4.73 of the 10.8 the asset was first measured at
+        markW: 0.7153,               // of the strip  \ keep in step with #brandRope
+        markLeft: -0.0904,           // of the strip  /   ~ A.desc.x - stemWorkX * markW (see above)
+        markAspect: 1160 / 1059,     // the artwork's own height / width
+        /* The RIGHT-HAND strand under each knot — the rope. The left one is the knot's leftover
+           tail and stops there, so hanging the rope off the midpoint of the pair (as this first
+           did) left it running down between the two instead of out of one. */
+        /* MEASURED on the layers that ship, not scaled from the full-size drawing. The owner's
+           carabiner file carries more cord than the logo ever showed, and the hardware is drawn at
+           55% now (tools/logo-layers.ps1, $HardScale), so the scaled figure started each rope a
+           dozen pixels below its knot with a gap in between. scratchpad stems.ps1 walks up the
+           shipped layer to the last row of cord and takes the right-hand strand. */
+        /* RE-CENTRED on the cord, not on its right edge. Both stems sat a little RIGHT of the
+           strand they hang from, so each rope left its knot off-centre and the join read as a
+           small step sideways. Alpha-weighted centroid of the single right-hand strand, on the
+           rows where the knot's leftover tail has already ended (tools/join-grid.ps1 shows them):
+             working  rows 168-170 -> 295.74 of 400   (was 296.60, i.e. 0.86 mark px right)
+             backup   rows 346-349 -> 364.85 of 400   (was 365.60, i.e. 0.75 mark px right)
+           0.86 mark px is 0.18 CSS px at this size - sub-pixel, but it is the whole of the offset
+           at the knot itself, and it is measured rather than judged. Re-measure in the artwork if
+           the mark is redrawn; do not nudge these by eye. */
+        stemWorkX: 0.73935, stemWorkY: 0.3750,  // fractions of the MARK, not the strip
+        stemBackX: 0.91213, stemBackY: 0.7968,
+        /* Where each carabiner is HELD — its bar through its hanger's eye. It turns about this and
+           its knot and cord turn with it, so the rope always leaves the knot along the cord instead
+           of at an angle to it. The owner marked both points himself, on a grid of the live page;
+           scratchpad greendots.ps1 read them back off his image. Same points as the
+           transform-origin on #caraWork / #caraBack in the CSS. */
+        pivotWorkX: 0.7375, pivotWorkY: 0.1266,
+        pivotBackX: 0.9078, pivotBackY: 0.5356,
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
         // He is a pendulum on the rope above him, so how far he can swing is set by that rope's
         // length, not by a fixed number: sin(38°) of it, and never more than 45% of the window.
@@ -1734,55 +1946,46 @@
         hangY: 0.34                  // where on the figure the rope carries him (his descender)
       };
       var wrapEl = document.getElementById("ropeClimber");
-      var boltWork = document.getElementById("boltWork"), boltBack = document.getElementById("boltBack");
-      var hangWork = document.getElementById("hangWork"), hangBack = document.getElementById("hangBack");
-      var weaves = [document.getElementById("ropeWeave"), document.getElementById("ropeWeaveF")];
-      var pivotWork = { px: 0, py: 0 }, pivotBack = { px: 0, py: 0 };   // the hangers' clip points
-      var angWork = 0, angBack = 0;                                    // and how far each has swung
+      // The two carabiners, and where each is held. sizeRopes fills these in; drawRopes turns each
+      // image about its pivot and carries its cord's end round with it.
+      var caraWork = document.getElementById("caraWork"), caraBack = document.getElementById("caraBack");
+      var pivotWork = { x: 0, y: 0 }, pivotBack = { x: 0, y: 0 };
+      var stemOffWork = { x: 0, y: 0 }, stemOffBack = { x: 0, y: 0 };
       var ropeCeil = -24;                                              // the lower of the two knots
       function sizeRopes() {
         if (!hasRopes) return;
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box);
-        // Place the four anchor pieces. Each anchor is hung so that the rope drawn across it lands
-        // on the rope fraction it belongs to; the hanging piece is slotted under its own hanger.
-        var aw = vw * A.anchorW;
-        // Hang an anchor level with the top of its own word (see A.capBack / capWork).
-        function place(bolt, hang, ropeFx, capFx) {
-          var topPx = (A.brandTop + capFx * vw - A.carabTop * aw).toFixed(2);
-          var left = ropeFx * vw - A.anchorRopeX * aw;
-          if (bolt) { bolt.style.width = aw.toFixed(2) + "px"; bolt.style.left = left.toFixed(2) + "px";
-                      bolt.style.top = topPx + "px"; }
-          // Both pieces are full-size and overlay exactly, so they share a corner; only the
-          // hanging one is ever transformed.
-          if (hang) { hang.style.width = aw.toFixed(2) + "px"; hang.style.left = left.toFixed(2) + "px";
-                      hang.style.top = topPx + "px"; }
-          return { px: left + A.anchorPivotX * aw, py: +topPx + A.anchorPivotY * aw };   // the clip point
+        /* The lockup's geometry. The mark is CSS-sized from the strip (#brandRope), so these three
+           numbers place it, and the two stems are fractions of that box. tools/logo-mark.ps1
+           measures them off the drawing and re-prints them if the artwork is replaced.
+           Each stem is pulled back a whole rope-width UP the cord so the rope starts INSIDE the
+           drawing: the strokes are round-capped (that is what finishes the free ends down in the
+           footer) and a round cap on the black outline bulges half a stroke past the start, which
+           at the knot read as a dark bar across the join. Tucked up the cord, the drawing covers
+           it. The stem is held as an offset FROM ITS PIVOT, because the carabiner turns and takes
+           its cord with it — drawRopes rotates this by the same angle it puts on the image. */
+        var markW = vw * A.markW;
+        var markH = markW * A.markAspect;
+        var markL = vw * A.markLeft;
+        pivotWork = { x: markL + A.pivotWorkX * markW, y: A.brandTop + A.pivotWorkY * markH };
+        pivotBack = { x: markL + A.pivotBackX * markW, y: A.brandTop + A.pivotBackY * markH };
+        var lap = vw * A.ropeW;
+        function stemOff(fx, fy, piv) {
+          var dx = (markL + fx * markW) - piv.x, dy = (A.brandTop + fy * markH) - piv.y;
+          var dl = Math.sqrt(dx * dx + dy * dy) || 1;
+          return { x: dx - (dx / dl) * lap, y: dy - (dy / dl) * lap };
         }
-        pivotWork = place(boltWork, hangWork, A.workTopX, A.capWork);
-        pivotBack = place(boltBack, hangBack, A.backupX, A.capBack);
+        stemOffWork = stemOff(A.stemWorkX, A.stemWorkY, pivotWork);
+        stemOffBack = stemOff(A.stemBackX, A.stemBackY, pivotBack);
         // Rope thickness scales with the strip, so it holds at any size. A.ropeW is the single
         // source of truth for it — the knots are drawn from the same number (see drawRopes).
         if (wrapEl) {
           var w = vw * A.ropeW;
           wrapEl.style.setProperty("--rope-w", w.toFixed(2));
-          wrapEl.style.setProperty("--rope-core", (w * 0.733).toFixed(2));
-          // The braid rides on the rope: bars A.weaveT rope-widths apart, each covering
-          // A.weaveL of the gap. Both patterns are resized together — #ropeFront keeps its own
-          // copy because Chrome won't reach into #ropeBack's defs for it.
-          var t = w * A.weaveT, lw = t * A.weaveL;
-          for (var pi = 0; pi < weaves.length; pi++) {
-            var pat = weaves[pi]; if (!pat) continue;
-            pat.setAttribute("width", t.toFixed(3)); pat.setAttribute("height", t.toFixed(3));
-            pat.setAttribute("patternTransform", "rotate(" + A.weaveAng + ")");
-            var rect = pat.querySelector("rect"), bar = pat.querySelector("path");
-            rect.setAttribute("width", t.toFixed(3)); rect.setAttribute("height", t.toFixed(3));
-            // ...drawn across the MIDDLE of the tile, not along its edge: a line centred on the
-            // edge loses its outer half to the tile's clip and comes out at half thickness.
-            var h = (t / 2).toFixed(3);
-            bar.setAttribute("d", "M" + h + " 0V" + t.toFixed(3) + "M0 " + h + "H" + t.toFixed(3));
-            bar.setAttribute("stroke-width", lw.toFixed(3));
-          }
+          wrapEl.style.setProperty("--rope-core", (w * A.ropeCore).toFixed(2));
+          // Nothing else to size: the cord is a flat core in an outline, no braid pattern to
+          // scale with it (see .rope-in).
         }
       }
       function setSeg(o, i, d) { o.setAttribute("d", d); i.setAttribute("d", d); }
@@ -1808,9 +2011,10 @@
           return { x: pivX + lx * cosR - ly * sinR + sway, y: top + pivY + lx * sinR + ly * cosR };
         }
         function pt(fx, fy) { var p = bodyXY(fx, fy); return p.x.toFixed(1) + " " + p.y.toFixed(1); }
-        function px(fx) { return (fx * Wn).toFixed(1); }
         // climber.png pixel → strip coordinate, through the same body transform. The cut lines are
-        // measured on the 560x686 artwork, which is the only place their exact position is legible.
+        // measured on the artwork itself, which is the only place their exact position is legible.
+        // 700x731 since the figure was replaced (Desktop\man mana.png, scaled from 1227x1281);
+        // it was 560x686, and every A.* fraction below had to be re-read off the new drawing.
         function art(x, y) { return bodyXY(x / 560, y / 686); }
         /* Cut a rope along a device's outline, so the outline reads as passing in front of it.
            The cut is a PATCH, not a half-plane: a box hugging the line c (two artwork pixels),
@@ -1821,7 +2025,9 @@
            rope meets it at a shallow angle and crosses the EXTENDED line a long way off to one
            side — and everything past the crossing went, so most of the rope simply vanished.
            A patch can only ever take the few pixels around the device it belongs to. */
-        var CUT_ALONG = 14, CUT_DEEP = 22;
+        // Also fractions of the strip, and for the same reason — a patch that no longer reaches round
+        // the rope stops hiding what it was cut to hide.
+        var CUT_ALONG = 0.1443 * Wn, CUT_DEEP = 0.2268 * Wn;   // = 14 and 22 at a 97px strip
         function applyCut(clip, c, kx, ky) {
           if (!clip) return;
           var p1 = art(c.x1, c.y1), p2 = art(c.x2, c.y2);
@@ -1839,35 +2045,42 @@
             " L " + (q2x + nx * CUT_DEEP).toFixed(1) + " " + (q2y + ny * CUT_DEEP).toFixed(1) +
             " L " + (q1x + nx * CUT_DEEP).toFixed(1) + " " + (q1y + ny * CUT_DEEP).toFixed(1) + " Z");
         }
-        /* Carabiner, knot and rope are ONE PIECE hanging from the clip point. The carabiner turns
-           in its hanger until it points exactly where the rope goes, the knot and the tail drawn
-           below it come round with it, and the rope carries on from the end of that tail — so
-           however far he is dragged, the four read as a single line from the hanger down to him.
-           They used to disagree: the hardware was held to 24 degrees and let through a spring, so
-           the tail pointed one way and the rope left at another, and the join kinked. A carabiner
-           clipped into a hanger really does swing round to face its load, so there is nothing to
-           hold it back to. */
-        var aw = Wn * A.anchorW;
-        function swing(p, ang, tx, ty) {                   // -> the rope's exit, and the new angle
-          /* Note the minus: a positive CSS rotation is clockwise, and rotating a point that hangs
-             BELOW the pivot clockwise moves it LEFT. Without it the carabiner leaned away from the
-             rope instead of towards it, and its knot travelled opposite to the rope's own end. */
-          var want = Math.atan2(-(tx - p.px), Math.max(1, ty - p.py)) * 57.2957795;
-          var rad = ang * Math.PI / 180, s = Math.sin(rad), c = Math.cos(rad);
-          // the rope leaves at the end of the drawn tail, on the rope's own line across the asset
-          var ex = (A.anchorRopeX - A.anchorPivotX) * aw, ey = (A.anchorHangLen - A.anchorPivotY) * aw;
-          return { want: want, x: p.px + ex * c - ey * s, y: p.py + ex * s + ey * c };
+        /* The same evenodd trick as applyCut, but with a WHOLE OUTLINE for the patch instead of a
+           quad off a line — for a part of him the rope goes behind and comes back out of, rather
+           than ends at. The points are artwork pixels and go through art(), so the hole travels
+           with the body: it sways, leans and rises with him exactly as the drawing does, and never
+           has to be re-measured. */
+        function applyHole(clip, pts) {
+          if (!clip) return;
+          var d = "M -4000 -4000 H 8000 V 8000 H -8000 Z";
+          for (var i = 0; i < pts.length; i++) {
+            var p = art(pts[i][0], pts[i][1]);
+            d += (i ? " L " : " M ") + p.x.toFixed(1) + " " + p.y.toFixed(1);
+          }
+          clip.setAttribute("clip-rule", "evenodd");
+          clip.setAttribute("d", d + " Z");
         }
         var desc = bodyXY(A.desc.x, A.desc.y);
-        var camB = bodyXY(A.camX, A.camY);
-        var sw = swing(pivotWork, angWork, desc.x, desc.y);
-        var sb = swing(pivotBack, angBack, camB.x, camB.y);
-        // straight to the angle, with nothing damping it: any lag is a kink at the join
-        angWork = sw.want; angBack = sb.want;
-        if (hangWork) { hangWork.style.transform = "rotate(" + angWork.toFixed(2) + "deg)"; }
-        if (hangBack) { hangBack.style.transform = "rotate(" + angBack.toFixed(2) + "deg)"; }
-        var knotW = swing(pivotWork, angWork, desc.x, desc.y);
-        var knotB = swing(pivotBack, angBack, camB.x, camB.y);
+        // The backup carabiner up in the mark faces where its rope actually goes — the ASAP's
+        // mouth, not the device's centre. Aim it anywhere else and the drawn cord leaves the knot
+        // at one angle while the painted rope leaves at another, which tears the join open.
+        var camB = bodyXY(A.asapIn.x, A.asapIn.y);
+        /* Each carabiner turns to FACE ITS LOAD, and its knot and cord turn with it — they are one
+           piece of hardware hanging in the hanger's eye, so the rope must leave the knot along the
+           cord and not at an angle to it. Turn the image and the cord's end together, by the same
+           angle about the same point, and the join cannot kink. That is the owner's ask: carabiner,
+           knot and rope following the drag as one thing.
+           Note the minus: a positive CSS rotation is clockwise, and rotating a point that hangs
+           BELOW the pivot clockwise moves it LEFT. Without it the carabiner leans away from its
+           rope instead of towards it. */
+        function swingTo(el, piv, off, tx, ty) {
+          var ang = Math.atan2(-(tx - piv.x), Math.max(1, ty - piv.y)) * 57.2957795;
+          if (el) el.style.transform = "rotate(" + ang.toFixed(2) + "deg)";
+          var r = ang * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+          return { x: piv.x + off.x * c - off.y * s, y: piv.y + off.x * s + off.y * c };
+        }
+        var knotW = swingTo(caraWork, pivotWork, stemOffWork, desc.x, desc.y);
+        var knotB = swingTo(caraBack, pivotBack, stemOffBack, camB.x, camB.y);
         ropeCeil = Math.max(knotW.y, knotB.y);             // trackBounds keeps him below both
         /* The rope ends are anchored to the BOTTOM OF THE PAGE, not to the window: their end sits
            this far above the end of the document, so while you scroll through home / about /
@@ -1926,13 +2139,16 @@
           var ty = 2 * mt * (c.y - y0) + 2 * t * (y1 - c.y);
           return knotD(kx, kyy, Math.atan2(ty, tx));
         }
-        /* Below his devices each rope LEAVES ALONG HIS BODY and only then falls back to vertical,
-           instead of running dead straight to its anchored end. That is drawn as a quadratic
-           curve whose control point sits along his lean — so when he swings, the rope stays
-           gripped in the hand and bends below it, rather than pivoting through the fist. */
-        function ctrlFor(hx, hy, ey) {                // control point: leaves along his lean
+        /* Below his devices each rope HANGS PLUMB — straight down from the device under gravity.
+           Only its free end trails when he swings; hold him off to one side and the tail settles
+           back to vertical. Drawn as a quadratic whose control point sits DIRECTLY BELOW the
+           device, so the rope leaves it vertically and the only sideways bend is whatever the
+           lagging end (freeEnd, on its own returning spring) puts in. It used to lean along his
+           body via sinR/cosR — but that lean stays put while he is held, so the rope read as a
+           permanent bow instead of a plumb line, which is not how a loose rope hangs. */
+        function ctrlFor(hx, hy, ey) {                // control point straight below the device
           var len = Math.max(1, ey - hy);
-          return { x: hx + sinR * len * 0.45, y: hy + cosR * len * 0.45 };
+          return { x: hx, y: hy + len * 0.45 };
         }
         /* A rope does not stretch. The free end below a device trails behind it when he swings,
            but it stays the SAME DISTANCE from that device — so the sideways lag has to be paid
@@ -1947,37 +2163,85 @@
         function hangQ(c, ex, ey) {                   // the curve only — prefix it with its own M
           return " Q " + c.x.toFixed(1) + " " + c.y.toFixed(1) + " " + ex.toFixed(1) + " " + ey.toFixed(1);
         }
-        // BACKUP rope, behind: fixed at the top, bending at his cam, loose end below him
-        var cam = bodyXY(A.camX, A.camY), camX = cam.x, camYpx = cam.y;
+        /* BACKUP rope, behind: fixed at the top, THREADED THROUGH the ASAP, loose end below him.
+           Two bends, not one. The device grips the rope over its own length, so the rope goes
+           straight from the knot to the device's mouth, straight down the channel inside it, and
+           only then hangs free. Both of those bends are body points, so the whole run turns with
+           him — drag him and the two segments either side of the device change angle about it,
+           which is what a rope in a fall arrester does. */
+        var ropeIn = camB, ropeOut = bodyXY(A.asapOut.x, A.asapOut.y);
+        var camX = ropeOut.x, camYpx = ropeOut.y;      // the free hang starts where it leaves
         var backEnd = freeEnd(camX, camYpx, endB, swayFree - sway);
         var backCtl = ctrlFor(camX, camYpx, backEnd.y);
         setSeg(rBackO, rBackI,
           "M " + knotB.x.toFixed(1) + " " + knotB.y.toFixed(1) +
+          " L " + ropeIn.x.toFixed(1) + " " + ropeIn.y.toFixed(1) +
           " L " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
           hangQ(backCtl, backEnd.x, backEnd.y));
         setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise, trueEndB));
         /* WORKING rope, IN FRONT: off-screen top → descender (grows as he descends). Front layer
            so it crosses over the absorber and rests on the descender.
-           It STOPS at A.desc, which is a point on the descender's own outline, and the drawn end
-           is pulled back half a stroke so the round cap's tip lands exactly on it. That point is
-           the rope's pivot: swing him and the rope turns about it instead of sliding along the
-           device.
-           It used to run on PAST the device and be hidden by a half-plane clip along that outline
-           — and the tip you actually saw was wherever the rope happened to cross the cut line.
-           This rope is the one thing that turns relative to the body (its far end is the anchor at
-           the top of the page, which does not travel with him), so that crossing swept: measured
-           over a full drag it ran from artwork px (246,224) out to (184,280), and at the angle
-           where the rope came parallel to the cut line it degenerated completely. No reference
-           point can fix that — a half-plane is simply the wrong tool for a line that rotates
-           through 125°. With a real endpoint there is nothing left to clip. */
+           It ENDS at A.desc, a point on the descender's own outline, and that point is its pivot:
+           swing him and the rope turns about it instead of sliding along the device. It then runs
+           a little past and is cut flat along the same outline, so the device covers it.
+           The endpoint is the part that matters, and it is what an earlier version was missing.
+           Back then the rope simply ran on past the device under a half-plane clip, and the tip you
+           actually saw was wherever the rope happened to cross the cut line. This rope is the one
+           thing that turns relative to the body (its far end is the anchor at the top of the page,
+           which does not travel with him), so that crossing swept: measured over a full drag it ran
+           from artwork px (246,224) out to (184,280), and where the rope came parallel to the line
+           it degenerated completely. Pinned at A.desc the crossing cannot move, and the clip is
+           back to doing the one job it is good at — hiding an overshoot of a few pixels. */
         var dscEnd = bodyXY(A.desc.x, A.desc.y);
         var kdx = dscEnd.x - knotW.x, kdy = dscEnd.y - knotW.y;
         var kdl = Math.sqrt(kdx * kdx + kdy * kdy) || 1;
         var capBack = Wn * A.ropeW / 2;      // half a stroke; sizeRopes sets --rope-w from the same
-        setSeg(rWupO, rWupI,
-          "M " + knotW.x.toFixed(1) + " " + knotW.y.toFixed(1) +
-          " L " + (dscEnd.x - (kdx / kdl) * capBack).toFixed(1) + " " +
-                  (dscEnd.y - (kdy / kdl) * capBack).toFixed(1));
+        /* The two strands of this rope do NOT start in the same place, and that is the point.
+           The rope is a light core inside a black outline, both round-capped, and the outline's cap
+           reaches half a stroke further back than the core's — so where the rope leaves the knot it
+           showed a black crescent, and the knot and the rope read as two things butted together
+           instead of one line. The BACKUP rope never had it: that one is painted behind the mark,
+           so its start is under the drawing. This one has to stay in front of the technician or it
+           vanishes under his shock absorber, so it cannot hide the same way.
+           Instead the CORE starts further back than the outline and covers it. The core then pokes
+           a hair past the outline into the drawn cord, which is the same colour, so nothing shows.
+           Keep the two setAttribute calls separate — setSeg would give both strands one path. */
+        /* The far end runs a little PAST A.desc and is shaved off flat along the descender's own
+           top outline by the clip (see applyCut below and A.descTuck). Both strands end together
+           there: the cut edge lies on the outline, the artwork's black outline carries straight on
+           below it, and the rope reads as running on BEHIND the device instead of stopping on top
+           of it. The owner drew that missing stretch of outline on a grid in red.
+           THE OVERSHOOT GOES INTO THE DEVICE, NOT ALONG THE ROPE. A.desc is a point on the device
+           and turns with it, but the rope's DIRECTION swings independently — so an overshoot
+           measured along the rope walked the end around the device as he was dragged, and
+           somewhere in the middle of the pull it walked off the edge and the tip stood out in the
+           open. Measured square to the device's own outline instead, the end goes the same
+           distance into the same edge at every angle.
+           ...but the overshoot is a SEPARATE SEGMENT, not a new endpoint for the whole rope, and
+           that is what keeps the rope plumb. The outline is slanted, so square into it means 3.3px
+           SIDEWAYS as well as down; aiming the one long line at that moved end tipped the entire
+           rope 1.7°. So the path is knot -> A.desc -> into the device: the first leg is the rope
+           you see, the second is the buried stub, and the corner between them sits ON A.desc,
+           which is the middle of the outline, so the clip takes it off with the stub. */
+        var c1 = art(A.cutWork.x1, A.cutWork.y1), c2 = art(A.cutWork.x2, A.cutWork.y2);
+        var cdx = c2.x - c1.x, cdy = c2.y - c1.y, cdl = Math.sqrt(cdx * cdx + cdy * cdy) || 1;
+        var cnx = -(cdy / cdl), cny = (cdx / cdl);
+        if ((knotW.x - c1.x) * cnx + (knotW.y - c1.y) * cny > 0) { cnx = -cnx; cny = -cny; }
+        var depth = Wn * A.ropeW * A.descTuck;
+        var wMid = " L " + dscEnd.x.toFixed(1) + " " + dscEnd.y.toFixed(1);
+        var wEnd = " L " + (dscEnd.x + cnx * depth).toFixed(1) + " " + (dscEnd.y + cny * depth).toFixed(1);
+        rWupO.setAttribute("d",
+          "M " + knotW.x.toFixed(1) + " " + knotW.y.toFixed(1) + wMid + wEnd);
+        rWupI.setAttribute("d",
+          "M " + (knotW.x - (kdx / kdl) * capBack).toFixed(1) + " " +
+                 (knotW.y - (kdy / kdl) * capBack).toFixed(1) + wMid + wEnd);
+        /* The cut itself. knotW is the point on the side that STAYS — it is the rope's other end,
+           far above the device, so it can never fall on the wrong side of the line however he
+           swings. */
+        applyCut(wrkP, A.cutWork, knotW.x, knotW.y);
+        // ...and the hand it passes behind. Always applied — at rest the rope is clear of the hand
+        // and the hole simply has nothing in it; it earns its keep once he is dragged sideways.
+        applyHole(fistP, A.fist);
         // ...and its TIP, behind the figure: starts above the cut so no seam shows between the
         // two layers, and dies under the descender.
         setSeg(rWtipO, rWtipI, "M " + pt(A.desc.x, (A.cutWork.y2 / 686) - 0.01) + " L " + pt(A.desc.x, A.descTipY));
@@ -1988,21 +2252,58 @@
         var hand = bodyXY(A.brake.x, A.brake.y), handX = hand.x, handY = hand.y;
         var workEnd = freeEnd(handX, handY, endW, tail2Sway - sway);
         var workCtl = ctrlFor(handX, handY, workEnd.y);
+        /* A.brake IS THE HINGE. The rope comes into the fist from the thumb side and leaves it
+           downwards, and the corner between those two is what the owner marked: everything below
+           turns about that point and the exit itself never moves.
+           So the buried lead-in runs back towards brakeIn, where the rope entered the hand — a
+           fixed direction, part of him. It was aimed along the hanging curve's own start for a
+           while, and that was the fault: the stub then swung with the curve, carrying the visible
+           corner around with it and poking out of the glove on a hard swing. The stub is there
+           only to hide the path's round cap under the glove; it must not move.
+           This tail is painted BEHIND him, so the glove covers it without any cutting. */
+        var inDir = bodyXY(A.brakeIn.x, A.brakeIn.y);
+        var tux = inDir.x - handX, tuy = inDir.y - handY;
+        var tul = Math.sqrt(tux * tux + tuy * tuy) || 1;
         setSeg(rWloO, rWloI,
-          "M " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workEnd.x, workEnd.y));
+          "M " + (handX + (tux / tul) * (A.brakeTailUp * Wn)).toFixed(1) + " " +
+                 (handY + (tuy / tul) * (A.brakeTailUp * Wn)).toFixed(1) +
+          " L " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workEnd.x, workEnd.y));
         setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workEnd.x, workEnd.y, workEnd.y - A.knotRise, trueEndW));
         // WORKING rope brake strand, in front: gripping hand → brake hand, trimmed at both
         // ends so the hands appear to hold it instead of the rope lying across them.
         var pa = bodyXY(A.descOut.x, A.descOut.y), ax = pa.x, ay = pa.y;
         var pb = bodyXY(A.brakeIn.x, A.brakeIn.y), bx = pb.x, by = pb.y;
         var vx = bx - ax, vy = by - ay, len = Math.sqrt(vx * vx + vy * vy) || 1;
-        // The strand now runs all the way INTO the fist and is cut along the glove's outline
-        // (A.cutBrake) instead of being stopped short of it with a rounded end — the same
-        // treatment the working rope gets at the descender. Keep the side it comes from.
-        setSeg(rBrkO, rBrkI,
-          "M " + (ax + (vx / len) * A.brakeTrimTop).toFixed(1) + " " + (ay + (vy / len) * A.brakeTrimTop).toFixed(1) +
+        /* The strand runs past BOTH ends of its visible stretch and is cut flat at each: into the
+           fist along the glove's outline (A.cutBrake), and back into the descender along its mouth
+           (A.cutDescOut). Neither end is a rounded cap any more — a rope running through a hand
+           and out of a device does not end at either place.
+           The two strands are not the same length at the top. The OUTLINE goes right up past the
+           mouth, the CORE stops brakeTopBand short of it, so the last stretch before the cut is
+           solid black: that is the device's edge closing over the rope, the band the owner marked.
+           Both are cut on the same line, so it ends as a straight black diagonal.
+           Keep-side for each cut is the OTHER end of the strand — the one point that is always
+           safely on the side that stays. */
+        var ux = vx / len, uy = vy / len;
+        /* Both ends of the top are measured from where the strand's axis actually CROSSES the
+           mouth, not from descOut. They are not the same point — descOut sits a little past the
+           line — and at a 19° crossing that little turns into 1.6px along the rope, which is most
+           of the band. Solved, not assumed: the axis is a + t*u, the mouth is m1 + r*m, and
+           crossing one with the other leaves t. */
+        var m1 = art(A.cutDescOut.x1, A.cutDescOut.y1), m2 = art(A.cutDescOut.x2, A.cutDescOut.y2);
+        var mdx = m2.x - m1.x, mdy = m2.y - m1.y;
+        var mden = ux * mdy - uy * mdx;
+        var tCut = mden ? ((m1.x - ax) * mdy - (m1.y - ay) * mdx) / mden : 0;
+        rBrkO.setAttribute("d",
+          "M " + (ax + ux * (tCut - A.brakeTopOver * Wn)).toFixed(1) + " " +
+                 (ay + uy * (tCut - A.brakeTopOver * Wn)).toFixed(1) +
+          " L " + bx.toFixed(1) + " " + by.toFixed(1));
+        rBrkI.setAttribute("d",
+          "M " + (ax + ux * (tCut + A.brakeTopBand * Wn)).toFixed(1) + " " +
+                 (ay + uy * (tCut + A.brakeTopBand * Wn)).toFixed(1) +
           " L " + bx.toFixed(1) + " " + by.toFixed(1));
         applyCut(brkP, A.cutBrake, ax, ay);
+        applyCut(dscOutP, A.cutDescOut, bx, by);
       }
 
       var targetY = 0, currentY = 0, targetRot = 0, currentRot = 0, targetSway = 0, currentSway = 0;
@@ -2375,10 +2676,12 @@
         card.setAttribute("aria-expanded", "true");
         card.classList.add("svc-lit");                   // turns the chevron over and lights it
 
-        /* The strip holds a copy of the card's title, summary and list — the summary included,
-           because a closed card hides it (see "Compact:" in the stylesheet), so the opened strip
-           is the only place it is read. The clones keep their data-ka / data-en attributes, so
-           the language toggle reaches them like anything else. */
+        /* The strip holds a copy of the card's summary and list — NOT its title: the card it
+           opens from stays in the grid with its title showing, so repeating it here just read as
+           the same heading twice. The summary is included because a closed card hides it (see
+           "Compact:" in the stylesheet), so the opened strip is the only place it is read. The
+           clones keep their data-ka / data-en attributes, so the language toggle reaches them
+           like anything else. */
         strip = document.createElement("div");
         strip.className = "svc-strip";
         var box = document.createElement("div");
@@ -2394,7 +2697,11 @@
             "linear-gradient(155deg, rgba(6,8,16,.5) 0%, rgba(6,8,16,.78) 58%, rgba(6,8,16,.93) 100%)," +
             " url('" + bg + "')";
         }
-        ["h3", "p", "ul"].forEach(function (sel) {
+        /* Only the bullet list is cloned into the opened strip now. The summary <p> (and the h3
+           before it) were dropped from the clone at the owner's request — both read as a redundant
+           heading above the list. The <p> still exists in each card's markup as hidden data
+           (display:none in the closed card), so nothing is lost if it is ever wanted back. */
+        ["ul"].forEach(function (sel) {
           var el = card.querySelector(sel);
           if (el) box.appendChild(el.cloneNode(true));
         });
