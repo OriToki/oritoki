@@ -31,6 +31,11 @@ param(
   [string]$Src = "C:\Users\gilmo\OneDrive\Desktop\try.png",
   [string]$OutDir = "C:\Users\gilmo\OneDrive\Documents\GitHub\oritoki\images",
   [int]$ShipW = 760,          # width the page loads; the frame is the MAN's own box
+  # How far apart the two ropes are, as a fraction of the strip. NOT a free number: it is the
+  # header mark's two stems, (stemBackX - stemWorkX) * markW = 0.17278 * markW, and markW is
+  # 0.7153 of a 116px strip. Widen the strip and the mark has to shrink by the same factor to
+  # keep its size on screen, so this comes down with it — 0.09557 at a 150px strip.
+  [double]$Sep = 0.09557,
   # --- everything below is in part 1's own pixels (the man, 1097 x 1236) -------------------
   # Where the working rope dies inside the RIG. The device's body runs x 498..580, y 398..495;
   # this sits in its left half so the rope and the absorber diverge going up instead of
@@ -65,9 +70,12 @@ $asap = New-Object System.Drawing.Bitmap((Join-Path $tmp "part-3.png"))
 $FW = $man.Width; $FH = $man.Height          # the frame IS the man's box
 
 # --- solve the placement --------------------------------------------------------------------
-# The mark's two stems, 0.12359 of the strip apart, are what fixes this. Everything else bends.
-$SEP = 0.12359 * $FW
-$holeGX = $DescX + $SEP                       # where the ASAP's hole has to land
+# The mark's two stems are what fixes this ($Sep). Everything else bends.
+# NOT $SEP: PowerShell variable names are case-insensitive, so $SEP IS the parameter $Sep, and
+# assigning to it here silently overwrote the fraction with a pixel count — which came straight
+# back out in the markLeft line printed at the end. The trap CLAUDE.md warns about.
+$sepPx = $Sep * $FW
+$holeGX = $DescX + $sepPx                     # where the ASAP's hole has to land
 $asapLeft = $holeGX - $HoleX
 $asapTop  = $AsapY - $AsapConnY
 # the absorber has to run from the harness ring to the ASAP's connection point
@@ -83,7 +91,7 @@ $scale = $needLen / $haveLen
 $rot   = $needAng - $haveAng
 
 "frame (the man's own box): $FW x $FH"
-"rope separation needed: {0:N1} px  ->  working rope x {1:N0}, ASAP hole x {2:N1}" -f $SEP, $DescX, $holeGX
+"rope separation needed: {0:N1} px  ->  working rope x {1:N0}, ASAP hole x {2:N1}" -f $sepPx, $DescX, $holeGX
 "absorber: {0:N1} px at {1:N2} deg  ->  {2:N1} px at {3:N2} deg   (scale {4:N3}, turn {5:N2} deg)" -f `
   $haveLen, $haveAng, $needLen, $needAng, $scale, $rot
 "ASAP box: x {0:N0}..{1:N0}  y {2:N0}..{3:N0}" -f $asapLeft, ($asapLeft + $asap.Width), $asapTop, ($asapTop + $asap.Height)
@@ -179,7 +187,8 @@ $body.Dispose(); $front.Dispose()
 "--- for index.html's A table, as fractions of $ShipW x $SH ---"
 "  desc     {0:N4} , {1:N4}" -f ($DescX / $FW), ($DescY / $FH)
 "  backupX  {0:N4}   (= camX; the ASAP's hole)" -f ($holeGX / $FW)
-"  markLeft {0:N4}   (= desc.x - 0.73935*0.7153 - 0.001443)" -f ($DescX / $FW - 0.528957 - 0.001443)
+"  markLeft {0:N4}   (= desc.x - stemWorkX*markW - 0.001443, markW = {1:N5})" -f `
+  ($DescX / $FW - 0.73935 * ($Sep / 0.17278) - 0.001443), ($Sep / 0.17278)
 foreach ($n in @("man-body.png", "man-front.png")) {
   $fi = Get-Item (Join-Path $OutDir $n)
   "  {0,-15} {1,5} KB" -f $n, [math]::Round($fi.Length / 1KB)

@@ -80,9 +80,18 @@ between two layers of him. What matters when touching it:
   ropes have to be bent to reach it. With the gear separate, the ASAP is *placed* on the rope and
   the absorber is stretched and leaned to reach the ASAP.
 - **The one thing nothing can change** is the gap between the two ropes: they hang from the two
-  stems of the header mark, 0.12359 of the strip apart. `climber-compose.ps1` **solves** the
-  ASAP's position from that (`$SEP`), so both ropes are dead plumb and neither device was shoved
-  sideways — a first.
+  stems of the header mark, `0.17278 × markW` of the strip. `climber-compose.ps1` **solves** the
+  ASAP's position from that (its `-Sep`), so both ropes are dead plumb and neither device was
+  shoved sideways — a first.
+- **`--worker-width` is 150, and the size is what decides whether he reads.** At 116 his harness
+  straps averaged into one grey haze across his chest and hips; the owner called it tangled and
+  he was right. Rendered at 116 / 134 / 150 / 170 they start separating at 134 and are distinct
+  straps at 150. **The strip can grow without moving anything else:** `A.markW` comes down by the
+  same factor (0.7153 → 0.5531) so the lockup keeps its exact size, `A.markLeft` is re-solved,
+  `--climber-left` comes in by what the mark moved, and `A.ropeW` comes down too because the
+  rope is pinned to the mark's drawn cord. Verified: the lockup's ink starts on the same device
+  pixel before and after, and both ropes land on the same screen x. Phones scale by the same
+  factor (86 → 111), because `markW` is one number for both breakpoints.
 - **Two layers, and only two pieces in the front one:** `man-body.png` under the ropes,
   `man-front.png` (the RIG with its carabiner, and the brake glove) over them. Those are the only
   places a front rope ENDS. **Nothing else may be lifted into the front layer** — the owner asked

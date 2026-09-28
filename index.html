@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!--
   =====================================================================
    ORITOKI (LTD Oritoki / შპს ორითოკი) — Industrial Rope Access
@@ -152,23 +152,28 @@
     :root {
       /* This one width drives the technician and the rope spacing together: the two rope
          x-positions are fractions of it, so shrinking him pulls the ropes closer as well. */
-      /* 190, not 116. Measured, not chosen: the technician was rendered at 116 / 150 / 190 / 240
-         with the PNG rebuilt to match each width exactly - one file pixel per screen pixel, so
-         nothing was left for the browser to resample - and the four were compared at the same
-         magnification. 116 is mush and no amount of sharpening or resolution fixes it, because
-         the drawing simply carries more detail than 116 pixels can hold; the quality steps up at
-         190 and is clean at 240. (scratchpad/sizetest.ps1 reruns the whole comparison.) */
-      --worker-width: 116px;        /* technician width (desktop); EVERYTHING scales with it — the
+      /* 150, NOT 116, and it is the size that decides whether he reads at all. Rendered at
+         116 / 134 / 150 / 170 side by side: at 116 his harness straps average into one grey
+         haze across his chest and hips — the owner called it tangled, and he was right. They
+         start separating at 134 and are distinct straps at 150. It is the same fault the
+         drawing before this one had; no sharpening fixes it, because the drawing simply carries
+         more line than 116 pixels can hold.
+         THE STRIP CAN GROW WITHOUT MOVING ANYTHING ELSE. A.markW comes down by the same factor
+         (0.7153 -> 0.5531), so the lockup keeps its exact size in the bar; A.markLeft is
+         re-solved and --climber-left comes in by what the mark moved, so the mark and BOTH
+         ropes land on the same screen pixels they did at 116 — only the man is bigger. A.ropeW
+         comes down the same way, so the rope stays the weight of the mark's drawn cord. */
+      --worker-width: 150px;        /* technician width (desktop); EVERYTHING scales with it — the
                                      lockup, both anchors, the ropes and their pivots are all
                                      fractions of it, so this one number is the size of the whole
                                      strip. The ceiling is the header: the lettering's bottom lands
                                      at 4 + 0.685 x this, and it has to stay inside the 88px bar,
                                      so 116 leaves about 4px. Past that the header has to grow. */
       /* Distance from the LEFT viewport edge — moves the technician and both ropes together.
-         49, not 52: the mark moved 3.1px the other way when the figure was replaced (A.markLeft,
-         -0.0904 -> -0.0637), and the mark is positioned FROM the strip, so the two cancel. The
-         lockup stays on screen exactly where it was and the man shifts instead. */
-      --climber-left: 49px;
+         It is solved, not chosen: the mark hangs at --climber-left + A.markLeft * --worker-width,
+         and that sum has to stay at 41.6px however wide the strip gets. 33 + 150*0.0563 = 41.4.
+         (52 at the old flat figure, 49 at 116px with this one, 33 now that the strip is 150.) */
+      --climber-left: 33px;
       /* How high above the window's bottom edge the technician's boots stop, at the very end of
          the page. It has to clear the HIGHER of the two rope ends and its stopper knot
          (A.ropeEndGapWork + A.knotRise in the script), so the knots hang visibly below him rather than behind his
@@ -203,14 +208,14 @@
        absorber (see #ropeFront) — so the mark goes over the top of everything instead, the
        climber included.
        pointer-events because the strip around it is click-through. */
-    #brandRope { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.0637);
-                 width: calc(var(--worker-width) * 0.7153); z-index: 5; display: block;
+    #brandRope { position: absolute; top: 4px; left: calc(var(--worker-width) * 0.0563);
+                 width: calc(var(--worker-width) * 0.5531); z-index: 5; display: block;
                  pointer-events: auto; }
     #brandRope img { display: block; width: 100%; height: auto; }
     /* The two moving pieces share #brandRope's box exactly — they are cut from the same drawing on
        the same canvas — so they need no alignment of their own, only the same left/width/top. */
-    .lock-piece { position: absolute; top: 4px; left: calc(var(--worker-width) * -0.0637);
-                  width: calc(var(--worker-width) * 0.7153); height: auto;
+    .lock-piece { position: absolute; top: 4px; left: calc(var(--worker-width) * 0.0563);
+                  width: calc(var(--worker-width) * 0.5531); height: auto;
                   z-index: 1; display: block; pointer-events: none; }
     /* Where each carabiner hangs in its hanger's eye — the owner marked both points on a grid of
        the live page. Turning about anything else drags the carabiner out from under its hanger and
@@ -297,8 +302,11 @@
        width that the wordmark hangs to the LEFT of the ropes (plus a couple of px of margin), or
        the "t" runs off the screen — 72 x 0.1362 = 9.8, so 22 leaves 12.2px. */
     @media (max-width: 640px) {
-      :root { --climber-left: 20px; --worker-width: 86px; }   /* phones: the 68px bar allows 86;
-                                       20 is 22 less the same 0.0267-of-the-strip the mark moved */
+      /* Phones scale by the SAME factor as the desktop (x150/116), or A.markW — one number for
+         both breakpoints — would shrink the lockup here. 111 * 0.5531 = 61.4, which is the
+         61.5 it was at 86 * 0.7153; and 8 + 111 * 0.0563 = 14.2 puts the mark on the same
+         screen pixel as 20 + 86 * -0.0637 did. */
+      :root { --climber-left: 8px; --worker-width: 111px; }
       #header { height: 68px; }          /* shorter bar on phones — the lockup's knots end at 63 */
       #langToggle button { padding: 4px 8px; }
       #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
@@ -889,7 +897,7 @@
          the lettering. -->
     <img class="lock-piece" id="lockBarLow" src="images/logo-barlow.png?v=17" alt="" draggable="false" />
     <img class="lock-piece" id="caraWork" src="images/logo-work.png?v=17" alt="" draggable="false" />
-    <img id="climber" src="images/man-body.png?v=4" alt="" draggable="false" />
+    <img id="climber" src="images/man-body.png?v=5" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
       <!-- No clipPaths. Both of these ropes END INSIDE the thing they run into — the working
            rope a few pixels down in the descender, the brake strand in the descender at one end
@@ -903,7 +911,7 @@
     </svg>
     <!-- The descender with its carabiner, and the brake glove — the pieces that paint OVER the
          ropes, so each rope can die inside them. Same canvas and transform as #climber. -->
-    <img id="climberFront" src="images/man-front.png?v=4" alt="" draggable="false" />
+    <img id="climberFront" src="images/man-front.png?v=5" alt="" draggable="false" />
     <!-- ORITOKI: "or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
          standing in for each dotted i, and the rope running on out of each knot. ONE image, the
          owner's finished drawing cropped to its own ink by tools/logo-mark.ps1 and otherwise
@@ -1685,7 +1693,10 @@
              stroke: 2*black + 0.161*core = 0.775 at core share 0.630 gives a strand of 1.64.
            1.63 CSS px is the pair of them, /116 = 0.01405. The old 0.0129 came off the PREVIOUS
            1059-wide drawing and left the rope a fifth thin — a step where it leaves the knot. */
-        ropeW: 0.01405,              // 1.63px at a 116px strip — a whole strand, outline included
+        ropeW: 0.01087,              // 1.63px at a 150px strip — a whole strand, outline included.
+                                     // It came down from 0.01405 when the strip went 116 -> 150:
+                                     // this is pinned to the MARK's drawn cord, and the mark did
+                                     // not grow, so the fraction has to shrink with it.
         ropeCore: 0.630,             /* the light core's share of the whole strand — 4.86 of 7.8
                                         drawing px, which puts 0.30 CSS px of black each side, the
                                         drawn cord's own outline weight.
@@ -1708,8 +1719,8 @@
            stems and lengthens the absorber to reach it. Every figure before this one had its
            devices drawn in, so the ropes had to lean or the hardware had to be shoved across
            his chest. */
-        backupX: 0.5903,             // backup rope, top — and its whole line, since camX matches
-        camX: 0.5903,                // = backupX; = shipped x 448.6, the middle of the ASAP's hole
+        backupX: 0.5623,             // backup rope, top — and its whole line, since camX matches
+        camX: 0.5623,                // = backupX; = shipped x 427, the middle of the ASAP's hole
         camY: 0.1424,                // and how far down the figure that is — kept for the drag
                                      // track; the rope itself bends at asapIn / asapOut
         /* WHERE THE BACKUP ROPE MEETS THE ASAP. It does not simply bend AT the device — the device
@@ -1721,8 +1732,8 @@
            body and the hole lets it show through, with nothing cut and nothing clipped. These two
            points are just the device's top and bottom edges (shipped y 67 and 124), a few pixels
            in, so neither bend ever shows. */
-        asapIn:  { x: 0.5903, y: 0.0809 },   // = (448.6, 69) of the 760x856 artwork
-        asapOut: { x: 0.5903, y: 0.1424 },   // = (448.6, 122)
+        asapIn:  { x: 0.5623, y: 0.0809 },   // = (427, 69) of the 760x856 artwork
+        asapOut: { x: 0.5623, y: 0.1424 },   // = (427, 122)
         /* The MAIN WORKING rope hangs plumb: its top and the descender it runs into share an x, so
            at rest it is dead vertical. That is what the mark is positioned by. */
         workTopX: 0.4667,            // = A.desc.x, and A.markLeft is solved from it
@@ -1795,8 +1806,8 @@
            rope is 0.18px off plumb over its whole run - a fifth of a pixel across the header.
            UPPER stem = MAIN WORKING rope, LOWER stem = BACKUP — the owner's call. */
         brandTop: 4,                 // where the lockup sits, matching #brandRope's own top
-        markW: 0.7153,               // of the strip  \ keep in step with #brandRope
-        markLeft: -0.0637,           // of the strip  /   ~ A.desc.x - stemWorkX * markW (see above)
+        markW: 0.5531,               // of the strip  \ keep in step with #brandRope
+        markLeft: 0.0563,            // of the strip  /   ~ A.desc.x - stemWorkX * markW (see above)
         markAspect: 1160 / 1059,     // the artwork's own height / width
         /* The RIGHT-HAND strand under each knot — the rope. The left one is the knot's leftover
            tail and stops there, so hanging the rope off the midpoint of the pair (as this first
