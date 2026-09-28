@@ -190,7 +190,10 @@ $gs.DrawImage($comp, (New-Object System.Drawing.Rectangle 0, 0, $ShipW, $SH), (N
 $gs.Dispose(); $comp.Dispose()
 
 # --- the cut, in the man's own pixels then scaled ------------------------------------------
-# The RIG with its carabiner, and the brake glove. Nothing else: see the header.
+# THREE layers, not two, and the middle one is why: the owner drew the brake rope running
+# ACROSS the descender's face, with a hook to the left where it leaves. So the strand has to be
+# painted OVER the device and still UNDER the glove it runs into, and one front layer cannot do
+# both. The page stacks them body -> working rope -> descender -> brake strand -> glove.
 # THE DESCENDER, AND NOTHING ELSE. This is the owner's own outline, drawn in yellow on a grid
 # sheet and read back row by row - not a box guessed round the device.
 # The polygon it replaced reached from y 402 down to 584 and swallowed the carabiner, the waist
@@ -210,39 +213,46 @@ function ScaledPoly($flat, $kk) {
   }
   return $pts
 }
-$mask = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-$gm = [System.Drawing.Graphics]::FromImage($mask)
-$gm.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::None    # exact complements
-$gm.Clear([System.Drawing.Color]::Black)
-foreach ($f in @($RIG, $GLOVE)) {
-  $gm.FillPolygon((New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::White)), (ScaledPoly $f $k))
+function MaskOf($flat) {
+  $m = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $gm = [System.Drawing.Graphics]::FromImage($m)
+  $gm.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::None    # exact complements
+  $gm.Clear([System.Drawing.Color]::Black)
+  $gm.FillPolygon((New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::White)), (ScaledPoly $flat $k))
+  $gm.Dispose()
+  return $m
 }
-$gm.Dispose()
+$mRig = MaskOf $RIG
+$mGlv = MaskOf $GLOVE
 
 $body  = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-$front = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$rig   = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+$glove = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
 $diff = 0
 for ($iy = 0; $iy -lt $SH; $iy++) {
   for ($ix = 0; $ix -lt $ShipW; $ix++) {
     $px = $small.GetPixel($ix, $iy)
     if ($px.A -eq 0) { continue }
-    if ($mask.GetPixel($ix, $iy).R -gt 127) { $front.SetPixel($ix, $iy, $px) } else { $body.SetPixel($ix, $iy, $px) }
+    # the glove wins a tie, but the two polygons are nowhere near each other
+    if ($mGlv.GetPixel($ix, $iy).R -gt 127)      { $glove.SetPixel($ix, $iy, $px) }
+    elseif ($mRig.GetPixel($ix, $iy).R -gt 127)  { $rig.SetPixel($ix, $iy, $px) }
+    else                                         { $body.SetPixel($ix, $iy, $px) }
   }
 }
-# restack check: body then front must reproduce the composed figure exactly
+# restack check: body, then rig, then glove must reproduce the composed figure exactly
 for ($iy = 0; $iy -lt $SH; $iy++) {
   for ($ix = 0; $ix -lt $ShipW; $ix++) {
     $a = $small.GetPixel($ix, $iy)
-    $f = $front.GetPixel($ix, $iy)
-    $b = $body.GetPixel($ix, $iy)
-    $r = if ($f.A -ne 0) { $f } else { $b }
+    $gl = $glove.GetPixel($ix, $iy); $rg = $rig.GetPixel($ix, $iy); $b = $body.GetPixel($ix, $iy)
+    $r = if ($gl.A -ne 0) { $gl } elseif ($rg.A -ne 0) { $rg } else { $b }
     if ($r.A -ne $a.A -or ($a.A -ne 0 -and ($r.R -ne $a.R -or $r.G -ne $a.G -or $r.B -ne $a.B))) { $diff++ }
   }
 }
-$small.Dispose(); $mask.Dispose()
+$small.Dispose(); $mRig.Dispose(); $mGlv.Dispose()
 $body.Save((Join-Path $OutDir "man-body.png"), [System.Drawing.Imaging.ImageFormat]::Png)
-$front.Save((Join-Path $OutDir "man-front.png"), [System.Drawing.Imaging.ImageFormat]::Png)
-$body.Dispose(); $front.Dispose()
+$rig.Save((Join-Path $OutDir "man-rig.png"), [System.Drawing.Imaging.ImageFormat]::Png)
+$glove.Save((Join-Path $OutDir "man-glove.png"), [System.Drawing.Imaging.ImageFormat]::Png)
+$body.Dispose(); $rig.Dispose(); $glove.Dispose()
 
 "shipped: $ShipW x $SH   (aspect {0:N4})" -f ($SH / $ShipW)
 "restack check: $diff pixels differ from the composed figure{0}" -f $(if ($diff -eq 0) { "  OK" } else { "  *** THE CUT IS WRONG, DO NOT SHIP ***" })
@@ -251,7 +261,7 @@ $body.Dispose(); $front.Dispose()
 "  backupX  {0:N4}   (= camX; the ASAP's hole)" -f ($holeGX / $FW)
 "  markLeft {0:N4}   (= desc.x - stemWorkX*markW - 0.001443, markW = {1:N5})" -f `
   ($DescX / $FW - 0.73935 * ($Sep / 0.17278) - 0.001443), ($Sep / 0.17278)
-foreach ($n in @("man-body.png", "man-front.png")) {
+foreach ($n in @("man-body.png", "man-rig.png", "man-glove.png")) {
   $fi = Get-Item (Join-Path $OutDir $n)
   "  {0,-15} {1,5} KB" -f $n, [math]::Round($fi.Length / 1KB)
 }

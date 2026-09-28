@@ -209,7 +209,7 @@
        climber included.
        pointer-events because the strip around it is click-through. */
     #brandRope { position: absolute; top: 4px; left: calc(var(--worker-width) * 0.0563);
-                 width: calc(var(--worker-width) * 0.5531); z-index: 5; display: block;
+                 width: calc(var(--worker-width) * 0.5531); z-index: 7; display: block;
                  pointer-events: auto; }
     #brandRope img { display: block; width: 100%; height: auto; }
     /* The two moving pieces share #brandRope's box exactly — they are cut from the same drawing on
@@ -230,9 +230,10 @@
        came out, and the nav sits centre/right, well clear of this 97px strip. Still below the
        service modal (z-120) and the search panel (z-130), which must cover everything. */
     #ropeClimber { position: fixed; left: var(--climber-left); top: 0; height: 100vh; width: var(--worker-width); z-index: 60; pointer-events: none; transition: opacity .25s ease; }
-    #ropeBack, #ropeFront { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    #ropeBack, #ropeFront, #ropeTop { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
     #ropeBack  { z-index: 1; }   /* rope parts that pass behind the body */
-    #ropeFront { z-index: 3; }   /* the working rope and the brake strand, in front of the body */
+    #ropeFront { z-index: 3; }   /* the working rope: in front of him, under the descender */
+    #ropeTop   { z-index: 5; }   /* the brake strand: OVER the descender, under the glove */
                                  /* both are under the z-4 lockup; see #brandRope */
     /* Braided-rope look matching the reference: light core + dark outline. Solid strokes give one
        constant colour (no shimmer, now that horizontal sway is disabled). */
@@ -258,30 +259,35 @@
        read as a highlight rather than a rope. The owner would rather they all match, and matching
        is also what keeps the knots clean: this colour is sampled off the lockup's drawn cord and
        the ropes run straight out of it, so any rope that differs shows a step where it leaves. */
-    /* THE TECHNICIAN IS TWO IMAGES and the ropes are painted BETWEEN them:
-         #climber      man-body.png   everything else            under the ropes
-         #ropeFront    the SVG ropes
-         #climberFront man-front.png  the RIG with its carabiner, and the brake glove
-       The front layer holds ONLY those two, because they are the only two places a front rope
-       ENDS — the working rope dies inside the descender, the brake strand runs out of it and
-       into the glove. Each rope simply stops a few pixels inside the ink that covers it, so
-       there is no visible end to place at any angle. That is what four clipPaths, a patch-cut
-       solver and a traced fist polygon used to be doing, all of it needed only because the
-       figure used to be one flat PNG.
-       NOTHING ELSE MAY BE LIFTED INTO THE FRONT LAYER. The owner asked for the working rope to
-       run in front of all the rest of him — the absorber and his gripping fist included — and
-       putting the fist up here is exactly the version he rejected: the rope vanished behind his
-       HAND a third of the way down instead of running on to the device.
+    /* THE TECHNICIAN IS THREE IMAGES and the ropes are painted BETWEEN them, in this order:
+         z2  #climber      man-body.png    everything else
+         z3  #ropeFront    the WORKING rope — in front of all of him, under the descender
+         z4  #climberRig   man-rig.png     the descender, and nothing else
+         z5  #ropeTop      the BRAKE strand — OVER the descender's face, under the glove
+         z6  #climberGlove man-glove.png   the brake glove
+       THE MIDDLE ROPE LAYER IS WHY THERE ARE THREE. The owner drew the brake rope running
+       across the descender's FACE, hooking left as it leaves, so it has to be over the device
+       and still under the hand it runs into — one front layer cannot do both.
+       Each rope still ends a few pixels inside the ink that covers it, so there is no visible
+       end to place at any angle. That is what four clipPaths, a patch-cut solver and a traced
+       fist polygon used to do, all of it needed only because the figure was one flat PNG.
+       NOTHING ELSE MAY BE LIFTED OUT OF THE BODY. The owner asked for the working rope to run
+       in front of all the rest of him — absorber and gripping fist included — and putting the
+       fist above it is the version he rejected: the rope vanished behind his HAND a third of
+       the way down instead of running on to the device. The carabiner under the descender
+       stays down here too, and correctly: the brake rope passes in FRONT of it.
        The BACKUP rope needs no piece at all. It is painted in the back layer, behind the whole
        figure, and his ASAP is drawn with a real HOLE in it, so the device hides the rope and
        the hole lets it through. Nothing is cut and nothing is clipped.
-       Both images are the same 760x856 canvas at the same position, so they need no alignment
-       of their own — only the same transform, which draw() writes to both.
-       No drop-shadow: the body layer has piece-shaped HOLES where those two were cut out, and a
-       drop-shadow would trace the inside of every hole. */
+       All three images are the same 760x856 canvas at the same position, so they need no
+       alignment of their own — only the same transform, which draw() writes to all three.
+       No drop-shadow: the body layer has piece-shaped HOLES where the pieces were cut out, and
+       a drop-shadow would trace the inside of every hole. */
     #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; }
     /* pointer-events: none so the drag still starts on the body img, where the handlers are. */
-    #climberFront { position: absolute; left: 50%; top: 0; z-index: 4; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
+    #climberRig, #climberGlove { position: absolute; left: 50%; top: 0; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
+    #climberRig   { z-index: 4; }
+    #climberGlove { z-index: 6; }
     body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
     body.climber-grabbing #climber { cursor: grabbing; }
     /* Set while the pointer is over a rope above or below him — the ropes act as the scrollbar's
@@ -899,19 +905,25 @@
     <img class="lock-piece" id="caraWork" src="images/logo-work.png?v=17" alt="" draggable="false" />
     <img id="climber" src="images/man-body.png?v=8" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
-      <!-- No clipPaths. Both of these ropes END INSIDE the thing they run into — the working
-           rope a few pixels down in the descender, the brake strand in the descender at one end
-           and in the glove at the other — and #climberFront is painted over them, so the device
-           and the hand cover the end wherever the swing puts it. -->
-      <!-- The working rope lives in the FRONT layer on purpose, and the owner was explicit about
-           it: coming down it passes IN FRONT of everything of his it meets — the absorber and
-           his gripping fist included — and only the descender takes its tip. -->
+      <!-- No clipPaths. This rope ENDS INSIDE the descender and #climberRig is painted over it,
+           so the device covers the end wherever the swing puts it. -->
+      <!-- The working rope lives in this layer on purpose, and the owner was explicit about it:
+           coming down it passes IN FRONT of everything of his it meets — the absorber and his
+           gripping fist included — and only the descender takes its tip. -->
       <path class="rope-out" id="rWupO"></path><path class="rope-in" id="rWupI"></path>  <!-- working rope: ceiling → descender, over the absorber -->
-      <path class="rope-out" id="rBrkO"></path><path class="rope-in" id="rBrkI"></path>  <!-- working rope brake strand: descender → brake hand -->
     </svg>
-    <!-- The descender with its carabiner, and the brake glove — the pieces that paint OVER the
-         ropes, so each rope can die inside them. Same canvas and transform as #climber. -->
-    <img id="climberFront" src="images/man-front.png?v=8" alt="" draggable="false" />
+    <!-- The descender, and nothing else: the owner's own outline. -->
+    <img id="climberRig" src="images/man-rig.png?v=1" alt="" draggable="false" />
+    <svg id="ropeTop" preserveAspectRatio="none" aria-hidden="true">
+      <!-- The BRAKE strand, and the reason there is a third layer at all. The owner drew it
+           running across the descender's FACE — visible on the device, with a hook to the left
+           where it leaves — so it has to be painted OVER #climberRig. It still has to pass
+           UNDER the glove it runs into, which is why the glove is a layer of its own above this.
+           Its far end is buried in that glove, so it needs no trimming at either end. -->
+      <path class="rope-out" id="rBrkO"></path><path class="rope-in" id="rBrkI"></path>  <!-- brake strand: descender → brake hand -->
+    </svg>
+    <!-- The brake glove, over the strand that runs into it. -->
+    <img id="climberGlove" src="images/man-glove.png?v=1" alt="" draggable="false" />
     <!-- ORITOKI: "or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
          standing in for each dotted i, and the rope running on out of each knot. ONE image, the
          owner's finished drawing cropped to its own ink by tools/logo-mark.ps1 and otherwise
@@ -1660,9 +1672,11 @@
       var rKnotBO = document.getElementById("rKnotBO"), rKnotBI = document.getElementById("rKnotBI");
       var rKnotWO = document.getElementById("rKnotWO"), rKnotWI = document.getElementById("rKnotWI");
       var rBrkO = document.getElementById("rBrkO"), rBrkI = document.getElementById("rBrkI");
-      // The layer painted over the ropes. It carries the same transform as #climber.
-      var climberFront = document.getElementById("climberFront");
-      var hasRopes = !!(svgBack && svgFront && rBackO && rWupO && rWloO && rBrkO && rKnotBO && rKnotWO);
+      // The two layers painted over the ropes. Both carry the same transform as #climber.
+      var svgTop = document.getElementById("ropeTop");
+      var climberRig = document.getElementById("climberRig");
+      var climberGlove = document.getElementById("climberGlove");
+      var hasRopes = !!(svgBack && svgFront && svgTop && rBackO && rWupO && rWloO && rBrkO && rKnotBO && rKnotWO);
       /* The figure carries no ropes of its own, so every rope here is free geometry.
          EVERY POINT BELOW IS A PIXEL OF images/man-*.png (760 x 856), divided by 760 or 856 —
          and those come from tools/climber-compose.ps1, which prints them at the end of a run.
@@ -1738,14 +1752,14 @@
            at rest it is dead vertical. That is what the mark is positioned by. */
         workTopX: 0.4667,            // = A.desc.x, and A.markLeft is solved from it
         /* EVERY ROPE END IS BURIED, and that is the whole of what four clipPaths, a patch-cut
-           solver and a hand-traced fist polygon used to do. #climberFront is painted OVER the
+           solver and a hand-traced fist polygon used to do. #climberRig and #climberGlove are painted OVER the
            ropes, so each rope simply STOPS a few pixels inside the device or the glove it runs
            into and the artwork covers the end. There is no visible end to place, so none of it
            can wander as he swings — which is what every one of those cuts was fighting, and it
            is also the end of the black spike that the brake strand's top used to draw.
            So each point below sits INSIDE the ink that covers it, not on its outline. Inside is
            the safe side: a few pixels too deep costs a few pixels of rope, a pixel too shallow
-           shows a round cap sitting on the device. Both were checked against man-front.png's
+           shows a round cap sitting on the device. Both were checked against the cut layers'
            own alpha, and each has better than a rope's width of solid ink all round it. */
         /* Where the working rope dies inside the descender. Its x IS the plumb line, and it sits
            in the RIG's LEFT half on purpose: that way the rope and the absorber diverge on the
@@ -1758,10 +1772,25 @@
                                             // left alone and only the HEIGHT taken from him.
                                             // Moving x would have dragged markLeft, the CSS and
                                             // the backup rope with it for no visible gain.
-        // Where the brake strand leaves the descender. Buried in the device; it then runs on
-        // behind the device's carabiner (in the front layer too) and comes into the open at his
-        // waist, which is what reads as the rope coming out from under the hardware.
-        descOut:{ x: 0.4695, y: 0.3803 },   // = (357, 326)
+        /* THE BRAKE STRAND'S WHOLE LINE, traced off the owner's own drawing of it rather than
+           solved. He drew it leaving the TOP of the descender straight down, hooking LEFT after
+           about fourteen pixels, then running dead straight to his brake hand — and it is
+           painted OVER the device (#ropeTop), so all of that shows.
+           FOUR points, and they are not a polyline: they are M p0 Q p1 p2 L p3. A polyline with
+           a round line join was the first attempt and the owner rejected it — a round join only
+           rounds the OUTER edge of the corner, so the rope's centre still turns through an
+           angle and it reads as kinked. A real quadratic bends the whole rope.
+             p0  inside the descender, where the strand starts
+             p1  the CONTROL, straight below p0, which is what makes it leave vertically
+             p2  where the curve ends and the straight run begins
+             p3  A.brakeIn, buried in the glove
+           p1, p2 and p3 are COLLINEAR on purpose: a quadratic's exit tangent is p2 - p1, so
+           putting p2 on the line from p1 to p3 makes the curve hand over to the straight run
+           with no kink at all. Move p1 and p2 has to be re-solved onto the new line.
+           Every point goes through bodyXY, so the hook sways and leans with him.
+           (This replaced A.descOut, which was a single buried point back when the strand was a
+           straight line that came out from UNDER the device.) */
+        brakePath: [[0.4825, 0.3245], [0.4829, 0.3470], [0.4625, 0.3618], [0.2097, 0.5461]],
         // Two separate points in the brake glove (its ink runs x 121..184, y 447..520): the
         // strand ENTERS the fist high on the wrist side and the tail LEAVES it at the heel of
         // the hand, so the two read as ONE rope running through the hand rather than two pieces
@@ -1864,7 +1893,7 @@
       function sizeRopes() {
         if (!hasRopes) return;
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
-        svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box);
+        svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box); svgTop.setAttribute("viewBox", box);
         /* The lockup's geometry. The mark is CSS-sized from the strip (#brandRope), so these three
            numbers place it, and the two stems are fractions of that box. tools/logo-mark.ps1
            measures them off the drawing and re-prints them if the artwork is replaced.
@@ -2105,18 +2134,24 @@
                  (handY + (tuy / tul) * (A.brakeTailUp * Wn)).toFixed(1) +
           " L " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workEnd.x, workEnd.y));
         setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workEnd.x, workEnd.y, workEnd.y - A.knotRise, trueEndW));
-        /* WORKING rope brake strand, in front: out of the descender, across his lap, into the
-           brake glove. Both of its ends are BODY points buried in ink — A.descOut inside the RIG,
-           A.brakeIn inside the glove — so the strand never turns relative to the artwork and both
-           round caps stay covered by #climberFront. It used to need a cut at each end, solved
-           against the device's mouth and the glove's outline, for exactly the effect the layer
-           now gives for nothing — and the black spike that the top cut kept drawing goes with
-           them, because there is no cut left to leave one. */
-        var pa = bodyXY(A.descOut.x, A.descOut.y);
-        var pb = bodyXY(A.brakeIn.x, A.brakeIn.y);
+        /* THE BRAKE STRAND, painted in #ropeTop — over the descender, under the glove.
+           It is not a straight line. The owner drew it: it leaves the top of the device running
+           straight DOWN for a few pixels, hooks LEFT, and then runs dead straight to his brake
+           hand. A.brakePath is that line, and every point of it is a BODY point — so the whole
+           shape sways, leans and rises with him and the hook never has to be re-solved.
+           It is a real CURVE, not a corner: p1 is a quadratic's control point. A polyline with a
+           round line JOIN was tried first and the owner rejected it — a round join rounds the
+           outer edge only, so the rope's centre still turned through an angle and read as kinked.
+           Both ends are buried: the first point is inside the descender and the last inside the
+           glove, so neither round cap ever shows. */
+        var bp = A.brakePath;
+        var b0 = bodyXY(bp[0][0], bp[0][1]), b1 = bodyXY(bp[1][0], bp[1][1]);
+        var b2 = bodyXY(bp[2][0], bp[2][1]), b3 = bodyXY(bp[3][0], bp[3][1]);
         setSeg(rBrkO, rBrkI,
-          "M " + pa.x.toFixed(1) + " " + pa.y.toFixed(1) +
-          " L " + pb.x.toFixed(1) + " " + pb.y.toFixed(1));
+          "M " + b0.x.toFixed(1) + " " + b0.y.toFixed(1) +
+          " Q " + b1.x.toFixed(1) + " " + b1.y.toFixed(1) +
+          " "   + b2.x.toFixed(1) + " " + b2.y.toFixed(1) +
+          " L " + b3.x.toFixed(1) + " " + b3.y.toFixed(1));
       }
 
       var targetY = 0, currentY = 0, targetRot = 0, currentRot = 0, targetSway = 0, currentSway = 0;
@@ -2157,7 +2192,8 @@
         // put while his body swung out from under it.
         var tf = "translate(-50%,0) translate3d(" + currentSway.toFixed(2) + "px," + (currentY - currentRise).toFixed(2) + "px,0) rotate(" + currentRot.toFixed(2) + "deg)";
         climber.style.transform = tf;
-        if (climberFront) climberFront.style.transform = tf;
+        if (climberRig) climberRig.style.transform = tf;
+        if (climberGlove) climberGlove.style.transform = tf;
         drawRopes();
       }
       /* The sway is a damped PENDULUM, not a lerp: a spring pulls it back towards its target and

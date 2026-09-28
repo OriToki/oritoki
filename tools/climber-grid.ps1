@@ -20,8 +20,9 @@ param(
   [int]$Zoom = 2,
   [int]$Fine = 10, [int]$Mid = 50, [int]$Bold = 100,
   # The points as index.html has them, in shipped pixels. Keep in step with A.* there.
-  [double]$WorkX = 354.7, [double]$DescY = 311.7,
-  [double]$OutX = 356.8,  [double]$OutY = 325.5,
+  [double]$WorkX = 354.7, [double]$DescY = 305,
+  # The brake strand is a traced line, not a straight one - see A.brakePath in index.html.
+  [double[]]$BrakePath = @(366.7,277.8, 367.0,291.7, 351.4,305.5, 159.4,467.5),
   [double]$InX  = 159.4,  [double]$InY  = 467.5,
   [double]$BrkX = 145.5,  [double]$BrkY = 509.1,
   [double]$BackX = 427.3, [double]$AsapInY = 69, [double]$AsapOutY = 122,
@@ -55,6 +56,22 @@ function Rope($pts) {
   $g.DrawLines($pOut, [System.Drawing.PointF[]]$a)
   $g.DrawLines($pIn,  [System.Drawing.PointF[]]$a)
 }
+# The brake strand: M p0 Q p1 p2 L p3, the same four points index.html holds in A.brakePath.
+# GDI+ has no quadratic, so it is raised to the equivalent cubic - C1 = p0 + 2/3 (q - p0),
+# C2 = p2 + 2/3 (q - p2).
+function RopeCurve($f) {
+  $p0 = New-Object System.Drawing.PointF ([single]$f[0]), ([single]$f[1])
+  $qx = [double]$f[2]; $qy = [double]$f[3]
+  $p2 = New-Object System.Drawing.PointF ([single]$f[4]), ([single]$f[5])
+  $p3 = New-Object System.Drawing.PointF ([single]$f[6]), ([single]$f[7])
+  $c1 = New-Object System.Drawing.PointF ([single]($f[0] + 2.0 / 3 * ($qx - $f[0]))), ([single]($f[1] + 2.0 / 3 * ($qy - $f[1])))
+  $c2 = New-Object System.Drawing.PointF ([single]($f[4] + 2.0 / 3 * ($qx - $f[4]))), ([single]($f[5] + 2.0 / 3 * ($qy - $f[5])))
+  $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+  $path.AddBezier($p0, $c1, $c2, $p2)
+  $path.AddLine($p2, $p3)
+  $g.DrawPath($pOut, $path); $g.DrawPath($pIn, $path)
+  $path.Dispose()
+}
 function Layer($n) {
   $p = Join-Path $R $n
   if (-not (Test-Path $p)) { throw "missing $p - run tools/climber-compose.ps1 first" }
@@ -65,11 +82,13 @@ function Layer($n) {
 Rope @(@($BackX, $TOP), @($BackX, $AsapInY), @($BackX, $AsapOutY), @($BackX, $BOT))
 Rope @(@($BrkX, $BrkY), @($BrkX, $BOT))
 Layer "man-body.png"
-# FRONT: the working rope, which runs in front of everything of his it meets, and the brake
-# strand across his lap.
+# The working rope: in front of everything of his it meets, under the descender only.
 Rope @(@($WorkX, $TOP), @($WorkX, $DescY))
-Rope @(@($OutX, $OutY), @($InX, $InY))
-Layer "man-front.png"
+Layer "man-rig.png"
+# The brake strand: OVER the descender's face, hooking left, then straight to the hand...
+RopeCurve $BrakePath
+# ...and the glove over it.
+Layer "man-glove.png"
 $g.Dispose()
 
 # --- the sheet: figure, grid, numbers ---------------------------------------------------------
