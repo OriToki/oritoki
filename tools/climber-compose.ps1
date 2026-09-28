@@ -191,7 +191,16 @@ $gs.Dispose(); $comp.Dispose()
 
 # --- the cut, in the man's own pixels then scaled ------------------------------------------
 # The RIG with its carabiner, and the brake glove. Nothing else: see the header.
-$RIG   = @(476,402, 596,402, 604,468, 566,578, 498,584, 468,486)
+# THE DESCENDER, AND NOTHING ELSE. This is the owner's own outline, drawn in yellow on a grid
+# sheet and read back row by row - not a box guessed round the device.
+# The polygon it replaced reached from y 402 down to 584 and swallowed the carabiner, the waist
+# belt and a slab of his thigh. All of that was being lifted into the FRONT layer, so the brake
+# strand ran BEHIND his hip instead of across it, and the owner spotted it: he circled the area
+# in red and said a sleeve was being treated as part of the device.
+# The carabiner belongs in the body layer, which is also right: the rope comes out of the
+# descender and passes IN FRONT of the carabiner that hangs it on the harness.
+$RIG   = @(519,395, 506,407, 501,419, 501,431, 494,443, 488,455, 482,467, 479,479, 481,491,
+           533,491, 548,479, 559,467, 566,455, 569,443, 571,431, 571,419, 566,407, 543,395)
 $GLOVE = @(166,636, 278,636, 278,762, 166,762)
 function ScaledPoly($flat, $kk) {
   $pts = New-Object "System.Drawing.Point[]" ($flat.Count / 2)
