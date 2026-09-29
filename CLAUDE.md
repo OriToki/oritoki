@@ -69,16 +69,17 @@ reaches cloned captions.
 
 **The rope-access climber is the most intricate part of the site** (all of it inline in
 `index.html`, near the bottom). He rides the scroll like a scrollbar thumb, on ropes drawn as SVG
-between two layers of him. What matters when touching it:
+between three layers of him. What matters when touching it:
 
-- **The figure is COMPOSED, not cut up.** The owner drew `Desktop\try.png` as three separate
-  pieces on one transparent canvas — the man with his descender, the absorber with its carabiner
-  and swivel, and the ASAP **with a real hole in it**. `tools/climber-parts.ps1` labels them,
-  `tools/climber-compose.ps1` places them and writes `images/man-body.png` + `man-front.png`
-  (760 × 856). **This is why it finally works.** Two finished drawings with their gear drawn in
-  were cut up before this and both were rejected: when the hardware is fixed in the drawing, the
-  ropes have to be bent to reach it. With the gear separate, the ASAP is *placed* on the rope and
-  the absorber is stretched and leaned to reach the ASAP.
+- **The figure is COMPOSED, not cut up.** The owner draws the man and his gear as separate
+  pieces on one transparent canvas — currently `Desktop\take.png`: the man with his descender and
+  a working ring on the harness, three absorbers at different lengths to pick from, and the ASAP
+  **with a real hole in it**. `tools/climber-parts.ps1` flood-fills the canvas and reports each
+  blob; `tools/climber-compose.ps1` places them and writes the shipped layers (760 × 856).
+  **This is why it finally works.** Two finished drawings with their gear drawn in were cut up
+  before this and both were rejected: when the hardware is fixed in the drawing, the ropes have to
+  be bent to reach it. With the gear separate, the ASAP is *placed* on the rope and the absorber is
+  stretched and leaned to reach the ASAP.
 - **The one thing nothing can change** is the gap between the two ropes: they hang from the two
   stems of the header mark, `0.17278 × markW` of the strip. `climber-compose.ps1` **solves** the
   ASAP's position from that (its `-Sep`), so both ropes are dead plumb and neither device was
@@ -92,16 +93,34 @@ between two layers of him. What matters when touching it:
   rope is pinned to the mark's drawn cord. Verified: the lockup's ink starts on the same device
   pixel before and after, and both ropes land on the same screen x. Phones scale by the same
   factor (86 → 111), because `markW` is one number for both breakpoints.
-- **Two layers, and only two pieces in the front one:** `man-body.png` under the ropes,
-  `man-front.png` (the RIG with its carabiner, and the brake glove) over them. Those are the only
-  places a front rope ENDS. **Nothing else may be lifted into the front layer** — the owner asked
-  for the working rope to run in front of all the rest of him, absorber and gripping fist
-  included, and putting the fist up there is the version he rejected: the rope vanished behind
-  his hand a third of the way down instead of running on to the device.
-- **So every rope end is BURIED** a few pixels inside the ink that covers it, and there is no
-  visible end to place at any angle. That replaced four `clipPath`s, a patch-cut solver and a
-  hand-traced fist polygon — and with them the black spike the brake strand's cut kept drawing.
-  **If an end ever shows, take the point deeper into the ink; do not bring the cuts back.**
+- **Three layers, interleaved with the ropes,** and only two small pieces above the body:
+  z2 `man-body.png` → z3 the working rope → z4 `man-rig.png` (the descender and its carabiner) →
+  z5 the brake strand → z6 `man-glove.png` (the brake hand). Those two are the only places a rope
+  ENDS. **Nothing else may be lifted above the body** — the owner asked for the working rope to run
+  in front of all the rest of him, absorber and gripping fist included, and putting the whole fist
+  up there is the version he rejected: the rope vanished behind his hand a third of the way down
+  instead of running on to the device.
+- **The body is NOT cut. The upper layers are hard-masked COPIES of it.** `man-body.png` keeps the
+  whole figure; `man-rig.png` and `man-glove.png` each take a copy of the pixels inside their own
+  polygon (`$RIG`, `$GLOVE` in `climber-compose.ps1`, in the man's native pixels). Cutting holes in
+  the body instead put **translucent rectangular bands** across his wrist on the live page: the
+  browser downscales each layer on its own, 760 → 150, so the two sides of a cut edge each lose
+  coverage and no longer sum back to solid. Copying costs nothing — the script's restack check
+  reports **0 pixels differ** against the source — and it cannot seam.
+- **Every rope end is BURIED** a few pixels inside the ink that covers it, so there is no visible
+  end to place at any angle. That replaced four `clipPath`s, a patch-cut solver and a hand-traced
+  fist polygon — and with them the black spike the brake strand's cut kept drawing. **If an end
+  ever shows, take the point deeper into the ink; do not bring the cuts back.**
+- **The glove's polygon has its top-right corner dropped on purpose.** The owner marked on the grid
+  sheet how far the brake rope may show: his hand has two black contour lines there, and the rope
+  must cross the **first** and not the second. The clip line through his mark takes the rope about
+  9 shipped px back from `A.brakeIn`; the whole box took it 18 (crossed neither) and an earlier cut
+  took it 3 (crossed both).
+- **The brake strand bends on a quadratic, not a corner.** `A.brakePath` is `M p0 Q p1 p2 L p3` —
+  the hook out of the descender's face has to be *rounded*, and a round line JOIN is not that: it
+  rounds the outer edge while the centreline still turns through an angle. `climber-grid.ps1`
+  redraws the same curve as a cubic (`C1 = p0 + ⅔(q − p0)`, `C2 = p2 + ⅔(q − p2)`) so the sheet
+  shows what the page shows.
 - **The backup rope needs no piece at all.** It is painted in the back layer, behind everything,
   and the ASAP's hole lets it show through. Nothing cut, nothing clipped.
 - **Measure in the shipped layers' own pixels** (760 × 856) or in the man's own (1097 × 1236,

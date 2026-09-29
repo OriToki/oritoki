@@ -205,16 +205,17 @@ $gs.Dispose(); $comp.Dispose()
 $RIG   = @(526,403, 517,413, 508,423, 501,433, 495,443, 489,453, 483,463, 480,473, 480,483,
            484,492, 515,492, 533,483, 548,473, 559,463, 564,453, 566,443, 566,433, 565,423,
            564,413, 550,403)
-# THE BRAKE GLOVE, with its top-right corner cut away. The owner marked in yellow how far the
-# rope should still SHOW as it comes into his hand, and put a + where it should go behind -
-# shipped (170,459) and (163,467), which is within four pixels of A.brakeIn.
-# The glove used to be the whole box, so it covered the rope from its outer edge onwards and
-# the rope disappeared about six pixels too early. The corner the rope crosses is dropped to
-# the BODY layer instead, which puts it under #ropeTop: the strand is painted over it and only
-# goes behind at the clip line, which runs through his + square to the rope.
-# Solved, not drawn: the rope's direction is (-0.7728, 0.6348), so the line through his + meets
-# the box's top edge at x 204 and its right edge at y 726.
-$GLOVE = @(166,636, 204,636, 278,726, 278,762, 166,762)
+# THE BRAKE GLOVE, with the corner the rope crosses cut off the top. The hand has TWO black
+# contour lines where the rope arrives - the cuff's and the glove's - and the owner was precise
+# about them: the rope crosses the FIRST and not the second. So the strand has to be painted
+# over the outer contour and go behind at the inner one, and his yellow line on the grid is
+# where that happens: shipped (167.5, 462.0).
+# Solved from the rope's own direction (-0.7728, 0.6348), not drawn: the line through his mark
+# meets the box's top edge at x 216 and its right edge at y 711.
+# (Two rounds were spent either side of this. The whole box hid the rope at the OUTER contour,
+# 18px back from A.brakeIn, so it never crossed either line; a cut through his earlier + hid it
+# at 3px back, so it crossed both. This one hides it at about 11.)
+$GLOVE = @(166,636, 216,636, 278,711, 278,762, 166,762)
 function ScaledPoly($flat, $kk) {
   $pts = New-Object "System.Drawing.Point[]" ($flat.Count / 2)
   for ($ix = 0; $ix -lt $flat.Count; $ix += 2) {
@@ -233,6 +234,21 @@ function MaskOf($flat) {
 }
 $mRig = MaskOf $RIG
 $mGlv = MaskOf $GLOVE
+<#  THE BODY IS NOT CUT. It keeps the WHOLE figure; the upper layers are copies of their own
+    regions laid on top. That looks wasteful and it is the point.
+    A cut leaves a HOLE, and these layers ship at 760 while the browser draws them at 150 - it
+    downscales EACH ONE on its own and only then composites. Along the edge of a hole one layer
+    has opaque pixels and the other has nothing, so both sides resample to partial alpha and the
+    seam comes out translucent. The owner saw it as transparent rectangles across his wrist,
+    which is the glove box's own edges. Complementary pieces simply cannot survive being
+    rescaled apart.
+    With no hole there is nothing to line up and nothing to lose, at any scale or any DPR.
+    Compositing a piece over its own pixels is safe BECAUSE they are its own: where the copy is
+    opaque the result is the same pixel, and where the drawing's own antialiasing makes it
+    partial it blends a colour with itself, so only the alpha rises. That is not the trap
+    CLAUDE.md warns about - painting a hand twice over a ROPE darkens it, because what is
+    underneath is a different colour. Here it is identical.                                    #>
+
 
 $body  = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
 $rig   = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
@@ -242,10 +258,10 @@ for ($iy = 0; $iy -lt $SH; $iy++) {
   for ($ix = 0; $ix -lt $ShipW; $ix++) {
     $px = $small.GetPixel($ix, $iy)
     if ($px.A -eq 0) { continue }
-    # the glove wins a tie, but the two polygons are nowhere near each other
+    # The body keeps everything; each upper layer takes a copy of its own polygon. No holes.
+    $body.SetPixel($ix, $iy, $px)
     if ($mGlv.GetPixel($ix, $iy).R -gt 127)      { $glove.SetPixel($ix, $iy, $px) }
     elseif ($mRig.GetPixel($ix, $iy).R -gt 127)  { $rig.SetPixel($ix, $iy, $px) }
-    else                                         { $body.SetPixel($ix, $iy, $px) }
   }
 }
 # restack check: body, then rig, then glove must reproduce the composed figure exactly

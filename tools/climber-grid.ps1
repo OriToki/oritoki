@@ -22,9 +22,9 @@ param(
   # The points as index.html has them, in shipped pixels. Keep in step with A.* there.
   [double]$WorkX = 354.7, [double]$DescY = 305,
   # The brake strand is a traced line, not a straight one - see A.brakePath in index.html.
-  [double[]]$BrakePath = @(366.7,277.8, 367.0,291.7, 351.4,305.5, 159.4,467.5),
+  [double[]]$BrakePath = @(366.7,277.8, 367.0,297.0, 351.5,309.7, 159.4,467.5),
   [double]$InX  = 159.4,  [double]$InY  = 467.5,
-  [double]$BrkX = 145.5,  [double]$BrkY = 509.1,
+  [double]$BrkX = 125.5,  [double]$BrkY = 492.5,
   [double]$BackX = 427.3, [double]$AsapInY = 69, [double]$AsapOutY = 122,
   [double]$RopeW = 8.26,  # = A.ropeW (0.01087 of the strip) x 760
   # Just the figure under the grid: no rings, no labels, no caption. For marking on a clean
@@ -144,7 +144,6 @@ $brLbl = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(
 # last number: which side the label hangs on, so none of them runs off the sheet
 $marks = @(
   @("A.desc     working rope ends here",  $WorkX, $DescY,    1),
-  @("A.descOut  brake strand out",        $OutX,  $OutY,    -1),
   @("A.brakeIn  strand into the glove",   $InX,   $InY,      1),
   @("A.brake    tail leaves the glove",   $BrkX,  $BrkY,     1),
   @("A.asapIn   rope into the ASAP",      $BackX, $AsapInY,  1),
@@ -167,7 +166,7 @@ foreach ($m in $marks) {
 if (-not $Bare) {
 $cy0 = $SH - $CAP + 6
 $lines = @(
-  "Numbers are pixels of images/man-body.png / man-front.png (760 x 856). Green box = the artwork; rope above and below it runs off the page.",
+  "Numbers are pixels of images/man-body.png / man-rig.png / man-glove.png (760 x 856). Green box = the artwork; rope above and below it runs off the page.",
   "THE TWO ROPES ARE LOCKED 72.6 px APART SIDEWAYS (the header mark's two stems). Move one across and the other moves the same way; heights are free.",
   "The ASAP is a separate drawing and is PLACED on the backup rope, so say where the rope should be and the device follows.",
   "A point should sit INSIDE the ink that covers it - the rope end is meant to be hidden under the device or the glove, not to touch an outline."
