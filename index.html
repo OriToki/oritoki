@@ -903,7 +903,7 @@
          the lettering. -->
     <img class="lock-piece" id="lockBarLow" src="images/logo-barlow.png?v=17" alt="" draggable="false" />
     <img class="lock-piece" id="caraWork" src="images/logo-work.png?v=17" alt="" draggable="false" />
-    <img id="climber" src="images/man-body.png?v=10" alt="" draggable="false" />
+    <img id="climber" src="images/man-body.png?v=13" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
       <!-- No clipPaths. This rope ENDS INSIDE the descender and #climberRig is painted over it,
            so the device covers the end wherever the swing puts it. -->
@@ -913,7 +913,7 @@
       <path class="rope-out" id="rWupO"></path><path class="rope-in" id="rWupI"></path>  <!-- working rope: ceiling → descender, over the absorber -->
     </svg>
     <!-- The descender, and nothing else: the owner's own outline. -->
-    <img id="climberRig" src="images/man-rig.png?v=3" alt="" draggable="false" />
+    <img id="climberRig" src="images/man-rig.png?v=4" alt="" draggable="false" />
     <svg id="ropeTop" preserveAspectRatio="none" aria-hidden="true">
       <!-- The BRAKE strand, and the reason there is a third layer at all. The owner drew it
            running across the descender's FACE — visible on the device, with a hook to the left
@@ -923,7 +923,7 @@
       <path class="rope-out" id="rBrkO"></path><path class="rope-in" id="rBrkI"></path>  <!-- brake strand: descender → brake hand -->
     </svg>
     <!-- The brake glove, over the strand that runs into it. -->
-    <img id="climberGlove" src="images/man-glove.png?v=3" alt="" draggable="false" />
+    <img id="climberGlove" src="images/man-glove.png?v=5" alt="" draggable="false" />
     <!-- ORITOKI: "or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
          standing in for each dotted i, and the rope running on out of each knot. ONE image, the
          owner's finished drawing cropped to its own ink by tools/logo-mark.ps1 and otherwise
@@ -1735,7 +1735,7 @@
            his chest. */
         backupX: 0.5623,             // backup rope, top — and its whole line, since camX matches
         camX: 0.5623,                // = backupX; = shipped x 427, the middle of the ASAP's hole
-        camY: 0.1424,                // and how far down the figure that is — kept for the drag
+        camY: 0.1180,                // and how far down the figure that is — kept for the drag
                                      // track; the rope itself bends at asapIn / asapOut
         /* WHERE THE BACKUP ROPE MEETS THE ASAP. It does not simply bend AT the device — the device
            HOLDS it, so it bends TWICE: once going in at the top, once coming out at the bottom, and
@@ -1744,10 +1744,16 @@
            THE DEVICE HAS A REAL HOLE IN IT — the owner drew it that way — and the rope is painted
            in the BACK layer, behind the whole figure. So the ASAP hides the rope over its own
            body and the hole lets it show through, with nothing cut and nothing clipped. These two
-           points are just the device's top and bottom edges (shipped y 67 and 124), a few pixels
-           in, so neither bend ever shows. */
-        asapIn:  { x: 0.5623, y: 0.0809 },   // = (427, 69) of the 760x856 artwork
-        asapOut: { x: 0.5623, y: 0.1424 },   // = (427, 122)
+           points are just the device's top and bottom edges, a few pixels in, so neither bend ever
+           shows.
+           WHERE THE DEVICE SITS IS THE OWNER'S OWN MARK — a red dot on a grid sheet for the top
+           hole, read back at shipped (421.6, 61.3). climber-compose.ps1 places the ASAP from it and
+           then picks the absorber that reaches with no distortion: part 3 of his three, at scale
+           0.983 and a turn of 0.03 degrees. Device shipped y 47.8..104.6; these two are a few
+           pixels inside it. (It sat at 67..124 for a while with nothing solving for it, and briefly
+           up at 2.8..59.6 when the longer absorber was in.) */
+        asapIn:  { x: 0.5623, y: 0.0596 },   // = (427, 51) of the 760x856 artwork
+        asapOut: { x: 0.5623, y: 0.1180 },   // = (427, 101)
         /* The MAIN WORKING rope hangs plumb: its top and the descender it runs into share an x, so
            at rest it is dead vertical. That is what the mark is positioned by. */
         workTopX: 0.4667,            // = A.desc.x, and A.markLeft is solved from it

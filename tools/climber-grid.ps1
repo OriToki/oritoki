@@ -25,7 +25,10 @@ param(
   [double[]]$BrakePath = @(366.7,277.8, 367.0,297.0, 351.5,309.7, 159.4,467.5),
   [double]$InX  = 159.4,  [double]$InY  = 467.5,
   [double]$BrkX = 125.5,  [double]$BrkY = 492.5,
-  [double]$BackX = 427.3, [double]$AsapInY = 69, [double]$AsapOutY = 122,
+  # The ASAP is where the owner's red dot put it - its top hole at shipped (421.6, 61.3). The
+  # device runs shipped y 47.8..104.6; these two are a few px inside it. Keep in step with
+  # A.asapIn / A.asapOut in index.html.
+  [double]$BackX = 427.3, [double]$AsapInY = 51, [double]$AsapOutY = 101,
   [double]$RopeW = 8.26,  # = A.ropeW (0.01087 of the strip) x 760
   # Just the figure under the grid: no rings, no labels, no caption. For marking on a clean
   # sheet, or for looking at the drawing itself without six magenta circles over it.
