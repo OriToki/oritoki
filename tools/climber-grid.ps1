@@ -36,7 +36,9 @@ param(
 )
 Add-Type -AssemblyName System.Drawing
 $R = (Resolve-Path (Join-Path $PSScriptRoot "..\images")).Path
-$W = 760; $H = 856
+# Read off the shipped layer, not typed: a hard-coded 856 stretched a 848-tall figure into the box
+# and every grid line under him was off by up to 8 px.
+$probe = [System.Drawing.Image]::FromFile((Join-Path $R "man-body.png")); $W = $probe.Width; $H = $probe.Height; $probe.Dispose()
 $TOP = -140; $BOT = 990          # a little rope above and below him
 $PAD = 56                        # room for the numbers
 $CAP = if ($Bare) { 10 } else { 74 }   # ...and for the caption, when there is one
@@ -169,7 +171,7 @@ foreach ($m in $marks) {
 if (-not $Bare) {
 $cy0 = $SH - $CAP + 6
 $lines = @(
-  "Numbers are pixels of images/man-body.png / man-rig.png / man-glove.png (760 x 856). Green box = the artwork; rope above and below it runs off the page.",
+  "Numbers are pixels of images/man-body.png / man-rig.png / man-glove.png ($W x $H). Green box = the artwork; rope above and below it runs off the page.",
   "THE TWO ROPES ARE LOCKED 72.6 px APART SIDEWAYS (the header mark's two stems). Move one across and the other moves the same way; heights are free.",
   "The ASAP is a separate drawing and is PLACED on the backup rope, so say where the rope should be and the device follows.",
   "A point should sit INSIDE the ink that covers it - the rope end is meant to be hidden under the device or the glove, not to touch an outline."

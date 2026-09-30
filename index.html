@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!--
   =====================================================================
    ORITOKI (LTD Oritoki / შპს ორითოკი) — Industrial Rope Access
@@ -222,7 +222,7 @@
        the two stop reading as one piece of hardware.
        Keep in step with A.pivotWork / A.pivotBack, which is the same point in the script. */
     #caraWork { transform-origin: 73.75% 12.66%; }
-    #caraBack { transform-origin: 90.78% 53.56%; }
+    #caraBack { transform-origin: 88.03% 53.56%; }   /* 11 canvas px left: tools/logo-shift-back.ps1 */
 
     /* ABOVE the z-50 header on purpose: the ropes run from off the top of the screen, and behind
        the header their whole upper stretch vanished the moment the bar turned solid on scroll.
@@ -894,16 +894,16 @@
          closes. And the MAIN WORKING rope is the one in front: it runs from the upper knot down
          past the lower anchor on its way to the technician, so its carabiner and knot are painted
          last of the three. Same z-index, so it is the DOM order that decides. -->
-    <img class="lock-piece" id="lockPlate" src="images/logo-plate.png?v=18" alt="" draggable="false" />
-    <img class="lock-piece" id="caraBack" src="images/logo-back.png?v=17" alt="" draggable="false" />
+    <img class="lock-piece" id="lockPlate" src="images/logo-plate.png?v=19" alt="" draggable="false" />
+    <img class="lock-piece" id="caraBack" src="images/logo-back.png?v=18" alt="" draggable="false" />
     <!-- The LOWER hanger's diagonal bar, on its own between the two carabiners. It has to be over
          its own carabiner, because that ring passes through the eye the bar closes, and under the
          upper one, whose rope and knot run down past this anchor on the way to the technician. One
          layer could not do both. The upper hanger's bar has no such conflict and rides along with
          the lettering. -->
-    <img class="lock-piece" id="lockBarLow" src="images/logo-barlow.png?v=17" alt="" draggable="false" />
+    <img class="lock-piece" id="lockBarLow" src="images/logo-barlow.png?v=18" alt="" draggable="false" />
     <img class="lock-piece" id="caraWork" src="images/logo-work.png?v=17" alt="" draggable="false" />
-    <img id="climber" src="images/man-body.png?v=13" alt="" draggable="false" />
+    <img id="climber" src="images/man-body.png?v=31" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
       <!-- No clipPaths. This rope ENDS INSIDE the descender and #climberRig is painted over it,
            so the device covers the end wherever the swing puts it. -->
@@ -912,8 +912,11 @@
            gripping fist included — and only the descender takes its tip. -->
       <path class="rope-out" id="rWupO"></path><path class="rope-in" id="rWupI"></path>  <!-- working rope: ceiling → descender, over the absorber -->
     </svg>
-    <!-- The descender, and nothing else: the owner's own outline. -->
-    <img id="climberRig" src="images/man-rig.png?v=4" alt="" draggable="false" />
+    <!-- The descender, and nothing else - NOT the fist on its handle. The owner: the working rope
+         must show IN FRONT of his descender hand when he is dragged, so the fist stays in the body
+         layer under the rope and only the device is lifted over it to bury the rope's end. -->
+
+    <img id="climberRig" src="images/man-rig.png?v=22" alt="" draggable="false" />
     <svg id="ropeTop" preserveAspectRatio="none" aria-hidden="true">
       <!-- The BRAKE strand, and the reason there is a third layer at all. The owner drew it
            running across the descender's FACE — visible on the device, with a hook to the left
@@ -923,7 +926,7 @@
       <path class="rope-out" id="rBrkO"></path><path class="rope-in" id="rBrkI"></path>  <!-- brake strand: descender → brake hand -->
     </svg>
     <!-- The brake glove, over the strand that runs into it. -->
-    <img id="climberGlove" src="images/man-glove.png?v=5" alt="" draggable="false" />
+    <img id="climberGlove" src="images/man-glove.png?v=24" alt="" draggable="false" />
     <!-- ORITOKI: "or" over "tok", with an anchor — bolt hanger, locking carabiner, knot —
          standing in for each dotted i, and the rope running on out of each knot. ONE image, the
          owner's finished drawing cropped to its own ink by tools/logo-mark.ps1 and otherwise
@@ -1733,9 +1736,12 @@
            stems and lengthens the absorber to reach it. Every figure before this one had its
            devices drawn in, so the ropes had to lean or the hardware had to be shoved across
            his chest. */
-        backupX: 0.5623,             // backup rope, top — and its whole line, since camX matches
-        camX: 0.5623,                // = backupX; = shipped x 427, the middle of the ASAP's hole
-        camY: 0.1180,                // and how far down the figure that is — kept for the drag
+        /* 0.5471 since 2026-09-30: the lower anchor moved 11 canvas px left so both anchors stand
+           the same distance off the lettering (the owner's ask). = desc.x + (stemBackX - stemWorkX)
+           * markW = 0.4667 + 0.14528 * 0.5531. */
+        backupX: 0.5471,             // backup rope, top — and its whole line, since camX matches
+        camX: 0.5471,                // = backupX; = shipped x 416, the middle of the ASAP's hole
+        camY: 0.0876,                // and how far down the figure that is — kept for the drag
                                      // track; the rope itself bends at asapIn / asapOut
         /* WHERE THE BACKUP ROPE MEETS THE ASAP. It does not simply bend AT the device — the device
            HOLDS it, so it bends TWICE: once going in at the top, once coming out at the bottom, and
@@ -1752,8 +1758,24 @@
            0.983 and a turn of 0.03 degrees. Device shipped y 47.8..104.6; these two are a few
            pixels inside it. (It sat at 67..124 for a while with nothing solving for it, and briefly
            up at 2.8..59.6 when the longer absorber was in.) */
-        asapIn:  { x: 0.5623, y: 0.0596 },   // = (427, 51) of the 760x856 artwork
-        asapOut: { x: 0.5623, y: 0.1180 },   // = (427, 101)
+        /* THE 2026-09-30 REDRAW ("G 1.png"): tools/climber-assemble.ps1 hangs the back-up chain,
+           unrotated, from the carabiner drawn in his chest ring, so the ASAP is upright on the rope
+           by construction; it prints the device's top and bottom as 0.0550 / 0.1340, and these are
+           5 frame px inside them. Shrunk 15% at the owner's ask. Its HEIGHT is not chosen: the
+           absorber's end sits on the carabiner bend the owner marked in red (Desktop\1.png), the
+           absorber keeps its length, and the ASAP slides on the rope to wherever that puts it -
+           which is behind his raised fist, as he asked. */
+        // THE ABSORBER'S HOOK-UP, the owner's way: its end fitting (the metal swivel under the
+        // webbing, tools/climber-assemble.ps1 -FitPoly) sits over the TOP of the chest carabiner
+        // and is the join. With the absorber at its own length the upper carabiner turned on its
+        // axis (the ASAP's hole, 8.6 deg) and the ASAP slid on the rope to 0.0136/0.0912. The
+        // artwork grew (the ASAP now reaches above the helmet; 760x859 since the absorber moved
+        // down-left again), so EVERY y in this table is re-based whenever the frame changes:
+        // y_new = (y_old * H_old + top_old - top_new) / H_new, from the script's "frame:" line.
+        // The fitting lies IN FRONT of the chest carabiner's top (the owner marked that contour),
+        // behind his fist - no bend is laid back over it.
+        asapIn:  { x: 0.5471, y: 0.0178 },   // = (416, 15) of the 760x859 artwork
+        asapOut: { x: 0.5471, y: 0.0876 },   // = (416, 75)
         /* The MAIN WORKING rope hangs plumb: its top and the descender it runs into share an x, so
            at rest it is dead vertical. That is what the mark is positioned by. */
         workTopX: 0.4667,            // = A.desc.x, and A.markLeft is solved from it
@@ -1771,7 +1793,14 @@
            in the RIG's LEFT half on purpose: that way the rope and the absorber diverge on the
            way up instead of crowding his gripping fist together. It is also the rope's PIVOT —
            swing him and the rope turns about it rather than sliding along the device. */
-        desc:   { x: 0.4667, y: 0.3561 },   // = (355, 305) of the 760x856 artwork — the owner's
+        /* 2026-09-30 redraw: the rope goes into the I'D beside its handle, and his LEFT fist is on
+           that handle - so the end is buried under the fist (#climberRig carries the fist over the
+           device). x is unchanged BY CONSTRUCTION: climber-assemble.ps1 cuts the frame so the rope
+           lands on 0.4667 again, which is why A.markLeft and --climber-left did not move. The
+           entry itself is at y 0.2930; this is 6 frame px further in. The notes below are the
+           previous figure's. */
+        desc:   { x: 0.4667, y: 0.2877 },   // = (355, 236) of the 760x848 artwork: 14 frame px
+                                            // below where the rope goes in (0.2672). Was the owner's
                                             // green mark. His x read 354.4 against the 354.7
                                             // this already was: a third of a pixel, which is
                                             // inside the width of the dot, so the plumb line was
@@ -1796,13 +1825,41 @@
            Every point goes through bodyXY, so the hook sways and leans with him.
            (This replaced A.descOut, which was a single buried point back when the strand was a
            straight line that came out from UNDER the device.) */
-        brakePath: [[0.4825, 0.3245], [0.4829, 0.3470], [0.4625, 0.3618], [0.2097, 0.5461]],
+        /* 2026-09-30 redraw, THE OWNER'S GREEN LINE: he drew the strand on a screenshot. It leaves
+           the TOP of the I'D just right of where the working rope goes in, hooks round the device's
+           RIGHT edge, and runs straight down-left to his brake hand. Read off his line by scaling the
+           screenshot on the two ropes (69.5 px there = 61.1 shipped px). p0 is 4 px inside the top
+           edge so the cap sits on the device; p1 is solved onto the p2-p3 line (no kink). */
+        /* SECOND PASS (the owner): it was drawn too far over the device. From his hand the strand
+           runs STRAIGHT, and only where it reaches the I'D does it follow the device's own right
+           contour up to the top, ending where it ended. The curve now hugs that edge (bulging to
+           shipped x 388 - the outline is at 385-387), p2 is where it meets the device's lower right. */
+        /* THIRD PASS, the owner's green line again: ONE STRAIGHT LINE from his fist to the top of the
+           I'D, across the device's face - no hook round its edge. The glove end (p3 / brakeIn) is
+           untouched; he said it sits perfectly on the glove's black line. p1, p2 are just points on
+           that line, so the quadratic is straight. */
+        /* ...and FOURTH: at the top the owner drew a short rounded HOOK - the strand turns over the
+           I'D's top-right corner and ends pointing left along its top edge, going into the device.
+           p0 is the hook's tip, p1 the corner (the control), p2 just down the straight run; p1-p2-p3
+           stay collinear so the hook hands over to the line without a kink. Read off his screenshot
+           scaled on the two ropes (182 px there = 61.1 shipped px). */
+        brakePath: [[0.4870, 0.2711], [0.5059, 0.2730], [0.4951, 0.2832], [0.2149, 0.5499]],
         // Two separate points in the brake glove (its ink runs x 121..184, y 447..520): the
         // strand ENTERS the fist high on the wrist side and the tail LEAVES it at the heel of
         // the hand, so the two read as ONE rope running through the hand rather than two pieces
         // parked either side of it. The glove is in the front layer and covers both ends.
-        brakeIn:{ x: 0.2097, y: 0.5461 },   // = (159, 468)
-        brake:  { x: 0.1651, y: 0.5754 },   // = (126, 493) — the owner's yellow mark, where the
+        // 2026-09-30 redraw: the rope goes in at the top of the fist (by the thumb and index) and
+        // leaves at the bottom (by the little finger), the way it runs through a closed hand.
+        // The glove layer's top-right corner is cut PARALLEL TO THE GLOVE'S TOP OUTLINE, a few px
+        // inside it - the owner cut the tip of his green line that way. So the strand runs onto the
+        // glove, over its outer black line, and ends in a flat diagonal edge. This point is 7 px
+        // past the cut along the rope (6 px square to it, more than the 4 px round cap needs).
+        brakeIn:{ x: 0.2149, y: 0.5499 },   // = (163, 462)
+        // Moved LEFT onto the owner's green line (Desktop screenshot, 2026-09-30): the tail leaves
+        // the fist at its lower-left, and since it is painted BEHIND him the glove's black outline
+        // is what cuts its top - diagonally, so it reads as coming out of the hand.
+        brake:  { x: 0.1776, y: 0.6029 },   // = (135, 507). The notes below were the owner's mark
+                                            // on the previous figure: where the
                                             // tail leaves the glove. 8px inside its left edge,
                                             // and the rope is 8.3 wide, so the half that shows
                                             // clears the ink by about 4px and the tail comes out
@@ -1819,7 +1876,7 @@
            thorn growing out of the rope — the owner circled it and it had to be set to zero.
            None of it exists now. The strand's top is simply inside the device and the device is
            painted over it, which is the reading the band was after in the first place.) */
-        workGroundX: 0.1651,         // = A.brake.x: the tail hangs straight down from the glove,
+        workGroundX: 0.1776,         // = A.brake.x: the tail hangs straight down from the glove,
                                      // and this is where the click-the-rope track looks for it
         // The ropes are as long as the PAGE: their ends are pinned this far above the end of the
         // document, so they run off the bottom of the screen the whole way down and only show
@@ -1872,21 +1929,21 @@
            at the knot itself, and it is measured rather than judged. Re-measure in the artwork if
            the mark is redrawn; do not nudge these by eye. */
         stemWorkX: 0.73935, stemWorkY: 0.3750,  // fractions of the MARK, not the strip
-        stemBackX: 0.91213, stemBackY: 0.7968,
+        stemBackX: 0.88463, stemBackY: 0.7968,   // was 0.91213; -11/400, see tools/logo-shift-back.ps1
         /* Where each carabiner is HELD — its bar through its hanger's eye. It turns about this and
            its knot and cord turn with it, so the rope always leaves the knot along the cord instead
            of at an angle to it. The owner marked both points himself, on a grid of the live page;
            scratchpad greendots.ps1 read them back off his image. Same points as the
            transform-origin on #caraWork / #caraBack in the CSS. */
         pivotWorkX: 0.7375, pivotWorkY: 0.1266,
-        pivotBackX: 0.9078, pivotBackY: 0.5356,
+        pivotBackX: 0.8803, pivotBackY: 0.5356,  // was 0.9078; moved with its anchor
         knotRise: 9,                 // how far above its cut end each knot sits (= its tail)
         // He is a pendulum on the rope above him, so how far he can swing is set by that rope's
         // length, not by a fixed number: sin(38°) of it, and never more than 45% of the window.
         // Low on the page the rope is long, so he can be thrown clean off the left edge.
         pullAngle: 0.62,             // sin(38°)
         pullGain: 0.95,              // how closely he follows the cursor while dragged
-        hangY: 0.356                 // where on the figure the rope carries him (= A.desc.y, his
+        hangY: 0.2877              // where on the figure the rope carries him (= A.desc.y, his
                                      // descender — keep the two in step)
       };
       var wrapEl = document.getElementById("ropeClimber");
