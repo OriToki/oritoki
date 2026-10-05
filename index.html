@@ -2369,13 +2369,20 @@
         var Hn = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
         return Math.max(90, currentY + A.hangY * Hn + 24);
       }
-      function pendMax() {
-        /* PHONES: he swings within his own gutter, half his width either way. Swung out over the
-           text he landed on its buttons and links, and the next touch meant for him opened them
-           (the owner's iPhone video: "What we do", Join Us, the socials). */
-        if (window.matchMedia("(max-width: 640px)").matches) return (climber.offsetWidth || 66) * 0.5;
-        return Math.min(pendLen() * A.pullAngle, window.innerWidth * 0.45);
+      /* How far he can be pulled sideways. RIGHT: all the way to the window's edge (the owner, on
+         desktop and phone alike), but never past what his rope can reach: on a rope of length L the
+         furthest he can hang out is L, so near the top of the page, where the rope is short, he
+         stops sooner. LEFT: unchanged, sin(38°) of the rope - he is already at the left edge.
+         (Phones used to be held to his gutter so he could not land on buttons; a drag that moved
+         now never ends as a click - see swallowClickUntil - and he swings home when let go.) */
+      function pendMaxR() {
+        var W = climber.offsetWidth || 66;
+        var stripL = wrapEl ? wrapEl.getBoundingClientRect().left : 0;
+        var restCentre = stripL + ((wrapEl ? wrapEl.offsetWidth : W)) / 2;
+        var room = window.innerWidth - W / 2 - restCentre - 4;
+        return Math.max(0, Math.min(room, pendLen() * 0.87));   // 0.87 = sin 60°: past that the ropes lie flat
       }
+      function pendMax() { return Math.min(pendLen() * A.pullAngle, window.innerWidth * 0.45); }
       /* Swinging out also lifts him: on a rope of fixed length, going sideways by s raises him by
          L - sqrt(L² - s²). Without this he would slide along an invisible horizontal rail. */
       function pendRise() {
@@ -2491,8 +2498,7 @@
         if (!dragging) return;
         // sideways: he hangs off the vertical, capped so he cannot be dragged across the page
         var dxp = e.clientX - dragStartClientX;
-        var lim = pendMax();
-        currentSway = Math.max(-lim, Math.min(lim, dragStartSway + dxp * A.pullGain));
+        currentSway = Math.max(-pendMax(), Math.min(pendMaxR(), dragStartSway + dxp * A.pullGain));
         targetSway = currentSway;                                    // no spring pull while held
         swayVel = 0;
         var b = trackBounds(), range = b.bottom - b.top0, ms = maxScroll();
