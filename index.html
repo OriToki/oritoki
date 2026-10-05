@@ -2557,10 +2557,21 @@
       if (window.matchMedia("(pointer: coarse)").matches && window.DeviceOrientationEvent) {
         var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
         if (isIOS && typeof DeviceOrientationEvent.requestPermission === "function") {
-          climber.addEventListener("pointerdown", function askTilt() {
-            climber.removeEventListener("pointerdown", askTilt);
-            DeviceOrientationEvent.requestPermission().then(function (r) { if (r === "granted") startTilt(); }).catch(function () {});
-          });
+          /* iOS shows the prompt only from a COMPLETED tap (touchend / click) - asked on pointerdown it
+             fails silently, which is why the owner saw nothing. A failed ask keeps the listener, so the
+             next tap tries again; only a real answer (granted / denied) removes it. */
+          var asking = false;
+          var askTilt = function () {
+            if (asking || tiltOn) return;
+            asking = true;
+            DeviceOrientationEvent.requestPermission().then(function (r) {
+              asking = false;
+              climber.removeEventListener("touchend", askTilt); climber.removeEventListener("click", askTilt);
+              if (r === "granted") startTilt();
+            }).catch(function () { asking = false; });
+          };
+          climber.addEventListener("touchend", askTilt);
+          climber.addEventListener("click", askTilt);
         } else {
           startTilt();
         }
