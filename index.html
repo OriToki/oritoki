@@ -524,6 +524,9 @@
     /* Language + theme controls relocated into the mobile drawer (JS moves the nodes).
        Hidden on desktop, where they live in the header bar instead. */
     .nav-actions { display: none; }
+    /* No double-tap zoom on phones (the owner: a quick double tap zoomed the page in). manipulation
+       keeps scrolling and two-finger pinch-zoom, and only drops the double tap. */
+    html { touch-action: manipulation; }
     @media (max-width: 1279px) {
       #nav .nav-actions {
         display: flex; align-items: center; gap: .75rem;
@@ -2663,10 +2666,11 @@
     var controlsMq = window.matchMedia("(max-width: 1279px)");
     function placeControls() {
       if (!headerActions || !navActions || !langToggleEl || !themeBtn || !burger) return;
-      // Theme first, language second — same order as in the markup.
+      // In the drawer: language on the LEFT, theme on the RIGHT (the owner). On desktop the header
+      // keeps the markup's order, theme then language.
       if (controlsMq.matches) {
-        navActions.appendChild(themeBtn);
         navActions.appendChild(langToggleEl);
+        navActions.appendChild(themeBtn);
       } else {
         headerActions.insertBefore(themeBtn, burger);
         headerActions.insertBefore(langToggleEl, burger);
