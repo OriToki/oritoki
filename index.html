@@ -2415,7 +2415,11 @@
         t.om += -(2.0 / L) * Math.sin(t.th) - (ax / L) * Math.cos(t.th);
         t.om *= t.damp;
         t.th += t.om;
-        if (t.th > 1.1) { t.th = 1.1; t.om = 0; } else if (t.th < -1.1) { t.th = -1.1; t.om = 0; }
+        /* A loose tail can trail, but never fly off to the side: at most ~17 degrees. On a phone the
+           finger moves him in jumps, each jump was a big kick, and a long tail (slow to swing back)
+           ended up streaming away from the brake hand at a steep angle (the owner's video 2). */
+        var TH = 0.3;
+        if (t.th > TH) { t.th = TH; t.om = Math.min(0, t.om); } else if (t.th < -TH) { t.th = -TH; t.om = Math.max(0, t.om); }
       }
       function loop() {
         currentY += (targetY - currentY) * 0.14;            // inertia: trail then catch up
@@ -2432,6 +2436,7 @@
            in his sideways speed), which is what makes a hanging rope trail and then swing past. */
         var sv = currentSway - lastSwayX, ax = sv - lastSwayV;
         lastSwayX = currentSway; lastSwayV = sv;
+        ax = Math.max(-1.5, Math.min(1.5, ax)) * 0.5;      // soften the jerks a finger drag makes
         stepTail(tailB, ax); stepTail(tailW, ax);
         // Lean = the pendulum's own angle, atan(offset / rope length).
         currentRot = Math.atan2(currentSway, L) * 57.2957795;
