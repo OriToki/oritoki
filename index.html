@@ -2542,9 +2542,9 @@
              Phones and tablets only (coarse pointer), and not with reduced motion.
              iPhone asks permission for the motion sensor, and only from a tap: we ask the first time
              someone touches HIM, not everyone on arrival. Android needs no permission. ---- */
-      var tiltSway = 0, tiltOn = false;
+      var tiltSway = 0, tiltOn = false, tiltEnabled = true;
       function onTilt(e) {
-        if (e.gamma == null) return;
+        if (e.gamma == null || !tiltEnabled) return;
         var ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
         var g = (ang === 90) ? e.beta : (ang === -90 || ang === 270) ? -e.beta : (ang === 180) ? -e.gamma : e.gamma;
         g = Math.max(-60, Math.min(60, g || 0));
@@ -2557,6 +2557,37 @@
         tiltOn = true;
         window.addEventListener("deviceorientation", onTilt);
       }
+      /* DOUBLE-TAP HIM to switch the tilt swing off and on (the owner). Off, he goes back to hanging
+         plumb and only a finger moves him; on again, tilting the phone swings him. A short note says
+         which, since nothing else on screen would. A tap that moved is a drag, not a tap. */
+      var tapT = 0, tapX = 0, tapY = 0, tStartX = 0, tStartY = 0, tiltNote = null, tiltNoteT = null;
+      function noteTilt() {
+        if (!tiltNote) {
+          tiltNote = document.createElement("div");
+          tiltNote.style.cssText = "position:fixed;left:50%;bottom:28%;transform:translateX(-50%);z-index:150;" +
+            "background:rgba(20,20,24,.86);color:#fff;font-size:14px;padding:8px 14px;border-radius:999px;" +
+            "pointer-events:none;transition:opacity .3s ease;opacity:0;white-space:nowrap";
+          document.body.appendChild(tiltNote);
+        }
+        var ka = document.documentElement.lang !== "en";
+        tiltNote.textContent = tiltEnabled ? (ka ? "ქანაობა ტელეფონის დახრით: ჩართულია" : "Tilt to swing: on")
+                                           : (ka ? "ქანაობა ტელეფონის დახრით: გამორთულია" : "Tilt to swing: off");
+        tiltNote.style.opacity = "1";
+        clearTimeout(tiltNoteT); tiltNoteT = setTimeout(function () { tiltNote.style.opacity = "0"; }, 1400);
+      }
+      climber.addEventListener("touchstart", function (e) { var t = e.touches[0]; if (t) { tStartX = t.clientX; tStartY = t.clientY; } }, { passive: true });
+      climber.addEventListener("touchend", function (e) {
+        if (!tiltOn) return;                                   // nothing to switch until the sensor runs
+        var t = e.changedTouches[0]; if (!t) return;
+        if (Math.abs(t.clientX - tStartX) > 10 || Math.abs(t.clientY - tStartY) > 10) { tapT = 0; return; }
+        var now = Date.now();
+        if (now - tapT < 320 && Math.abs(t.clientX - tapX) < 30 && Math.abs(t.clientY - tapY) < 30) {
+          tapT = 0;
+          tiltEnabled = !tiltEnabled;
+          if (!tiltEnabled) tiltSway = 0;
+          run(); noteTilt();
+        } else { tapT = now; tapX = t.clientX; tapY = t.clientY; }
+      });
       if (window.matchMedia("(pointer: coarse)").matches && window.DeviceOrientationEvent) {
         var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
         if (isIOS && typeof DeviceOrientationEvent.requestPermission === "function") {
