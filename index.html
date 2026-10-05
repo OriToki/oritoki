@@ -1598,6 +1598,20 @@
         }
       });
       lb.addEventListener("pointercancel", function () { lbDown = false; });
+      /* A LAPTOP TOUCHPAD's two-finger swipe steps photos too (the browser reports it as a sideways
+         wheel). One swipe sends dozens of small deltas, so they are summed and a step fires once per
+         gesture: after a step, the rest of that gesture's flick is ignored until it goes quiet. */
+      var wheelAcc = 0, wheelLock = false, wheelQuiet = null;
+      lb.addEventListener("wheel", function (e) {
+        if (!lb.classList.contains("lb-on") || lb.classList.contains("lb-single")) return;
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;          // up/down: not ours
+        e.preventDefault();
+        clearTimeout(wheelQuiet);
+        wheelQuiet = setTimeout(function () { wheelLock = false; wheelAcc = 0; }, 180);
+        if (wheelLock) return;
+        wheelAcc += e.deltaX;
+        if (Math.abs(wheelAcc) > 40) { show(wheelAcc > 0 ? at + 1 : at - 1); wheelLock = true; wheelAcc = 0; }
+      }, { passive: false });
       /* Anywhere off the picture shuts it; the buttons stop their own clicks getting here. */
       lb.addEventListener("click", function (e) {
         if (lbSwiped) { lbSwiped = false; return; }
