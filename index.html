@@ -2485,7 +2485,7 @@
            he swings quickly; far down it is long and he swings slow and wide. */
         var L = pendLen(), k = 2.0 / L;
         if (!dragging) {                                    // while held, the cursor IS the sway
-          swayVel  += (targetSway - currentSway) * k;
+          swayVel  += (targetSway + tiltSway - currentSway) * k;
           swayVel  *= 0.975;                                // damping: settles in a few seconds
           currentSway += swayVel;
         }
@@ -2499,7 +2499,7 @@
         // capped at 40°: pulled far out on a short rope he would otherwise lie flat across the page
         currentRot = Math.max(-40, Math.min(40, Math.atan2(currentSway, L) * 57.2957795));
         draw();
-        if (!dragging && Math.abs(targetY - currentY) < 0.25 && Math.abs(targetSway - currentSway) < 0.04 &&
+        if (!dragging && Math.abs(targetY - currentY) < 0.25 && Math.abs(targetSway + tiltSway - currentSway) < 0.04 &&
             Math.abs(swayVel) < 0.04 && Math.abs(lastSwayV) < 0.02 &&
             Math.abs(tailB.th) < 0.002 && Math.abs(tailB.om) < 0.0005 &&
             Math.abs(tailW.th) < 0.002 && Math.abs(tailW.om) < 0.0005) { running = false; return; }
@@ -2533,6 +2533,38 @@
              through the middle a few times before he settles. ---- */
       var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0, dragTouch = false;
       function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - layoutH()); }
+      /* ---- TILT THE PHONE and he swings (the owner's idea). His rope hangs plumb in the REAL
+             world, so tip the phone and he hangs towards the low side, by L·sin(tilt) - a true
+             pendulum, through the same spring the scroll uses, so he swings into place and settles.
+             Phones and tablets only (coarse pointer), and not with reduced motion.
+             iPhone asks permission for the motion sensor, and only from a tap: we ask the first time
+             someone touches HIM, not everyone on arrival. Android needs no permission. ---- */
+      var tiltSway = 0, tiltOn = false;
+      function onTilt(e) {
+        if (e.gamma == null) return;
+        var ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+        var g = (ang === 90) ? e.beta : (ang === -90 || ang === 270) ? -e.beta : (ang === 180) ? -e.gamma : e.gamma;
+        g = Math.max(-60, Math.min(60, g || 0));
+        var s = pendLen() * Math.sin(g * Math.PI / 180);
+        s = Math.max(-pendMax(), Math.min(pendMaxR(), s));
+        if (Math.abs(s - tiltSway) > 0.5) { tiltSway = s; run(); }
+      }
+      function startTilt() {
+        if (tiltOn || reduce || !window.DeviceOrientationEvent) return;
+        tiltOn = true;
+        window.addEventListener("deviceorientation", onTilt);
+      }
+      if (window.matchMedia("(pointer: coarse)").matches && window.DeviceOrientationEvent) {
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        if (isIOS && typeof DeviceOrientationEvent.requestPermission === "function") {
+          climber.addEventListener("pointerdown", function askTilt() {
+            climber.removeEventListener("pointerdown", askTilt);
+            DeviceOrientationEvent.requestPermission().then(function (r) { if (r === "granted") startTilt(); }).catch(function () {});
+          });
+        } else {
+          startTilt();
+        }
+      }
       climber.addEventListener("pointerdown", function (e) {
         dragging = true;
         dragTouch = e.pointerType === "touch";
