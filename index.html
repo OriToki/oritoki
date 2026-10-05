@@ -659,7 +659,10 @@
       background: rgba(255,255,255,.1); color: #fff; font-size: 1rem; cursor: pointer;
       transition: background .2s ease, color .2s ease;
     }
-    .lb-btn:hover { background: #f97316; color: #fff; }
+    /* White arrows that stay white, the usual photo-viewer look. The orange hover is kept for a
+       mouse only: on a phone :hover sticks after a tap, so the arrow turned orange and stayed. */
+    @media (hover: hover) { .lb-btn:hover { background: rgba(255,255,255,.22); color: #fff; } }
+    .lb-figure img { touch-action: pan-y pinch-zoom; }   /* sideways swipes are ours (step photos) */
     .lb-close { top: 1.25rem; right: 1.25rem; }
     .lb-prev { left: 1.25rem; top: 50%; transform: translateY(-50%); }
     .lb-next { right: 1.25rem; top: 50%; transform: translateY(-50%); }
@@ -668,7 +671,12 @@
     @media (max-width: 640px) {
       .lb { --lb-x: 1rem; --lb-y: 3.5rem; }
       .lb-prev { left: .5rem; } .lb-next { right: .5rem; }
-      .lb-btn { height: 2.5rem; width: 2.5rem; }
+      .lb-btn { height: 2.25rem; width: 2.25rem; font-size: .85rem; background: rgba(0,0,0,.35); }
+      /* Gallery carousel arrows on a phone: Swiper's 44px default was huge, and they sat on the
+         middle of the slide PLUS the dots strip under it, so below the photo's middle. Smaller,
+         and centred on the 260px photo itself. */
+      .gallery-swiper { --swiper-navigation-size: 22px; }
+      .gallery-swiper .swiper-button-prev, .gallery-swiper .swiper-button-next { top: 130px; margin-top: -11px; }
     }
 
     /* Keep the white hero text legible over bright parts of the photo */
@@ -1577,8 +1585,22 @@
       lb.querySelector(".lb-close").addEventListener("click", close);
       lb.querySelector(".lb-prev").addEventListener("click", function () { show(at - 1); });
       lb.querySelector(".lb-next").addEventListener("click", function () { show(at + 1); });
+      /* SWIPE between photos while one is open (the owner: it has to work both ways). A sideways
+         move of 40px+ steps; anything shorter is a tap. A swipe that ends off the picture must
+         not also count as the tap that closes it, hence lbSwiped. */
+      var lbX = 0, lbY = 0, lbDown = false, lbSwiped = false;
+      lb.addEventListener("pointerdown", function (e) { lbDown = true; lbSwiped = false; lbX = e.clientX; lbY = e.clientY; });
+      lb.addEventListener("pointerup", function (e) {
+        if (!lbDown) return; lbDown = false;
+        var dx = e.clientX - lbX, dy = e.clientY - lbY;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2 && !lb.classList.contains("lb-single")) {
+          lbSwiped = true; show(dx < 0 ? at + 1 : at - 1);
+        }
+      });
+      lb.addEventListener("pointercancel", function () { lbDown = false; });
       /* Anywhere off the picture shuts it; the buttons stop their own clicks getting here. */
       lb.addEventListener("click", function (e) {
+        if (lbSwiped) { lbSwiped = false; return; }
         if (e.target === lbImg || e.target.closest(".lb-btn")) return;
         close();
       });
@@ -2347,7 +2369,13 @@
         var Hn = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
         return Math.max(90, currentY + A.hangY * Hn + 24);
       }
-      function pendMax() { return Math.min(pendLen() * A.pullAngle, window.innerWidth * 0.45); }
+      function pendMax() {
+        /* PHONES: he swings within his own gutter, half his width either way. Swung out over the
+           text he landed on its buttons and links, and the next touch meant for him opened them
+           (the owner's iPhone video: "What we do", Join Us, the socials). */
+        if (window.matchMedia("(max-width: 640px)").matches) return (climber.offsetWidth || 66) * 0.5;
+        return Math.min(pendLen() * A.pullAngle, window.innerWidth * 0.45);
+      }
       /* Swinging out also lifts him: on a rope of fixed length, going sideways by s raises him by
          L - sqrt(L² - s²). Without this he would slide along an invisible horizontal rail. */
       function pendRise() {
@@ -2479,9 +2507,15 @@
         draw();
         e.preventDefault();
       });
+      /* A drag that MOVED must not end as a click on whatever is under the finger when it lifts. */
+      var swallowClickUntil = 0;
+      document.addEventListener("click", function (e) {
+        if (Date.now() < swallowClickUntil) { e.preventDefault(); e.stopPropagation(); swallowClickUntil = 0; }
+      }, true);
       function endDrag(e) {
         if (!dragging) return;
         dragging = false;
+        if (e && (Math.abs(e.clientX - dragStartClientX) > 6 || Math.abs(e.clientY - dragStartClientY) > 6)) swallowClickUntil = Date.now() + 400;
         targetSway = 0; swayVel = 0;                                 // let go: gravity swings him back
         run();
         document.body.classList.remove("climber-grabbing");
