@@ -2423,10 +2423,11 @@
              SIDEWAYS to pull him off the vertical. Let go and gravity takes him back — the same
              damped pendulum the scroll uses, just released from further out, so he swings
              through the middle a few times before he settles. ---- */
-      var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0;
+      var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0, dragTouch = false;
       function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
       climber.addEventListener("pointerdown", function (e) {
         dragging = true;
+        dragTouch = e.pointerType === "touch";
         dragStartClientY = e.clientY;
         dragStartClientX = e.clientX;
         dragStartSway = currentSway;
@@ -2447,7 +2448,12 @@
         var b = trackBounds(), range = b.bottom - b.top0, ms = maxScroll();
         if (range > 0 && ms > 0) {
           var dy = e.clientY - dragStartClientY;
-          var y = Math.max(0, Math.min(ms, dragStartScroll + dy * (ms / range)));
+          /* With a MOUSE he is the scrollbar thumb: moving him the length of his track scrolls the
+             whole page. With a FINGER that ratio is ~10x on a phone (long page, short track), so a
+             small slip of the thumb flung the page and everything in the strip jumped (the owner,
+             on an iPhone). By finger the page moves with the finger instead, like any scroll. */
+          var gain = dragTouch ? 1 : (ms / range);
+          var y = Math.max(0, Math.min(ms, dragStartScroll + dy * gain));
           window.scrollTo(0, y);
           computeTarget(); currentY = targetY;                       // stick to the cursor, no inertia lag while dragging
         }
