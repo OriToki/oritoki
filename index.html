@@ -2028,11 +2028,16 @@
       var caraWork = document.getElementById("caraWork"), caraBack = document.getElementById("caraBack");
       var pivotWork = { x: 0, y: 0 }, pivotBack = { x: 0, y: 0 };
       var stemOffWork = { x: 0, y: 0 }, stemOffBack = { x: 0, y: 0 };
+      /* The LAYOUT viewport's height, not window.innerHeight. On a phone, pinch-zoom shrinks
+         innerHeight to the zoomed-in visible part, while the fixed strip and its SVGs stay sized to
+         the layout viewport - so the ropes were drawn into a too-short box and came out chopped and
+         floating (the owner's iPhone video). clientHeight does not change with pinch-zoom. */
+      function layoutH() { return document.documentElement.clientHeight || window.innerHeight; }
       var ropeCeil = -24;                                              // the lower of the two knots
       var markK = 1;                                                   // --mark-k, read by sizeRopes
       function sizeRopes() {
         if (!hasRopes) return;
-        var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + window.innerHeight;
+        var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + layoutH();
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box); svgTop.setAttribute("viewBox", box);
         /* The lockup's geometry. The mark is CSS-sized from the strip (#brandRope), so these three
            numbers place it, and the two stems are fractions of that box. tools/logo-mark.ps1
@@ -2085,7 +2090,7 @@
         if (!hasRopes) return;
         var Wn = climber.offsetWidth || cssPx("--worker-width", 58);
         var Hn = climber.offsetHeight || Wn * 1.225;
-        var VH = window.innerHeight, top = currentY - currentRise;   // the swing lifts him
+        var VH = layoutH(), top = currentY - currentRise;   // the swing lifts him
         /* Everything anchored to his BODY has to go through the SAME transform the browser
            applies to the artwork — the sway AND the lean, about the same pivot (transform-origin
            is 50% 8% of the image). Translating alone was not enough: near the pivot, at the top
@@ -2314,11 +2319,11 @@
         // Below the header, and below the lockup's knots — he hangs from them, so he can never
         // be level with them.
         var top0 = Math.max((header ? header.offsetHeight : 64) + 6, ropeCeil + 10);
-        var bottom = window.innerHeight - climber.offsetHeight - cssPx("--climber-bottom-gap", 10);
+        var bottom = layoutH() - climber.offsetHeight - cssPx("--climber-bottom-gap", 10);
         return { top0: top0, bottom: Math.max(top0, bottom) };
       }
       function computeTarget() {
-        var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        var maxScroll = document.documentElement.scrollHeight - layoutH();
         var p = maxScroll > 0 ? Math.min(Math.max((window.scrollY || 0) / maxScroll, 0), 1) : 0;
         var b = trackBounds();
         targetY = b.top0 + p * (b.bottom - b.top0);
@@ -2424,7 +2429,7 @@
              damped pendulum the scroll uses, just released from further out, so he swings
              through the middle a few times before he settles. ---- */
       var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0, dragTouch = false;
-      function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
+      function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - layoutH()); }
       climber.addEventListener("pointerdown", function (e) {
         dragging = true;
         dragTouch = e.pointerType === "touch";
