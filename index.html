@@ -945,7 +945,7 @@
          the lettering. -->
     <img class="lock-piece" id="lockBarLow" src="images/logo-barlow.png?v=18" alt="" draggable="false" />
     <img class="lock-piece" id="caraWork" src="images/logo-work.png?v=17" alt="" draggable="false" />
-    <img id="climber" src="images/man-body.png?v=39" alt="" draggable="false" />
+    <img id="climber" src="images/man-body.png?v=43" alt="" draggable="false" />
     <svg id="ropeFront" preserveAspectRatio="none" aria-hidden="true">
       <!-- No clipPaths. This rope ENDS INSIDE the descender and #climberRig is painted over it,
            so the device covers the end wherever the swing puts it. -->
@@ -1800,7 +1800,7 @@
            * markW = 0.4667 + 0.14528 * 0.5531. */
         backupX: 0.5486,             // backup rope, top — and its whole line, since camX matches
         camX: 0.5486,                // = backupX; = shipped x 416, the middle of the ASAP's hole
-        camY: 0.1459,                // and how far down the figure that is — kept for the drag
+        camY: 0.1292,                // and how far down the figure that is — kept for the drag (= asapOut.y)
                                      // track; the rope itself bends at asapIn / asapOut
         /* WHERE THE BACKUP ROPE MEETS THE ASAP. It does not simply bend AT the device — the device
            HOLDS it, so it bends TWICE: once going in at the top, once coming out at the bottom, and
@@ -1844,8 +1844,14 @@
            working rope enters the descender, the green line = the strand between the hands, yellow =
            where it leaves the brake hand, green dots = through the ASAP's centre. The frame was re-cut so
            the red mark lands on the plumb line. The notes below are history. */
-        asapIn:  { x: 0.5486, y: 0.0828 },   // = (416, 15) of the 760x859 artwork
-        asapOut: { x: 0.5486, y: 0.1459 },   // = (416, 75)
+        /* 2026-10-05: the owner's NEW back-up gear (tools/climber-new-gear.ps1): absorber clipped to his
+           chest ring, ASAP on the rope a little right of it, so the rope meets its plate here now. */
+        /* The rope's two PIVOTS, on the owner's marks. IN: his red dot on the grid sheet
+           (tools/climber-sheet.ps1, read back by pixel) at shipped (417.4, 48.9) - just inside the
+           plate's top outline, so the rope turns behind the device. OUT: his earlier green mark,
+           2.8 man px above the plate's bottom (the plate runs 0.0519 .. 0.1316). */
+        asapIn:  { x: 0.5486, y: 0.0574 },
+        asapOut: { x: 0.5486, y: 0.1292 },
         /* The MAIN WORKING rope hangs plumb: its top and the descender it runs into share an x, so
            at rest it is dead vertical. That is what the mark is positioned by. */
         workTopX: 0.4677,            // = A.desc.x, and A.markLeft is solved from it
@@ -2140,7 +2146,6 @@
            the two lower ends only the BACKUP rope's is loose — it swings wider than he does, and
            the rope bends where it passes through his device: fixed above it, free below it. The
            brake rope is rigid: it carries his weight, so it stays taut and still. */
-        var swayFree = tailSway;
         var ropeW = Wn * A.ropeW * markK;
         /* The knot is PART OF THE ROPE, so it is not placed at a fixed spot near the end: the
            curve is solved for the height the knot sits at, and the knot is then wrapped around
@@ -2181,26 +2186,22 @@
           var ty = 2 * mt * (c.y - y0) + 2 * t * (y1 - c.y);
           return knotD(kx, kyy, Math.atan2(ty, tx));
         }
-        /* Below his devices each rope HANGS PLUMB — straight down from the device under gravity.
-           Only its free end trails when he swings; hold him off to one side and the tail settles
-           back to vertical. Drawn as a quadratic whose control point sits DIRECTLY BELOW the
-           device, so the rope leaves it vertically and the only sideways bend is whatever the
-           lagging end (freeEnd, on its own returning spring) puts in. It used to lean along his
-           body via sinR/cosR — but that lean stays put while he is held, so the rope read as a
-           permanent bow instead of a plumb line, which is not how a loose rope hangs. */
-        function ctrlFor(hx, hy, ey) {                // control point straight below the device
-          var len = Math.max(1, ey - hy);
-          return { x: hx, y: hy + len * 0.45 };
-        }
-        /* A rope does not stretch. The free end below a device trails behind it when he swings,
-           but it stays the SAME DISTANCE from that device — so the sideways lag has to be paid
-           for in height: the end rises by exactly as much as the lag takes out of the drop.
-           Letting it lag sideways at a fixed height, as it did before, made the rope read as
-           rubber. `lag` is how far the end trails; `rest` is the length it hangs at rest. */
-        function freeEnd(hx, hy, restY, lag) {
-          var rest = Math.max(1, restY - hy);
-          var l = Math.max(-rest * 0.85, Math.min(rest * 0.85, lag));
-          return { x: hx + l, y: hy + Math.sqrt(rest * rest - l * l) };
+        /* Below his devices each rope hangs from the device; held still, it hangs PLUMB (th = 0).
+           It never leans along his body - that lean stays put while he is held, so the rope read as
+           a permanent bow, which is not how a loose rope hangs.
+           THE LOOSE TAILS ARE PENDULUMS (2026-10-05, the owner: the tails stretched like rubber and
+           smeared while he swung). Each tail hangs from its device with a FIXED length and an angle
+           th that loop() integrates - so the end can lag and swing past, but the rope never gets
+           longer or shorter: swung out sideways, the end rises. The old freeEnd() pulled the end
+           towards a lagging x on a spring sized for the MAIN rope (often 1000+ px, so it took
+           seconds to catch up) and held the end at its resting height, which is what read as
+           rubber. The length is measured from where the device hangs when he is neither leaned nor
+           lifted, so his lean and the swing's lift do not stretch it either (measured: a 150px drag
+           had stretched the working tail 5% when it was taken from the leaned hand). */
+        function tailEnd(hx, hy, len, th) { return { x: hx + len * Math.sin(th), y: hy + len * Math.cos(th) }; }
+        function tailCtl(hx, hy, len, th) {           // leaves the device bending gently towards the end
+          var h = th * 0.5;
+          return { x: hx + len * 0.45 * Math.sin(h), y: hy + len * 0.45 * Math.cos(h) };
         }
         function hangQ(c, ex, ey) {                   // the curve only — prefix it with its own M
           return " Q " + c.x.toFixed(1) + " " + c.y.toFixed(1) + " " + ex.toFixed(1) + " " + ey.toFixed(1);
@@ -2213,8 +2214,11 @@
            which is what a rope in a fall arrester does. */
         var ropeIn = camB, ropeOut = bodyXY(A.asapOut.x, A.asapOut.y);
         var camX = ropeOut.x, camYpx = ropeOut.y;      // the free hang starts where it leaves
-        var backEnd = freeEnd(camX, camYpx, endB, swayFree - sway);
-        var backCtl = ctrlFor(camX, camYpx, backEnd.y);
+        // length from where the device hangs when he is NOT leaned or lifted (currentY + its height on
+        // him), so neither the swing's lift nor his lean changes how much rope hangs below it
+        tailB.len = Math.max(1, endB - (currentY + A.asapOut.y * Hn));
+        var backEnd = tailEnd(camX, camYpx, tailB.len, tailB.th);
+        var backCtl = tailCtl(camX, camYpx, tailB.len, tailB.th);
         setSeg(rBackO, rBackI,
           "M " + knotB.x.toFixed(1) + " " + knotB.y.toFixed(1) +
           " L " + ropeIn.x.toFixed(1) + " " + ropeIn.y.toFixed(1) +
@@ -2263,8 +2267,9 @@
         // end trails on its own spring — a slightly different one from the backup rope's, so the
         // two tails never move as one welded piece.
         var hand = bodyXY(A.brake.x, A.brake.y), handX = hand.x, handY = hand.y;
-        var workEnd = freeEnd(handX, handY, endW, tail2Sway - sway);
-        var workCtl = ctrlFor(handX, handY, workEnd.y);
+        tailW.len = Math.max(1, endW - (currentY + A.brake.y * Hn));   // same rule as the backup tail
+        var workEnd = tailEnd(handX, handY, tailW.len, tailW.th);
+        var workCtl = tailCtl(handX, handY, tailW.len, tailW.th);
         /* A.brake IS THE HINGE. The rope comes into the fist from the thumb side and leaves it
            downwards, and the corner between those two is what the owner marked: everything below
            turns about that point and the exit itself never moves.
@@ -2350,7 +2355,23 @@
          gliding to a halt. Deliberately weak: about ±3px and ±1.3°, which reads as him hanging
          in the air rather than as animation. The tilt is derived from the sway (transform-origin
          sits near the top of the figure, so he pivots from where he hangs). */
-      var swayVel = 0, tailSway = 0, tailVel = 0, tail2Sway = 0, tail2Vel = 0;
+      var swayVel = 0;
+      /* The two loose tails, as pendulums hanging from his devices: angle from plumb, its rate, and
+         the tail's length (drawRopes measures it every frame). Slightly different damping, so the
+         two ropes never swing as one welded piece. */
+      var tailB = { th: 0, om: 0, len: 300, damp: 0.955 };     // backup rope, below the ASAP
+      var tailW = { th: 0, om: 0, len: 300, damp: 0.945 };     // working rope, below the brake hand
+      var lastSwayX = 0, lastSwayV = 0;
+      function stepTail(t, ax) {
+        /* A pendulum whose support accelerates sideways by ax: th'' = -(g/L) sin th - (ax/L) cos th.
+           g = 2 px/frame², the same gravity the main pendulum uses (its stiffness is 2/L). The
+           support pulled right throws the end left, and it swings back past plumb when he stops. */
+        var L = Math.max(40, t.len);
+        t.om += -(2.0 / L) * Math.sin(t.th) - (ax / L) * Math.cos(t.th);
+        t.om *= t.damp;
+        t.th += t.om;
+        if (t.th > 1.1) { t.th = 1.1; t.om = 0; } else if (t.th < -1.1) { t.th = -1.1; t.om = 0; }
+      }
       function loop() {
         currentY += (targetY - currentY) * 0.14;            // inertia: trail then catch up
         /* A real pendulum's rhythm comes from its length (ω² = g/L), not from a fixed constant —
@@ -2362,21 +2383,18 @@
           swayVel  *= 0.975;                                // damping: settles in a few seconds
           currentSway += swayVel;
         }
-        /* Each loose rope tail below him hangs from his device, so it follows him — but on its own
-           softer spring, which makes it trail on the way out and overshoot on the way back. Two
-           springs, very slightly different, so the two ropes do not swing as one welded piece. */
-        tailVel += (currentSway - tailSway) * k * 0.85;
-        tailVel *= 0.972;
-        tailSway += tailVel;
-        tail2Vel += (currentSway - tail2Sway) * k * 1.1;
-        tail2Vel *= 0.966;
-        tail2Sway += tail2Vel;
+        /* Each loose tail is driven by how hard his devices ACCELERATE sideways (this frame's change
+           in his sideways speed), which is what makes a hanging rope trail and then swing past. */
+        var sv = currentSway - lastSwayX, ax = sv - lastSwayV;
+        lastSwayX = currentSway; lastSwayV = sv;
+        stepTail(tailB, ax); stepTail(tailW, ax);
         // Lean = the pendulum's own angle, atan(offset / rope length).
         currentRot = Math.atan2(currentSway, L) * 57.2957795;
         draw();
         if (!dragging && Math.abs(targetY - currentY) < 0.25 && Math.abs(targetSway - currentSway) < 0.04 &&
-            Math.abs(swayVel) < 0.04 && Math.abs(currentSway - tailSway) < 0.04 && Math.abs(tailVel) < 0.04 &&
-            Math.abs(currentSway - tail2Sway) < 0.04 && Math.abs(tail2Vel) < 0.04) { running = false; return; }
+            Math.abs(swayVel) < 0.04 && Math.abs(lastSwayV) < 0.02 &&
+            Math.abs(tailB.th) < 0.002 && Math.abs(tailB.om) < 0.0005 &&
+            Math.abs(tailW.th) < 0.002 && Math.abs(tailW.om) < 0.0005) { running = false; return; }
         requestAnimationFrame(loop);
       }
       function run() { if (!running) { running = true; requestAnimationFrame(loop); } }

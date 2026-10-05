@@ -140,6 +140,18 @@ between three layers of him. What matters when touching it:
   ends are anchored to the **bottom of the page**, so they run off-screen while scrolling and only
   show their stopper knots in the footer.
 
+**The back-up gear was swapped IN PLACE (2026-10-05), the man untouched.** `tools/climber-new-gear.ps1`
+puts the owner's new absorber + ASAP (Desktop: `perfect worker. no absorber.png` = the absorber alone,
+`asap.png`, both in the man's pixels) on the shipped `man-body.png` without re-running
+`climber-assemble.ps1`, whose last command line was never recorded. The map from the man's pixels
+(`Perfect 1.png`) to the shipped frame was FITTED: frame 1052 wide, left 120.2, top 31.8 (rms 4.3 on
+the legs). Only pixels inside the old and new gear's footprints are rewritten; rig and glove layers
+are untouched, and his descender fist (glove layer) covers the absorber's tail. The ASAP stays upright
+with its plate's centre line on the back-up rope (x 697.3 man px); the absorber turns 28.5° about its
+tail to reach it, and `A.asapIn / asapOut / camY` moved up with the plate. Note the Desktop files were
+renamed since `climber-swing-gear.ps1` was written: its `perfect.png` is now `perfect 2.png`, its
+`Perfect 2.png` is now `Perfect 1.png`.
+
 **The header mark is the owner's drawing, cut — never rebuilt.** `Desktop\parts\final logo.png` is
 the finished lockup: "or" over "tok" with a bolt hanger, locking carabiner and knot standing in for
 each dotted i. `tools/logo-split.ps1` cuts it into three layers that live in `#ropeClimber`:
