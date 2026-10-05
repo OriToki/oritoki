@@ -295,6 +295,9 @@
     #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; }
     /* pointer-events: none so the drag still starts on the body img, where the handlers are. */
     #climberRig, #climberGlove { position: absolute; left: 50%; top: 0; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
+    /* No long-press "preview / save image" sheet on a phone (the owner: holding the man popped his
+       picture up for download). Covers the man's three layers and the lockup's pieces. */
+    #ropeClimber img { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
     #climberRig   { z-index: 4; }
     #climberGlove { z-index: 6; }
     body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
@@ -2629,7 +2632,9 @@
       }
       climber.addEventListener("pointerup", endDrag);
       climber.addEventListener("pointercancel", endDrag);
-      climber.addEventListener("dragstart", function (e) { e.preventDefault(); });   // stop the browser's native image drag stealing the first grab
+      climber.addEventListener("dragstart", function (e) { e.preventDefault(); });
+      // Android's long-press menu on an image comes through contextmenu
+      if (wrapEl) wrapEl.addEventListener("contextmenu", function (e) { if (e.target.tagName === "IMG") e.preventDefault(); });   // stop the browser's native image drag stealing the first grab
 
       /* ---- Click the ROPES to page up/down, exactly like clicking a scrollbar's track above or
              below its thumb. Above him the page goes up, below him it goes down, and holding the
