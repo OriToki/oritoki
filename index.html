@@ -309,9 +309,9 @@
        to stay put while the drawer is down. Hence the children rather than the container: opacity
        on a parent is a group, and no child can opt back out of it. */
     #ropeClimber > * { transition: opacity .25s ease; }
-    body.menu-open #ropeClimber > :not(#brandRope):not(.lock-piece) { opacity: 0; visibility: hidden; }
-    /* (.lock-piece too: the anchors, carabiners and knots are part of the logo. Hidden with the
-       ropes, the open menu showed the letters alone - the owner noticed.) */
+    /* (With the phone menu open, the man and ropes stay; only the part of the strip the drawer
+       covers is clipped away, so they read as passing BEHIND it - see clipStripToMenu in the
+       script. They used to be hidden outright, which the owner did not want.) */
     /* (#brandRope is the only child that stays — it is brand furniture, not part of the rappel.) */
     @media (prefers-reduced-motion: reduce) { #climber { transition: none !important; } }
     /* Mobile: a narrower strip, set through the SAME two variables so the lockup, the ropes and
@@ -2637,9 +2637,27 @@
     /* ---------- 5. Mobile menu ---------- */
     var burger = document.getElementById("burger");
     var nav = document.getElementById("nav");
+    /* The climber's strip is a layer ABOVE the header (it has to be, for the ropes to cross the
+       bar), so the drawer cannot simply cover him. Instead, while the drawer is open, the strip is
+       clipped along the drawer's own box: he and his ropes carry on above and below it and simply
+       pass behind it. Measured from layout (offsetTop/Height), not the opening animation. */
+    var stripEl = document.getElementById("ropeClimber"), stripClipTimer = null;
+    function clipStripToMenu(open) {
+      if (!stripEl) return;
+      clearTimeout(stripClipTimer);
+      if (open) {
+        var t = nav.offsetTop, b = t + nav.offsetHeight;
+        stripEl.style.clipPath = 'path(evenodd, "M -9999 -9999 H 9999 V 9999 H -9999 Z M -9999 ' + t +
+          ' H 9999 V ' + b + ' H -9999 Z")';
+      } else {
+        // wait for the drawer's fade-out (.34s) before he shows through again
+        stripClipTimer = setTimeout(function () { stripEl.style.clipPath = ""; }, 360);
+      }
+    }
     function closeMenu() {
       nav.classList.remove("open");
       document.body.classList.remove("menu-open");
+      clipStripToMenu(false);
       burger.setAttribute("aria-expanded", "false");
       burger.innerHTML = '<i class="fa-solid fa-bars"></i>';
     }
@@ -2648,6 +2666,7 @@
         e.stopPropagation();
         var open = nav.classList.toggle("open");
         document.body.classList.toggle("menu-open", open);
+        clipStripToMenu(open);
         burger.setAttribute("aria-expanded", open ? "true" : "false");
         burger.innerHTML = open ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
       });
