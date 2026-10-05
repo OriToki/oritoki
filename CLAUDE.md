@@ -19,8 +19,11 @@ step, no package manager, no test suite.**
   and paren balance count over the file catches gross errors; otherwise verify by loading the page.
 - **git is installed but not on PATH** — GitHub Desktop ships it:
   `C:\Users\<user>\AppData\Local\GitHubDesktop\app-<version>\resources\app\git\cmd\git.exe`.
-  Committing from there works; `push`/`fetch` cannot authenticate from a non-interactive shell, so
-  pushing is done by clicking **Push origin** in GitHub Desktop.
+  Committing from there works. Pushing works too since 2026-10-06, once the owner signed in to Git
+  Credential Manager: `git -c credential.helper= -c credential.helper=manager push origin main`
+  (set `GCM_INTERACTIVE=never` so a missing login fails instead of hanging). The remote is
+  `OriToki/oritoki` (`origin`); the old `SafeProDev/oritoki` is kept as remote `safeprodev`.
+  Every push to `main` deploys to Cloudflare Pages: https://oritoki.pages.dev (production).
 - **Artwork tooling lives in `tools/`** (PowerShell + System.Drawing, no install needed). See
   `tools/README.md`: grids and zooms for measuring the climber artwork, a preview that repaints what
   the browser draws, and the generator for the join-page wallpaper.
