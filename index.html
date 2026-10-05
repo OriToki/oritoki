@@ -2074,6 +2074,12 @@
          the layout viewport - so the ropes were drawn into a too-short box and came out chopped and
          floating (the owner's iPhone video). clientHeight does not change with pinch-zoom. */
       function layoutH() { return document.documentElement.clientHeight || window.innerHeight; }
+      /* The ROPES' drawing box: the strip's own height. The strip is 100vh tall, and on a phone 100vh
+         is the TALL viewport (as if the browser bars were hidden) while clientHeight is the short one,
+         so a viewBox of clientHeight was stretched to fit 100vh and every rope point slid down by a
+         few percent - off its knot, off the brake hand, off the descender, worst at the bottom
+         (the owner's iPhone video). The viewBox must be exactly the box it is drawn into. */
+      function stripH() { var s = document.getElementById("ropeClimber"); return (s && s.offsetHeight) || layoutH(); }
       /* PHONES: the rope ends, their knots and his boots stop ABOVE the copyright bar (the owner drew
          the line: its top border), not down in it. footLift is the height from that bar's top to
          the end of the page; every "from the bottom of the page" distance is lifted by it. Measured
@@ -2090,7 +2096,7 @@
       function sizeRopes() {
         measureFootLift();
         if (!hasRopes) return;
-        var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + layoutH();
+        var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + stripH();
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box); svgTop.setAttribute("viewBox", box);
         /* The lockup's geometry. The mark is CSS-sized from the strip (#brandRope), so these three
            numbers place it, and the two stems are fractions of that box. tools/logo-mark.ps1
@@ -2143,7 +2149,7 @@
         if (!hasRopes) return;
         var Wn = climber.offsetWidth || cssPx("--worker-width", 58);
         var Hn = climber.offsetHeight || Wn * 1.225;
-        var VH = layoutH(), top = currentY - currentRise;   // the swing lifts him
+        var VH = stripH(), top = currentY - currentRise;   // the swing lifts him
         /* Everything anchored to his BODY has to go through the SAME transform the browser
            applies to the artwork — the sway AND the lean, about the same pivot (transform-origin
            is 50% 8% of the image). Translating alone was not enough: near the pivot, at the top
