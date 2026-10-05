@@ -2488,6 +2488,7 @@
            he swings quickly; far down it is long and he swings slow and wide. */
         var L = pendLen(), k = 2.0 / L;
         if (!dragging) {                                    // while held, the cursor IS the sway
+          tiltSway += (tiltTarget - tiltSway) * 0.04;      // slow ease towards the phone's tilt
           swayVel  += (targetSway + tiltSway - currentSway) * k;
           swayVel  *= 0.975;                                // damping: settles in a few seconds
           currentSway += swayVel;
@@ -2503,6 +2504,7 @@
         currentRot = Math.max(-40, Math.min(40, Math.atan2(currentSway, L) * 57.2957795));
         draw();
         if (!dragging && Math.abs(targetY - currentY) < 0.25 && Math.abs(targetSway + tiltSway - currentSway) < 0.04 &&
+            Math.abs(tiltTarget - tiltSway) < 0.3 &&
             Math.abs(swayVel) < 0.04 && Math.abs(lastSwayV) < 0.02 &&
             Math.abs(tailB.th) < 0.002 && Math.abs(tailB.om) < 0.0005 &&
             Math.abs(tailW.th) < 0.002 && Math.abs(tailW.om) < 0.0005) { running = false; return; }
@@ -2542,15 +2544,17 @@
              Phones and tablets only (coarse pointer), and not with reduced motion.
              iPhone asks permission for the motion sensor, and only from a tap: we ask the first time
              someone touches HIM, not everyone on arrival. Android needs no permission. ---- */
-      var tiltSway = 0, tiltOn = false, tiltEnabled = true;
+      var tiltSway = 0, tiltTarget = 0, tiltOn = false, tiltEnabled = true;
       function onTilt(e) {
         if (e.gamma == null || !tiltEnabled) return;
         var ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
         var g = (ang === 90) ? e.beta : (ang === -90 || ang === 270) ? -e.beta : (ang === 180) ? -e.gamma : e.gamma;
         g = Math.max(-60, Math.min(60, g || 0));
-        var s = pendLen() * Math.sin(g * Math.PI / 180);
+        /* Gentler (the owner): 60% of a true pendulum's reach, and the swing follows the tilt through
+           a slow ease in loop() (tiltSway -> tiltTarget), so he drifts over rather than jumps. */
+        var s = 0.6 * pendLen() * Math.sin(g * Math.PI / 180);
         s = Math.max(-pendMax(), Math.min(pendMaxR(), s));
-        if (Math.abs(s - tiltSway) > 0.5) { tiltSway = s; run(); }
+        if (Math.abs(s - tiltTarget) > 0.5) { tiltTarget = s; run(); }
       }
       function startTilt() {
         if (tiltOn || reduce || !window.DeviceOrientationEvent) return;
@@ -2584,7 +2588,7 @@
         if (now - tapT < 320 && Math.abs(t.clientX - tapX) < 30 && Math.abs(t.clientY - tapY) < 30) {
           tapT = 0;
           tiltEnabled = !tiltEnabled;
-          if (!tiltEnabled) tiltSway = 0;
+          if (!tiltEnabled) tiltTarget = 0;
           run(); noteTilt();
         } else { tapT = now; tapX = t.clientX; tapY = t.clientY; }
       });
