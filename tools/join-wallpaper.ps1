@@ -55,6 +55,21 @@ param(
   [int]$LineBoost = 1,                # ...by this much, so the set reads at one line weight
   [int]$CloseR = 4,                   # brush that seals interior detail gaps before tracing
   [string]$Ver = "v14",
+  # DEPTH BY DRAWING STYLE (the owner's v15 note). The icons that were solid silhouettes - traced
+  # to outlines below, but still dense with ink - sit BACK, fainter, as if further away; the ones
+  # drawn as plain line art come FORWARD. Both are multipliers on the theme's alpha (16 dark / 26
+  # light), so 1 / 1 is the old flat tile exactly.
+  # Which icons count as "full of ink" is MEASURED on the finished doodle, not taken from how the
+  # source was drawn: the share of its own box its ink covers. The first try split by source style
+  # (traced silhouettes back) and got it backwards - tracing turns a silhouette into a clean
+  # outline, while the dense ones the owner marked (workers in helmets, people with tools) were
+  # drawn as line art to begin with. Above $DenseInk % goes back.
+  [double]$DenseInk = 30,
+  [double]$FrontAlpha = 1.25,         # airy icons
+  [double]$BackAlpha = 0.55,          # dense icons
+  [switch]$Classes,                   # also write tools\join-classes-$Ver.png: front white, back red,
+                                      # and list every icon's density, to check the split against the
+                                      # owner's marks before baking
   [string]$Src = "C:\Users\gilmo\OneDrive\Desktop\icons in high rez",
   # Icons left out of the tile. The file stays in the owner's folder - this is the exclusion, so it
   # can be undone by deleting a line. The abseiler on the cliff is a solid black wedge taking up
@@ -166,9 +181,11 @@ foreach ($f in $files) {
   $dw = $maxx - $minx + 1; $dh = $maxy - $miny + 1
   $d = New-Object System.Drawing.Bitmap($dw, $dh, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
   $blk = [System.Drawing.Color]::FromArgb(255, 0, 0, 0)
+  $inkPx = 0
   for ($y = 0; $y -lt $dh; $y++) { for ($x = 0; $x -lt $dw; $x++) {
-    if ($mask[($miny+$y)*$Work + ($minx+$x)]) { $d.SetPixel($x, $y, $blk) } } }
-  $doodles += ,@{ bmp = $d; name = $f.Name }
+    if ($mask[($miny+$y)*$Work + ($minx+$x)]) { $d.SetPixel($x, $y, $blk); $inkPx++ } } }
+  $dens = 100.0 * $inkPx / ($dw * $dh)
+  $doodles += ,@{ bmp = $d; name = $f.Name; line = $isLine; dens = $dens; back = ($dens -ge $DenseInk) }
   $sq.Dispose()
 }
 $report | ForEach-Object { $_ }
@@ -180,6 +197,15 @@ $layer = New-Object System.Drawing.Bitmap($T, $T, [System.Drawing.Imaging.PixelF
 $g = [System.Drawing.Graphics]::FromImage($layer)
 $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
 $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+# Each doodle ALSO goes onto one of two depth layers by its drawing style, so the bake can give
+# them different strengths. $layer keeps everything, for the figures printed below.
+$depth = @{}
+foreach ($k in "front", "back") {
+  $bm = New-Object System.Drawing.Bitmap($T, $T, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $gr = [System.Drawing.Graphics]::FromImage($bm)
+  $gr.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+  $gr.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+  $depth[$k] = @{ bmp = $bm; g = $gr; n = 0 } }
 # FREE scatter, not a grid: throw a dart anywhere and keep it only if it clears everything already
 # down. Even spacing without the regularity a grid leaves behind.
 #
@@ -304,16 +330,22 @@ foreach ($pass in @(@{ want = $Big; scale = 1.0; label = "big" },
 
     # Drawn nine times, so anything crossing an edge appears on the opposite one and the tile meets
     # itself cleanly.
-    foreach ($ox in -$T, 0, $T) { foreach ($oy in -$T, 0, $T) {
-      $st = $g.Save()
-      $g.TranslateTransform([single]($cx + $ox), [single]($cy + $oy))
-      $g.RotateTransform([single]$ang)
-      $g.DrawImage($d, [single](-$w/2), [single](-$h/2), [single]$w, [single]$h)
-      $g.Restore($st) } }
+    $dl = $depth[$(if ($doodles[$idx].back) { "back" } else { "front" })]; $dl.n++
+    foreach ($gx in @($g, $dl.g)) {
+      foreach ($ox in -$T, 0, $T) { foreach ($oy in -$T, 0, $T) {
+        $st = $gx.Save()
+        $gx.TranslateTransform([single]($cx + $ox), [single]($cy + $oy))
+        $gx.RotateTransform([single]$ang)
+        $gx.DrawImage($d, [single](-$w/2), [single](-$h/2), [single]$w, [single]$h)
+        $gx.Restore($st) } } }
   }
   $placedPer += ("{0} {1}/{2}" -f $pass.label, $got, $pass.want)
 }
-$g.Dispose()
+$g.Dispose(); foreach ($k in "front", "back") { $depth[$k].g.Dispose() }
+"depth: {0} airy doodles in FRONT (x{1}), {2} dense ones BEHIND (x{3}), split at {4}% ink" -f $depth.front.n, $FrontAlpha, $depth.back.n, $BackAlpha, $DenseInk
+if ($Classes) {
+  "icon densities (ink share of its own box), densest first:"
+  $doodles | Sort-Object { -$_.dens } | ForEach-Object { "  {0,5:N1}%  {1,-5} {2}" -f $_.dens, $(if ($_.back) { "BACK" } else { "front" }), $_.name } }
 "placed: $n doodles from $($doodles.Count) icons   ($($placedPer -join ', '))   darts thrown: $guard"
 $counts = $perIcon | Where-Object { $_ -gt 0 }
 "each icon used {0}-{1} times; {2} icons unused" -f ($counts | Measure-Object -Minimum).Minimum, ($counts | Measure-Object -Maximum).Maximum, (@($perIcon | Where-Object { $_ -eq 0 }).Count)
@@ -334,22 +366,41 @@ $rs = $rs | Sort-Object
 # Recolour in one DrawImage through a colour matrix rather than pixel by pixel. The matrix throws
 # the source colour away (the layer is black line art), writes the theme's colour flat, and scales
 # the alpha the artwork already has - which keeps the antialiasing on every stroke.
+# The two depth layers are baked one over the other, each at its own share of the theme's alpha.
+# They never overlap (nothing in the scatter does), so the order between them does not matter.
 foreach ($theme in @(@{n="dark"; r=255; g=255; b=255; a=16}, @{n="light"; r=20; g=20; b=24; a=26})) {
   $res = New-Object System.Drawing.Bitmap($T, $T, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
   $gg = [System.Drawing.Graphics]::FromImage($res)
-  $cm = New-Object System.Drawing.Imaging.ColorMatrix
-  $cm.Matrix00 = 0; $cm.Matrix11 = 0; $cm.Matrix22 = 0
-  $cm.Matrix33 = $theme.a / 255.0
-  $cm.Matrix40 = $theme.r / 255.0
-  $cm.Matrix41 = $theme.g / 255.0
-  $cm.Matrix42 = $theme.b / 255.0
-  $ia = New-Object System.Drawing.Imaging.ImageAttributes
-  $ia.SetColorMatrix($cm)
-  $gg.DrawImage($layer, (New-Object System.Drawing.Rectangle 0,0,$T,$T), 0, 0, $T, $T,
-                [System.Drawing.GraphicsUnit]::Pixel, $ia)
-  $gg.Dispose(); $ia.Dispose()
+  foreach ($k in @(@("back", $BackAlpha), @("front", $FrontAlpha))) {
+    $cm = New-Object System.Drawing.Imaging.ColorMatrix
+    $cm.Matrix00 = 0; $cm.Matrix11 = 0; $cm.Matrix22 = 0
+    $cm.Matrix33 = [math]::Min(1.0, $theme.a * $k[1] / 255.0)
+    $cm.Matrix40 = $theme.r / 255.0
+    $cm.Matrix41 = $theme.g / 255.0
+    $cm.Matrix42 = $theme.b / 255.0
+    $ia = New-Object System.Drawing.Imaging.ImageAttributes
+    $ia.SetColorMatrix($cm)
+    $gg.DrawImage($depth[$k[0]].bmp, (New-Object System.Drawing.Rectangle 0,0,$T,$T), 0, 0, $T, $T,
+                  [System.Drawing.GraphicsUnit]::Pixel, $ia)
+    $ia.Dispose() }
+  $gg.Dispose()
   $res.Save("$IMG\join-doodles-$($theme.n)-$Ver.png", [System.Drawing.Imaging.ImageFormat]::Png)
   "wrote join-doodles-$($theme.n)-$Ver.png  ({0}x{0})" -f $T
   $res.Dispose()
 }
-$layer.Dispose(); foreach ($d in $doodles) { $d.bmp.Dispose() }
+# A check sheet for the split: line art in white, traced silhouettes in red, at full strength on
+# the dark ground, so it can be laid beside the owner's marked screenshot.
+if ($Classes) {
+  $chk = New-Object System.Drawing.Bitmap($T, $T, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $gc = [System.Drawing.Graphics]::FromImage($chk); $gc.Clear([System.Drawing.Color]::FromArgb(255, 18, 19, 22))
+  foreach ($k in @(@("front", 1.0, 1.0, 1.0), @("back", 1.0, 0.25, 0.25))) {
+    $cm = New-Object System.Drawing.Imaging.ColorMatrix
+    $cm.Matrix00 = 0; $cm.Matrix11 = 0; $cm.Matrix22 = 0; $cm.Matrix33 = 1
+    $cm.Matrix40 = $k[1]; $cm.Matrix41 = $k[2]; $cm.Matrix42 = $k[3]
+    $ia = New-Object System.Drawing.Imaging.ImageAttributes; $ia.SetColorMatrix($cm)
+    $gc.DrawImage($depth[$k[0]].bmp, (New-Object System.Drawing.Rectangle 0,0,$T,$T), 0, 0, $T, $T, [System.Drawing.GraphicsUnit]::Pixel, $ia)
+    $ia.Dispose() }
+  $gc.Dispose(); $chk.Save("$IMG\..\tools\join-classes-$Ver.png", [System.Drawing.Imaging.ImageFormat]::Png); $chk.Dispose()
+  "wrote tools\join-classes-$Ver.png  (white = line art, FRONT; red = traced, BEHIND)"
+}
+$layer.Dispose(); foreach ($k in "front", "back") { $depth[$k].bmp.Dispose() }; foreach ($d in $doodles) { $d.bmp.Dispose() }

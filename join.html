@@ -160,14 +160,14 @@
        Two bakes of the same layer: dark ink for the light theme, light ink for the dark one. */
     html:not(.dark) body {
       background-color: #f0f0ec;
-      background-image: url('images/join-doodles-light-v14.png?v=19');
+      background-image: url('images/join-doodles-light-v15.png?v=20');
       background-repeat: repeat;
       background-size: 768px 768px;
       background-attachment: fixed;
     }
     html.dark body {
       background-color: #121314;
-      background-image: url('images/join-doodles-dark-v14.png?v=19');
+      background-image: url('images/join-doodles-dark-v15.png?v=20');
       background-repeat: repeat;
       background-size: 768px 768px;
       background-attachment: fixed;
@@ -278,14 +278,16 @@
     <!-- Left-aligned, not centred: centring gave all three lines different left edges, since they
          are different lengths. They now share one edge, which is also the edge the form below
          starts at. -->
-    <div id="joinIntro" class="max-w-3xl mx-auto px-5 py-14 sm:py-20 text-center">
+    <!-- max-w-7xl, not 3xl: the owner wants the intro as ONE line on desktop, and at the body size
+         that line is ~1160px. The lead above it is capped at 1.25rem, so the wider box leaves it
+         exactly as it was. On a phone the line simply wraps. -->
+    <div id="joinIntro" class="max-w-7xl mx-auto px-5 py-14 sm:py-20 text-center">
       <!-- Written in the register the certifying bodies use on their own pages: it states who the
-           page is for instead of asking a rhetorical question, names the actual certifications
-           (the form lists them, so the opening line should too), and promises only what we can
-           keep. All three lines are centred as one block, on the page's own axis. -->
+           page is for instead of asking a rhetorical question and promises only what we can keep.
+           The certifications are no longer named here (the owner took them out; the form still
+           asks for them). Both lines are centred as one block, on the page's own axis. -->
       <p id="joinLead" class="text-2xl sm:text-3xl font-600 text-accent" data-ka="ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘᲡᲗᲕᲘᲡ!">For rope access technicians!</p>
-      <p class="mt-4 text-mute leading-relaxed" data-ka="შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას — IRATA, SPRAT ან სხვა აღიარებული სერტიფიკატით.">Complete the application to join the ORITOKI specialists register — with IRATA, SPRAT or another recognised certification.</p>
-      <p class="mt-2 text-mute leading-relaxed" data-ka="დაგიკავშირდებით, როცა პროექტი თქვენს კვალიფიკაციას შეესაბამება.">We contact you when a project matches your qualifications.</p>
+      <p class="mt-4 text-mute leading-relaxed" data-ka="შეავსეთ განაცხადი და დაემატეთ „ორითოკი“-ის სპეციალისტების ბაზას — დაგიკავშირდებით, როცა პროექტი თქვენს კვალიფიკაციას შეესაბამება.">Complete the application to join the ORITOKI specialists register — we contact you when a project matches your qualifications.</p>
     </div>
   </section>
 

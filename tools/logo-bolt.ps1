@@ -1,5 +1,10 @@
 # Fills the hex bolt head inside each anchor hanger with the rope's grey, a shade darker.
 #
+# RETIRED - DO NOT RUN. The owner later asked for the bolts in the header's assembled anchors
+# (logo-plate.png) WHITE again; tools/logo-bolt-white.ps1 undid this fill there. logo-full.png keeps
+# the grey this put in - the owner wants the original mark as it is. Running this again would grey
+# the header anchors back. (Its lower logo-plate seed is also stale: that bolt moved to 363,215.)
+#
 # Why this exists: the owner's drawing (images/logo-full.png) has both bolts filled with a solid
 # grey - 151,150,150, which is the SAME grey the rope is drawn in (154,153,153). The layer split
 # that produced images/logo-plate.png lost that fill and left the hexagons empty, so on the site
