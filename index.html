@@ -292,7 +292,7 @@
        alignment of their own — only the same transform, which draw() writes to all three.
        No drop-shadow: the body layer has piece-shaped HOLES where the pieces were cut out, and
        a drop-shadow would trace the inside of every hole. */
-    #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; }
+    #climber { position: absolute; left: 50%; top: 0; z-index: 2; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: auto; cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; user-drag: none; }
     /* pointer-events: none so the drag still starts on the body img, where the handlers are. */
     #climberRig, #climberGlove { position: absolute; left: 50%; top: 0; width: var(--worker-width); height: auto; transform: translate(-50%,0); transform-origin: 50% 8%; will-change: transform; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
     #climberRig   { z-index: 4; }
@@ -2033,9 +2033,21 @@
          the layout viewport - so the ropes were drawn into a too-short box and came out chopped and
          floating (the owner's iPhone video). clientHeight does not change with pinch-zoom. */
       function layoutH() { return document.documentElement.clientHeight || window.innerHeight; }
+      /* PHONES: the rope ends, their knots and his boots stop ABOVE the copyright bar (the owner drew
+         the line: its top border), not down in it. footLift is the height from that bar's top to
+         the end of the page; every "from the bottom of the page" distance is lifted by it. Measured
+         live, since the bar's height depends on the text wrapping. 0 on wider screens. */
+      var footLift = 0;
+      function measureFootLift() {
+        var bar = document.querySelector("footer > .border-t");
+        if (!bar || !window.matchMedia("(max-width: 640px)").matches) { footLift = 0; return; }
+        var docH = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
+        footLift = Math.max(0, docH - (bar.getBoundingClientRect().top + (window.scrollY || 0)));
+      }
       var ropeCeil = -24;                                              // the lower of the two knots
       var markK = 1;                                                   // --mark-k, read by sizeRopes
       function sizeRopes() {
+        measureFootLift();
         if (!hasRopes) return;
         var vw = climber.offsetWidth || cssPx("--worker-width", 97), box = "0 0 " + vw + " " + layoutH();
         svgBack.setAttribute("viewBox", box); svgFront.setAttribute("viewBox", box); svgTop.setAttribute("viewBox", box);
@@ -2143,8 +2155,8 @@
         var docH = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
         var scrolled = window.scrollY || 0;
         var offBottom = VH + 24;                       // far enough below to be out of sight
-        var trueEndB = (docH - A.ropeEndGapBackup) - scrolled;
-        var trueEndW = (docH - A.ropeEndGapWork) - scrolled;
+        var trueEndB = (docH - footLift - A.ropeEndGapBackup) - scrolled;
+        var trueEndW = (docH - footLift - A.ropeEndGapWork) - scrolled;
         var endB = Math.min(trueEndB, offBottom);
         var endW = Math.min(trueEndW, offBottom);
         /* The tops of the ropes are pinned (they hang from above the header and never move). Of
@@ -2319,7 +2331,7 @@
         // Below the header, and below the lockup's knots — he hangs from them, so he can never
         // be level with them.
         var top0 = Math.max((header ? header.offsetHeight : 64) + 6, ropeCeil + 10);
-        var bottom = layoutH() - climber.offsetHeight - cssPx("--climber-bottom-gap", 10);
+        var bottom = layoutH() - footLift - climber.offsetHeight - cssPx("--climber-bottom-gap", 10);
         return { top0: top0, bottom: Math.max(top0, bottom) };
       }
       function computeTarget() {
@@ -2440,7 +2452,7 @@
         document.body.classList.add("climber-grabbing");
         document.documentElement.style.scrollBehavior = "auto";      // instant while dragging (page scrolls smooth otherwise)
         if (climber.setPointerCapture) { try { climber.setPointerCapture(e.pointerId); } catch (x) {} }
-        e.preventDefault();
+        if (!dragTouch) e.preventDefault();   // a finger is left to the browser (see below)
       });
       climber.addEventListener("pointermove", function (e) {
         if (!dragging) return;
@@ -2451,14 +2463,15 @@
         targetSway = currentSway;                                    // no spring pull while held
         swayVel = 0;
         var b = trackBounds(), range = b.bottom - b.top0, ms = maxScroll();
-        if (range > 0 && ms > 0) {
+        /* With a MOUSE he is the scrollbar thumb: moving him the length of his track scrolls the
+           whole page. With a FINGER he is not a thumb at all (the owner: the ~10x thumb ratio flung
+           the page, and 1:1 felt too slow). #climber has touch-action: pan-y, so an up/down swipe on
+           him is the browser's own scroll, momentum included, and only a sideways swipe reaches
+           this handler and swings him; once the browser takes the gesture it sends pointercancel,
+           which ends the drag. */
+        if (!dragTouch && range > 0 && ms > 0) {
           var dy = e.clientY - dragStartClientY;
-          /* With a MOUSE he is the scrollbar thumb: moving him the length of his track scrolls the
-             whole page. With a FINGER that ratio is ~10x on a phone (long page, short track), so a
-             small slip of the thumb flung the page and everything in the strip jumped (the owner,
-             on an iPhone). By finger the page moves with the finger instead, like any scroll. */
-          var gain = dragTouch ? 1 : (ms / range);
-          var y = Math.max(0, Math.min(ms, dragStartScroll + dy * gain));
+          var y = Math.max(0, Math.min(ms, dragStartScroll + dy * (ms / range)));
           window.scrollTo(0, y);
           computeTarget(); currentY = targetY;                       // stick to the cursor, no inertia lag while dragging
         }
