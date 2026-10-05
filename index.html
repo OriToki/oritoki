@@ -2040,7 +2040,7 @@
         // length, not by a fixed number: sin(38°) of it, and never more than 45% of the window.
         // Low on the page the rope is long, so he can be thrown clean off the left edge.
         pullAngle: 0.62,             // sin(38°)
-        pullGain: 0.95,              // how closely he follows the cursor while dragged
+        pullGain: 1.0,               // how closely he follows the cursor while dragged (1 = under it)
         hangY: 0.3528                // where on the figure the rope carries him (= A.desc.y, his
                                      // descender — keep the two in step)
       };
@@ -2255,7 +2255,11 @@
         var camX = ropeOut.x, camYpx = ropeOut.y;      // the free hang starts where it leaves
         // length from where the device hangs when he is NOT leaned or lifted (currentY + its height on
         // him), so neither the swing's lift nor his lean changes how much rope hangs below it
-        tailB.len = Math.max(1, endB - (currentY + A.asapOut.y * Hn));
+        /* The tail always REACHES its end: off the bottom of the screen, or on the ground at the
+           end of the page. It is the rope paying out from the device, so its length is measured from
+           where the device is NOW (lifted, leaned, swung) and lengthened by the slant, so a leaning
+           tail still runs off-screen instead of stopping short in mid-air (the owner's screenshot). */
+        tailB.len = Math.max(1, endB - camYpx) / Math.max(0.5, Math.cos(tailB.th));
         var backEnd = tailEnd(camX, camYpx, tailB.len, tailB.th);
         var backCtl = tailCtl(camX, camYpx, tailB.len, tailB.th);
         setSeg(rBackO, rBackI,
@@ -2306,7 +2310,7 @@
         // end trails on its own spring — a slightly different one from the backup rope's, so the
         // two tails never move as one welded piece.
         var hand = bodyXY(A.brake.x, A.brake.y), handX = hand.x, handY = hand.y;
-        tailW.len = Math.max(1, endW - (currentY + A.brake.y * Hn));   // same rule as the backup tail
+        tailW.len = Math.max(1, endW - handY) / Math.max(0.5, Math.cos(tailW.th));   // same rule as the backup tail
         var workEnd = tailEnd(handX, handY, tailW.len, tailW.th);
         var workCtl = tailCtl(handX, handY, tailW.len, tailW.th);
         /* A.brake IS THE HINGE. The rope comes into the fist from the thumb side and leaves it
@@ -2380,13 +2384,18 @@
         var stripL = wrapEl ? wrapEl.getBoundingClientRect().left : 0;
         var restCentre = stripL + ((wrapEl ? wrapEl.offsetWidth : W)) / 2;
         var room = window.innerWidth - W / 2 - restCentre - 4;
-        return Math.max(0, Math.min(room, pendLen() * 0.87));   // 0.87 = sin 60°: past that the ropes lie flat
+        /* No rope-length cap any more (the owner: he should follow the mouse wherever it goes, the
+           rope paying out as far as it has to). Only the window's edge stops him. */
+        return Math.max(0, room);
       }
       function pendMax() { return Math.min(pendLen() * A.pullAngle, window.innerWidth * 0.45); }
       /* Swinging out also lifts him: on a rope of fixed length, going sideways by s raises him by
          L - sqrt(L² - s²). Without this he would slide along an invisible horizontal rail. */
       function pendRise() {
-        var L = pendLen(), s = Math.min(Math.abs(currentSway), L * 0.985);
+        /* The lift is capped at what half a rope-length of swing gives (13% of L): pulled further
+           out he stays at the cursor's height instead of floating up towards the anchor - the rope
+           pays out rather than lifting him. */
+        var L = pendLen(), s = Math.min(Math.abs(currentSway), L * 0.5);
         return L - Math.sqrt(L * L - s * s);
       }
       var currentRise = 0;
@@ -2446,7 +2455,8 @@
         ax = Math.max(-1.5, Math.min(1.5, ax)) * 0.5;      // soften the jerks a finger drag makes
         stepTail(tailB, ax); stepTail(tailW, ax);
         // Lean = the pendulum's own angle, atan(offset / rope length).
-        currentRot = Math.atan2(currentSway, L) * 57.2957795;
+        // capped at 40°: pulled far out on a short rope he would otherwise lie flat across the page
+        currentRot = Math.max(-40, Math.min(40, Math.atan2(currentSway, L) * 57.2957795));
         draw();
         if (!dragging && Math.abs(targetY - currentY) < 0.25 && Math.abs(targetSway - currentSway) < 0.04 &&
             Math.abs(swayVel) < 0.04 && Math.abs(lastSwayV) < 0.02 &&
