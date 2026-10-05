@@ -309,7 +309,9 @@
        to stay put while the drawer is down. Hence the children rather than the container: opacity
        on a parent is a group, and no child can opt back out of it. */
     #ropeClimber > * { transition: opacity .25s ease; }
-    body.menu-open #ropeClimber > :not(#brandRope) { opacity: 0; visibility: hidden; }
+    body.menu-open #ropeClimber > :not(#brandRope):not(.lock-piece) { opacity: 0; visibility: hidden; }
+    /* (.lock-piece too: the anchors, carabiners and knots are part of the logo. Hidden with the
+       ropes, the open menu showed the letters alone - the owner noticed.) */
     /* (#brandRope is the only child that stays — it is brand furniture, not part of the rappel.) */
     @media (prefers-reduced-motion: reduce) { #climber { transition: none !important; } }
     /* Mobile: a narrower strip, set through the SAME two variables so the lockup, the ropes and
