@@ -1539,6 +1539,12 @@
         lbImg.removeAttribute("style");
         lbImg.alt = p.en;
         lbImg.src = "images/gallery/" + (p.full || p.file);
+        /* Fetch the photos either side NOW, so the next swipe shows its picture at once instead
+           of waiting on a full-size download (the owner: each swipe seemed to need a pause). */
+        [at + 1, at - 1].forEach(function (j) {
+          var q = pics[(j + pics.length) % pics.length], im = new Image();
+          im.src = "images/gallery/" + (q.full || q.file);
+        });
       }
 
       lbImg.addEventListener("load", function () {
@@ -1606,13 +1612,19 @@
       /* A LAPTOP TOUCHPAD's two-finger swipe steps photos too (the browser reports it as a sideways
          wheel). One swipe sends dozens of small deltas, so they are summed and a step fires once per
          gesture: after a step, the rest of that gesture's flick is ignored until it goes quiet. */
-      var wheelAcc = 0, wheelLock = false, wheelQuiet = null;
+      /* After a step the rest of that flick is ignored - but a NEW swipe must work at once, even
+         while the old one's momentum is still trickling in (that wait was the owner's complaint).
+         Momentum only ever DIES DOWN, so a delta that jumps back up is a fresh swipe: unlock. */
+      var wheelAcc = 0, wheelLock = false, wheelQuiet = null, wheelLast = 0;
       lb.addEventListener("wheel", function (e) {
         if (!lb.classList.contains("lb-on") || lb.classList.contains("lb-single")) return;
         if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;          // up/down: not ours
         e.preventDefault();
+        var mag = Math.abs(e.deltaX);
+        if (wheelLock && mag > 8 && mag > wheelLast * 1.6) { wheelLock = false; wheelAcc = 0; }
+        wheelLast = mag;
         clearTimeout(wheelQuiet);
-        wheelQuiet = setTimeout(function () { wheelLock = false; wheelAcc = 0; }, 180);
+        wheelQuiet = setTimeout(function () { wheelLock = false; wheelAcc = 0; wheelLast = 0; }, 120);
         if (wheelLock) return;
         wheelAcc += e.deltaX;
         if (Math.abs(wheelAcc) > 40) { show(wheelAcc > 0 ? at + 1 : at - 1); wheelLock = true; wheelAcc = 0; }
