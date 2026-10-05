@@ -44,6 +44,7 @@ param(
   # simply COPIED into the rig layer by $RigPoly, and the rope goes to $EntryX/$EntryY.
   [switch]$IdBaked,
   [switch]$AllBaked,
+  [int[]]$TopFistPoly = @(),
   [int[]]$RigPoly = @(575,290, 590,255, 630,248, 668,262, 672,300, 668,335, 700,335, 716,355, 722,400,
                       716,440, 700,462, 672,468, 650,460, 630,440, 622,420, 625,395, 640,370, 655,350,
                       600,350, 578,330),
@@ -233,7 +234,9 @@ public static class ClimberPx {
 function Load($p) {
   $b = New-Object System.Drawing.Bitmap $p
   $c = New-Object System.Drawing.Bitmap $b.Width, $b.Height, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
-  $g = [System.Drawing.Graphics]::FromImage($c); $g.DrawImageUnscaled($b, 0, 0); $g.Dispose(); $b.Dispose()
+  # explicit size: DrawImageUnscaled honours the file's DPI, and perfect.png's is not 96, which
+  # silently drew it at two thirds of its size
+  $g = [System.Drawing.Graphics]::FromImage($c); $g.DrawImage($b, 0, 0, $b.Width, $b.Height); $g.Dispose(); $b.Dispose()
   return $c
 }
 function Bytes($bmp) {
@@ -657,7 +660,15 @@ $gl = New-Object System.Drawing.Bitmap $ShipW, $SH, ([System.Drawing.Imaging.Pix
 $gg = [System.Drawing.Graphics]::FromImage($gl)
 $gpts = New-Object "System.Drawing.PointF[]" ($GlovePoly.Count / 2)
 for ($i = 0; $i -lt $GlovePoly.Count; $i += 2) { $gpts[$i / 2] = New-Object System.Drawing.PointF ([single](($GlovePoly[$i] - $left) * $k)), ([single](($GlovePoly[$i + 1] - $top) * $k)) }
-$gg.FillPolygon((New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::White)), $gpts); $gg.Dispose()
+$gg.FillPolygon((New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::White)), $gpts)
+if ($TopFistPoly.Count -ge 6) {
+  # a second piece in the top layer: his DESCENDER fist, so the brake strand's upper tip runs in
+  # behind it (the owner's ask for the flat figure)
+  $fpts2 = New-Object "System.Drawing.PointF[]" ($TopFistPoly.Count / 2)
+  for ($i = 0; $i -lt $TopFistPoly.Count; $i += 2) { $fpts2[$i / 2] = New-Object System.Drawing.PointF ([single](($TopFistPoly[$i] + $Pad - $left) * $k)), ([single](($TopFistPoly[$i + 1] + $Pad - $top) * $k)) }
+  $gg.FillPolygon((New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::White)), $fpts2)
+}
+$gg.Dispose()
 $sb = Bytes $small; $rb = Bytes $rigM; $gb = Bytes $gl
 $bodyB = New-Object byte[] $sb.Length; $rigB = New-Object byte[] $sb.Length; $gloveB = New-Object byte[] $sb.Length
 [ClimberPx]::Layers($sb, $rb, $gb, $bodyB, $rigB, $gloveB)

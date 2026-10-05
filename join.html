@@ -234,6 +234,17 @@
     #joinLead { white-space: nowrap; line-height: 1.3; }
     html[lang="ka"] #joinLead { font-size: min(1.25rem,  calc(100cqw / 37.4)); }
     html[lang="en"] #joinLead { font-size: min(1.875rem, calc(100cqw / 24.6)); text-transform: uppercase; }
+    /* PHONES: one line cannot hold the lead at a readable size — fitted to a 350px column the
+       Georgian came out ~9px, the smallest text on the page. So below 640px it WRAPS and is set
+       as a heading, and the intro is left-aligned like the main site's sections on a phone (and
+       on the same edge as the form card under it). The size is fitted to the longest word,
+       "ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘᲡᲗᲕᲘᲡ!", which cannot break. Measured: 284px wide in a 305px column at 360,
+       312 in 335 at 390, 339 in 375 at 430 (23.5 / 25.8 / 28px type), so 1/13 of the column
+       keeps it inside with ~7% to spare. Desktop keeps the one-line rule above. */
+    @media (max-width: 639px) {
+      #joinIntro { text-align: left; }
+      html[lang] #joinLead { white-space: normal; line-height: 1.2; font-size: min(1.75rem, calc(100cqw / 13)); }
+    }
   </style>
 </head>
 

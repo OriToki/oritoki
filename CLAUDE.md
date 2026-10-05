@@ -249,7 +249,7 @@ compensate — 470 doodles at 1300 tries is tens of millions of comparisons. Ver
 optimisation: the same seed and settings before and after the change produced byte-identical
 figures (ink 23.24%, sizes 5.26/11.19/3.05%). A whole run is about 30 seconds.
 
-**The gallery is real photographs now** — fourteen of the company's own job pictures, listed in
+**The gallery is real photographs now** — sixteen of the company's own job pictures, listed in
 `js/images.js`. Each entry also names a `full:` file in `images/gallery/full/`, the uncropped
 original that the click-to-enlarge view opens; the carousel frame is landscape, so a photo shot
 upright is cropped for the slide and only the `full` one is whole. The `sample-*.svg`
