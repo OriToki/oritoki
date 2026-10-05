@@ -356,15 +356,15 @@
     #callFab:hover { background: #ea580c; transform: translateY(-2px); box-shadow: 0 12px 26px -6px rgba(249,115,22,.6), 0 4px 10px rgba(0,0,0,.2); }
     #callFab:focus-visible { outline: 3px solid rgba(249,115,22,.45); outline-offset: 3px; }
     body.menu-open #callFab { opacity: 0; visibility: hidden; pointer-events: none; }
-    /* PHONES: higher up the right edge, where the owner circled it - about a sixth of the screen
+    /* PHONES: higher up the right edge, where the owner circled it (then a little higher still) - a fifth of the screen
        above the bottom, clear of the browser's own toolbar and of the copyright line - and 48px,
        a size down from 52 but still a comfortable thumb target (44-48 is the usual minimum).
        svh = the screen with the browser bars SHOWN, so it does not jump as they hide; vh is the
        fallback for older browsers. */
     @media (max-width: 640px) {
       #callFab { right: 16px; width: 48px; height: 48px; font-size: 18px;
-                 bottom: calc(15vh + env(safe-area-inset-bottom, 0px));
-                 bottom: calc(15svh + env(safe-area-inset-bottom, 0px)); }
+                 bottom: calc(20vh + env(safe-area-inset-bottom, 0px));
+                 bottom: calc(20svh + env(safe-area-inset-bottom, 0px)); }
     }
     #header.scrolled { background-color: rgba(244,243,236,.96); border-bottom: 1px solid rgba(0,0,0,.06); box-shadow: 0 6px 22px -6px rgba(0,0,0,.12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 
