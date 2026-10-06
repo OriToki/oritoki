@@ -371,6 +371,26 @@
               --gutter: calc(var(--climber-left) + var(--worker-width) * 0.995 + 8px); }
       #home > .max-w-7xl, section > .max-w-7xl, footer .max-w-7xl { padding-left: var(--gutter); }
     }
+    /* SMALL LAPTOPS (1280px and up, 2026-10-07, the owner): the content column is 1280 wide and
+       centred, so until the window is ~1640 wide its left edge sits under the man (his ink runs to
+       --climber-left + 0.995 x the strip = ~171px) and he and the text overlapped. The left padding
+       is now whichever is larger: the column's own, or what it takes for the text to start at the
+       same --gutter the tablets use. (100vw - 17px - 1280px) / 2 is the margin the centred column
+       already has (17px = the classic scrollbar, which 100vw counts and the column does not).
+       Wide screens are untouched: there the max() picks the column's own padding. */
+    @media (min-width: 1280px) {
+      :root { --gutter: calc(var(--climber-left) + var(--worker-width) * 0.995 + 8px); }
+      section > .max-w-7xl, footer .max-w-7xl {
+        padding-left: max(1.25rem, calc(var(--gutter) - (100vw - 17px - 1280px) / 2)); }
+      #home > .max-w-7xl {
+        padding-left: max(3rem, calc(var(--gutter) - (100vw - 17px - 1280px) / 2)); }
+    }
+    /* ...and the hero headline keeps the size it has below 1280 (lg) up to 1499px: the padded
+       column is narrower here, and the owner asked for the fonts as they are on smaller screens. */
+    @media (min-width: 1280px) and (max-width: 1499px) {
+      #heroTitle { font-size: 3rem; }
+      html[lang="en"] body #heroTitle { font-size: 3.75rem; }   /* body: outranks the xl rule further down */
+    }
     /* Floating call button (#callFab). z-100: over the header (50) and the climber's strip (60),
        under the service modal (120), the search panel (130) and the photo lightbox (200), so
        anything that opens on top of the page still covers it. Hidden while the phone menu is open
