@@ -3029,9 +3029,14 @@
       stripMaskRaf = requestAnimationFrame(stripMaskFrame);
     }
     function closeMenu() {
+      /* Only when the drawer really was open. Every nav link calls this, and on DESKTOP (no drawer,
+         the nav is the bar itself, opacity 1) the mask below was cut out of the strip along the nav's
+         band for ~0.45s - the logo and ropes vanished there and the owner saw a black flash in the
+         header on every nav click (2026-10-07). */
+      var wasOpen = nav.classList.contains("open");
       nav.classList.remove("open");
       document.body.classList.remove("menu-open");
-      clipStripToMenu(false);
+      if (wasOpen) clipStripToMenu(false);
       burger.setAttribute("aria-expanded", "false");
       burger.innerHTML = '<i class="fa-solid fa-bars"></i>';
     }
