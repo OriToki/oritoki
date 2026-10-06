@@ -2617,7 +2617,31 @@
         var TH = 0.3;
         if (t.th > TH) { t.th = TH; t.om = Math.min(0, t.om); } else if (t.th < -TH) { t.th = -TH; t.om = Math.max(0, t.om); }
       }
-      function loop() {
+      /* THE CLOCK. Every constant in step() below was tuned as "per frame" at 60 frames a second, so
+         on a phone that drops frames he swung in slow motion (the owner, 2026-10-07: "he swings
+         very slowly now" - a finger drag was drawing the whole figure two and three times a frame).
+         So a SLOW frame now catches up: it runs one step() for each 1/60 s it took (a 30fps frame
+         runs two), capped at 4 so a tab coming back from the background does not fast-forward.
+         A frame at 60fps or faster still runs exactly one step, as it always did - so nothing
+         changes on a screen that keeps up, desktop included. And everything is drawn ONCE a
+         frame, here. */
+      var STEP_MS = 1000 / 60, lastFrameT = 0;
+      function loop(now) {
+        now = now || performance.now();
+        var dtF = lastFrameT ? Math.min(4 * STEP_MS, Math.max(0, now - lastFrameT)) : STEP_MS;
+        lastFrameT = now;
+        if (thumbActive) thumbStep(dtF);                    // a finger drag: page + man first
+        var n = Math.max(1, Math.min(4, Math.round(dtF / STEP_MS)));
+        for (var i = 0; i < n; i++) step();
+        draw();
+        if (!dragging && !thumbActive && Math.abs(targetY - currentY) < 0.25 && Math.abs(targetSway + tiltSway - currentSway) < 0.04 &&
+            Math.abs(tiltTarget - tiltSway) < 0.3 &&
+            Math.abs(swayVel) < 0.04 && Math.abs(lastSwayV) < 0.02 &&
+            Math.abs(tailB.th) < 0.002 && Math.abs(tailB.om) < 0.0005 &&
+            Math.abs(tailW.th) < 0.002 && Math.abs(tailW.om) < 0.0005) { running = false; lastFrameT = 0; return; }
+        requestAnimationFrame(loop);
+      }
+      function step() {
         currentY += (targetY - currentY) * 0.14;            // inertia: trail then catch up
         /* A real pendulum's rhythm comes from its length (ω² = g/L), not from a fixed constant —
            so the stiffness is divided by the rope length. High on the page the rope is short and
@@ -2638,13 +2662,6 @@
         // Lean = the pendulum's own angle, atan(offset / rope length).
         // capped at 40°: pulled far out on a short rope he would otherwise lie flat across the page
         currentRot = Math.max(-40, Math.min(40, Math.atan2(currentSway, L) * 57.2957795));
-        draw();
-        if (!dragging && Math.abs(targetY - currentY) < 0.25 && Math.abs(targetSway + tiltSway - currentSway) < 0.04 &&
-            Math.abs(tiltTarget - tiltSway) < 0.3 &&
-            Math.abs(swayVel) < 0.04 && Math.abs(lastSwayV) < 0.02 &&
-            Math.abs(tailB.th) < 0.002 && Math.abs(tailB.om) < 0.0005 &&
-            Math.abs(tailW.th) < 0.002 && Math.abs(tailW.om) < 0.0005) { running = false; return; }
-        requestAnimationFrame(loop);
       }
       function run() { if (!running) { running = true; requestAnimationFrame(loop); } }
 
@@ -2655,7 +2672,7 @@
         // He trails the movement, the way a hanging body does — capped hard, since the whole
         // effect is meant to be felt rather than noticed. Skipped while he is being held: there
         // the cursor sets the sway, and the page scrolls under the same gesture.
-        if (!dragging && !thumbRaf) {                                  // nor while a finger drag glides to a stop
+        if (!dragging && !thumbActive) {                               // nor while a finger drag glides to a stop
           targetSway = Math.max(-3.2, Math.min(3.2, -v * 0.05));
           clearTimeout(idleTimer);
           idleTimer = setTimeout(function () { if (!dragging) { targetSway = 0; run(); } }, 140);   // then swing back and settle
@@ -2687,26 +2704,26 @@
          cancels it outright (an earlier version chased a goal it could not reach and fought every
          normal swipe afterwards). */
       var THUMB_TAU = 55;                                             // ms; higher = silkier but laggier
-      var thumbRaf = 0, thumbFinger = 0, thumbSmooth = 0, thumbRatio = 0, thumbT = 0, thumbLastY = -1;
+      /* It runs INSIDE the figure's own frame loop (loop() calls thumbStep first), so page, man,
+         ropes and swing are all moved and drawn once a frame - it used to be a second loop of its
+         own that drew the whole figure again on top of loop(), which cost the phone frames. */
+      var thumbActive = false, thumbFinger = 0, thumbSmooth = 0, thumbRatio = 0, thumbMax = 0, thumbLastY = -1;
       function realMaxScroll() {
         return Math.max(0, Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0) - window.innerHeight);
       }
-      function stopThumb() { if (thumbRaf) { cancelAnimationFrame(thumbRaf); thumbRaf = 0; } thumbLastY = -1; }
-      function thumbFollow(now) {
-        thumbRaf = 0;
-        var dt = thumbT ? Math.min(64, Math.max(1, now - thumbT)) : 16; thumbT = now;
-        thumbSmooth += (thumbFinger - thumbSmooth) * (1 - Math.exp(-dt / THUMB_TAU));
+      function stopThumb() { thumbActive = false; thumbLastY = -1; }
+      function thumbStep(dt) {
+        thumbSmooth += (thumbFinger - thumbSmooth) * (1 - Math.exp(-Math.max(1, dt) / THUMB_TAU));
         var settled = Math.abs(thumbFinger - thumbSmooth) < 0.2;
         if (settled) thumbSmooth = thumbFinger;
-        var goal = Math.max(0, Math.min(realMaxScroll(), dragStartScroll + (thumbSmooth - dragStartClientY) * thumbRatio));
+        var goal = Math.max(0, Math.min(thumbMax, dragStartScroll + (thumbSmooth - dragStartClientY) * thumbRatio));
         var y = window.scrollY || window.pageYOffset || 0;
         if (Math.abs(goal - y) >= 0.5) window.scrollTo({ top: goal, behavior: "instant" });   // instant: smooth-scroll is back on after the lift
-        computeTarget(); currentY = targetY; draw();
-        var now2 = window.scrollY || window.pageYOffset || 0;
+        computeTarget(); currentY = targetY;
+        var y2 = window.scrollY || window.pageYOffset || 0;
         // done once the finger is up and the smoothing has caught up - or the page will not move
-        if (!dragging && (settled || (thumbLastY >= 0 && Math.abs(now2 - thumbLastY) < 0.5))) { thumbLastY = -1; thumbT = 0; run(); return; }
-        thumbLastY = dragging ? -1 : now2;
-        thumbRaf = requestAnimationFrame(thumbFollow);
+        if (!dragging && (settled || (thumbLastY >= 0 && Math.abs(y2 - thumbLastY) < 0.5))) { stopThumb(); return; }
+        thumbLastY = dragging ? -1 : y2;
       }
       // a finger anywhere but on him, or a wheel, takes the page back at once
       document.addEventListener("touchstart", function (e) { if (e.target !== climber) stopThumb(); }, { passive: true });
@@ -2826,10 +2843,11 @@
         dragStartSway = currentSway;
         dragStartScroll = window.scrollY || window.pageYOffset || 0;
         if (dragTouch) {
-          stopThumb(); thumbT = 0;
+          stopThumb();
           thumbFinger = thumbSmooth = e.clientY;
           var tb = trackBounds(), tr = tb.bottom - tb.top0, tm = maxScroll();
           thumbRatio = tr > 0 ? tm / tr : 0;
+          thumbMax = realMaxScroll();                                // read once, not every frame
         }
         document.body.classList.add("climber-grabbing");
         document.documentElement.style.scrollBehavior = "auto";      // instant while dragging (page scrolls smooth otherwise)
@@ -2849,11 +2867,14 @@
            the whole page. #climber has touch-action: none, so the browser never takes the gesture.
            (For a while a finger got the browser's own scroll instead, pan-y, which runs the other
            way round; the owner chose the thumb, knowing it moves the page ~10x the finger.)
-           A finger only records where it is; thumbFollow smooths it and moves page and man once a
+           A finger only records where it is; thumbStep (from loop) smooths it and moves page and man once a
            frame (see THUMB_TAU). The mouse stays instant. */
         if (dragTouch) {
           thumbFinger = e.clientY;
-          if (!thumbRaf && thumbRatio > 0) thumbRaf = requestAnimationFrame(thumbFollow);
+          if (thumbRatio > 0) thumbActive = true;
+          run();                                                     // loop() moves and draws it
+          e.preventDefault();
+          return;
         } else if (range > 0 && ms > 0) {
           var dy = e.clientY - dragStartClientY;
           var y = Math.max(0, Math.min(ms, dragStartScroll + dy * (ms / range)));
