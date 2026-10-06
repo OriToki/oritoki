@@ -350,6 +350,16 @@
       #langToggle button { padding: 4px 8px; }
       #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
     }
+    /* TABLETS (641-1279px, the burger range): the same gutter as phones, by the same formulas -
+       before this he was the full 150px desktop figure standing on top of the text and both ropes
+       ran through every line. 100px, not the phone's 66: a tablet has the room, and the lockup at
+       k 1.2 is then 66 x 73, still inside the 88px bar these widths keep. Gutter = 118px. */
+    @media (min-width: 641px) and (max-width: 1279px) {
+      :root { --worker-width: 100px; --mark-k: 1.2;
+              --climber-left: calc(8px - var(--worker-width) * (0.0563 + (1 - var(--mark-k)) * 0.40990));
+              --gutter: calc(var(--climber-left) + var(--worker-width) * 0.995 + 8px); }
+      #home > .max-w-7xl, section > .max-w-7xl, footer .max-w-7xl { padding-left: var(--gutter); }
+    }
     /* Floating call button (#callFab). z-100: over the header (50) and the climber's strip (60),
        under the service modal (120), the search panel (130) and the photo lightbox (200), so
        anything that opens on top of the page still covers it. Hidden while the phone menu is open
@@ -371,6 +381,11 @@
     @media (max-width: 640px) {
       #callFab { right: 16px; width: 48px; height: 48px; font-size: 18px;
                  bottom: calc(20vh + env(safe-area-inset-bottom, 0px));
+                 bottom: calc(20svh + env(safe-area-inset-bottom, 0px)); }
+    }
+    /* TABLETS: the phones' height up the edge, at the desktop's 56px size. */
+    @media (min-width: 641px) and (max-width: 1279px) {
+      #callFab { bottom: calc(20vh + env(safe-area-inset-bottom, 0px));
                  bottom: calc(20svh + env(safe-area-inset-bottom, 0px)); }
     }
     #header.scrolled { background-color: rgba(244,243,236,.96); border-bottom: 1px solid rgba(0,0,0,.06); box-shadow: 0 6px 22px -6px rgba(0,0,0,.12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
@@ -693,6 +708,11 @@
          and centred on the 260px photo itself. */
       .gallery-swiper { --swiper-navigation-size: 22px; }
       .gallery-swiper .swiper-button-prev, .gallery-swiper .swiper-button-next { top: 130px; margin-top: -11px; }
+    }
+    /* TABLETS: the same fix — arrows centred on the 260px photo, not on photo + dots strip. Swiper's
+       own size kept; its margin-top already takes half of it. */
+    @media (min-width: 641px) and (max-width: 1279px) {
+      .gallery-swiper .swiper-button-prev, .gallery-swiper .swiper-button-next { top: 130px; }
     }
 
     /* Keep the white hero text legible over bright parts of the photo */
@@ -2127,11 +2147,12 @@
       /* PHONES: the rope ends, their knots and his boots stop ABOVE the copyright bar (the owner drew
          the line: its top border), not down in it. footLift is the height from that bar's top to
          the end of the page; every "from the bottom of the page" distance is lifted by it. Measured
-         live, since the bar's height depends on the text wrapping. 0 on wider screens. */
+         live, since the bar's height depends on the text wrapping. Tablets too (up to 1279px, the
+         burger range), which got the phone layout; 0 on the desktop. */
       var footLift = 0;
       function measureFootLift() {
         var bar = document.querySelector("footer > .border-t");
-        if (!bar || !window.matchMedia("(max-width: 640px)").matches) { footLift = 0; return; }
+        if (!bar || !window.matchMedia("(max-width: 1279px)").matches) { footLift = 0; return; }
         var docH = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
         footLift = Math.max(0, docH - (bar.getBoundingClientRect().top + (window.scrollY || 0)));
       }
