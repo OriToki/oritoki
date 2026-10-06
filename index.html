@@ -2592,6 +2592,33 @@
           run(); noteTilt();
         } else { tapT = now; tapX = t.clientX; tapY = t.clientY; }
       });
+      /* A ONE-TIME HINT on phones, so people find out he can be played with: a small bubble beside
+         him, "tap me and tilt your phone", once per visitor (remembered in localStorage), gone after
+         a few seconds or as soon as he is touched. iPhone visitors would otherwise never find it -
+         the swing only starts after they tap him and allow the motion sensor. */
+      function showTiltHint() {
+        try { if (localStorage.getItem("oritoki_tilt_hint")) return; localStorage.setItem("oritoki_tilt_hint", "1"); } catch (x) {}
+        var r = climber.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) return;
+        var ka = document.documentElement.lang !== "en";
+        var h = document.createElement("div");
+        h.textContent = ka ? "👆 შემეხე და დახარე ტელეფონი" : "👆 Tap me, then tilt your phone";
+        h.style.cssText = "position:fixed;z-index:70;pointer-events:none;left:" + Math.round(r.right - 6) + "px;top:" +
+          Math.round(r.top + r.height * 0.22) + "px;background:#f97316;color:#fff;font-size:13px;font-weight:600;" +
+          "padding:7px 12px;border-radius:12px 12px 12px 3px;box-shadow:0 6px 18px -6px rgba(0,0,0,.45);" +
+          "max-width:calc(100vw - " + Math.round(r.right + 4) + "px);opacity:0;transform:translateY(6px);" +
+          "transition:opacity .35s ease,transform .35s ease";
+        document.body.appendChild(h);
+        requestAnimationFrame(function () { h.style.opacity = "1"; h.style.transform = "none"; });
+        var gone = false;
+        function hide() { if (gone) return; gone = true; h.style.opacity = "0"; setTimeout(function () { h.remove(); }, 400); }
+        setTimeout(hide, 5000);
+        climber.addEventListener("touchstart", hide, { once: true, passive: true });
+        window.addEventListener("scroll", hide, { once: true, passive: true });
+      }
+      if (window.matchMedia("(pointer: coarse)").matches && window.DeviceOrientationEvent && !reduce) {
+        setTimeout(showTiltHint, 2500);
+      }
       if (window.matchMedia("(pointer: coarse)").matches && window.DeviceOrientationEvent) {
         var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
         if (isIOS && typeof DeviceOrientationEvent.requestPermission === "function") {
