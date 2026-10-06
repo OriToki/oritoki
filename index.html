@@ -528,6 +528,15 @@
     @media (max-width: 639px) {
       .footer-grid > div:first-child > a > img { width: 128px; max-width: none; }
     }
+    /* PHONES + TABLETS: the copyright line on ONE line, across the bar from the ordinary 20px
+       margin (the owner drew it from there) - the climber's gutter is not needed in this bar, his
+       ropes and boots stop above it (footLift). Never wraps; on a narrow phone the type steps down
+       instead: the Georgian line is ~324px at 14px, so 14/335 of the room leaves ~3% to spare
+       (13.4px on a 360px phone, the full 14px from about 375px up). */
+    @media (max-width: 1279px) {
+      footer > .border-t > .max-w-7xl { padding-left: 1.25rem; white-space: nowrap;
+        font-size: min(14px, calc((100vw - 2.5rem) * 0.0418)); }
+    }
 
     /* Mobile (< lg): highlight the two quick-contact cards (Phone + WhatsApp) with a
        subtle accent tint so the tap-to-contact actions stand out. Desktop unchanged. */
