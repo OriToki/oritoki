@@ -197,6 +197,12 @@ circle (scale 0.203 / 0.202, the grey middle left out of the score), and it is r
 it was before the whitening. Use it, not the other two. The lower plate bolt is at (363,215) now,
 11 px left of `logo-bolt.ps1`'s stale seed.
 
+**"The mark looks blurry" is not resolution (checked 2026-10-06).** `logo-rest.png` is 400 px
+shown ~83 CSS px, and in the owner's own Chrome screenshot its edges go dark → white in ONE device
+pixel, as sharp as the nav text beside it. An exact vector trace (marching-squares iso-contours of
+the PNG's alpha and fill, 1 pixel off by >64/255) rendered no sharper, so it was not shipped.
+Ask what exactly he sees before changing the files.
+
 `A.pivotWork` / `A.pivotBack` are where the owner marked the two hinges on a printed grid of the
 live page (`tools/page-grid.ps1` makes the grid; scratchpad `greendots.ps1` read his marks back).
 `A.stemWork` / `A.stemBack` are where each cord ends and the SVG rope takes over, and they are held
