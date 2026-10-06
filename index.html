@@ -587,18 +587,6 @@
       #nav { top: 68px; }
     }
 
-    /* Tap-to-call number shown right after CONTACT on the desktop bar, and again in the mobile
-       drawer. On desktop it renders like any nav link (colour follows the bar state); the phone
-       icon keeps its accent colour. In the drawer it takes the drawer's own light colour and a
-       slightly larger number. */
-    #nav .nav-phone { display: inline-flex; }
-    /* Not on the DESKTOP bar any more (the owner's call): the floating call button (#callFab)
-       carries the number there now. The drawer below 1280px still lists it. */
-    @media (min-width: 1280px) { #nav .nav-phone { display: none; } }
-    @media (max-width: 1279px) {
-      #nav .nav-phone { color: rgb(var(--c-light)); }
-      #nav .nav-phone span { font-size: 15px; }
-    }
 
     /* Language + theme controls relocated into the mobile drawer (JS moves the nodes).
        Hidden on desktop, where they live in the header bar instead. */
@@ -1163,10 +1151,8 @@
         </div>
         <a href="#gallery"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲒᲐᲚᲔᲠᲔᲐ</span></span></span></a>
         <a href="#contact"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲙᲝᲜᲢᲐᲥᲢᲘ">CONTACT</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲙᲝᲜᲢᲐᲥᲢᲘ</span></span></span></a>
-        <!-- Tap-to-call number, right after CONTACT — shown on the desktop bar and again in the
-             mobile drawer (see #nav .nav-phone in the CSS). The phone icon stays accent-orange;
-             the number follows the nav's colour for the current bar state. -->
-        <a href="tel:+995571253530" class="nav-link nav-phone inline-flex items-center gap-2.5 hover:opacity-80 transition" aria-label="Call +995 571 25 35 30"><span dir="ltr">+995 571 25 35 30</span></a>
+        <!-- (The phone number that used to close this list is gone from the drawer too - the owner:
+             the contact tab, #callFab, carries it everywhere now.) -->
       </nav>
 
       <!-- Right group (actions). On desktop it mirrors the brand (flex-1) so the nav
