@@ -365,13 +365,49 @@
        anything that opens on top of the page still covers it. Hidden while the phone menu is open
        — the drawer carries the number itself. env(safe-area-inset-bottom) keeps it above the
        iPhone home bar. */
-    #callFab { position: fixed; right: 20px; bottom: calc(108px + env(safe-area-inset-bottom, 0px)); z-index: 100;   /* desktop: raised to the owner's mark */
-               width: 56px; height: 56px; border-radius: 999px; display: flex; align-items: center; justify-content: center;
-               background: #f97316; color: #ffffff; font-size: 22px; text-decoration: none;
+    /* It is a CONTACT TAB now (the owner's drawing, option "d"): a tab glued to the right edge,
+       round on its left side only, that opens a small card above it - "Contact us", with the
+       number (tel:) and WhatsApp. #callFab is the fixed box that places it; .cfab-tab is the tab,
+       .cfab-menu the card. The tab's width and height are --cf-w / --cf-h. */
+    #callFab { position: fixed; right: 0; bottom: calc(108px + env(safe-area-inset-bottom, 0px)); z-index: 100;   /* desktop: raised to the owner's mark */
+               --cf-w: 64px; --cf-h: 56px;
+               transition: opacity .25s ease, visibility .25s; }
+    #callFab .cfab-tab { display: flex; align-items: center; justify-content: center; padding-right: 4px;
+               width: var(--cf-w); height: var(--cf-h); border: 0; cursor: pointer;
+               border-radius: calc(var(--cf-h) / 2) 0 0 calc(var(--cf-h) / 2);
+               background: #f97316; color: #ffffff; font-size: 22px;
                box-shadow: 0 8px 22px -6px rgba(249,115,22,.55), 0 3px 8px rgba(0,0,0,.18);
-               transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, opacity .25s ease; }
-    #callFab:hover { background: #ea580c; transform: translateY(-2px); box-shadow: 0 12px 26px -6px rgba(249,115,22,.6), 0 4px 10px rgba(0,0,0,.2); }
-    #callFab:focus-visible { outline: 3px solid rgba(249,115,22,.45); outline-offset: 3px; }
+               transition: background-color .2s ease, width .2s ease, box-shadow .2s ease; }
+    @media (hover: hover) { #callFab .cfab-tab:hover { background: #ea580c; width: calc(var(--cf-w) + 6px); } }
+    #callFab .cfab-tab:focus-visible { outline: 3px solid rgba(249,115,22,.45); outline-offset: 3px; }
+    /* phone icon <-> close cross, crossfaded in the same spot */
+    #callFab .cfab-tab i { grid-area: 1 / 1; transition: opacity .2s ease, transform .3s cubic-bezier(.2,.85,.25,1); }
+    #callFab .cfab-tab .cfab-ico { display: grid; }
+    #callFab .cfab-x { opacity: 0; transform: rotate(-90deg); }
+    #callFab.open .cfab-ph { opacity: 0; transform: rotate(90deg); }
+    #callFab.open .cfab-x { opacity: 1; transform: none; }
+    #callFab .cfab-menu {
+      position: absolute; right: 12px; bottom: calc(100% + 12px);
+      width: max-content; min-width: 220px; padding: .9rem .9rem .8rem; border-radius: 16px;
+      background: rgb(var(--c-surface)); border: 1px solid rgb(var(--c-line));
+      box-shadow: 0 22px 44px -18px rgba(20,20,42,.45), 0 4px 12px rgba(0,0,0,.08);
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transform: translateY(10px) scale(.96); transform-origin: bottom right;
+      transition: var(--dd-fade), var(--dd-slide), visibility 0s linear .34s;
+    }
+    #callFab.open .cfab-menu { opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+      transition: var(--dd-fade), var(--dd-slide), visibility 0s; }
+    #callFab .cfab-title { font-family: inherit; font-weight: 700; font-size: .95rem; color: rgb(var(--c-heading)); padding: 0 .35rem .6rem; }
+    #callFab .cfab-opt { display: flex; align-items: center; gap: .75rem; padding: .55rem .5rem; border-radius: 10px;
+      color: rgb(var(--c-light)); font-weight: 600; font-size: 1rem; text-decoration: none; white-space: nowrap;
+      transition: background-color .15s ease; }
+    #callFab .cfab-opt:hover { background: rgba(249,115,22,.08); }
+    #callFab .cfab-opt + .cfab-opt { margin-top: 2px; }
+    #callFab .cfab-oi { flex: none; display: flex; align-items: center; justify-content: center;
+      width: 2.25rem; height: 2.25rem; border-radius: 999px; color: #fff; font-size: 1rem; background: #f97316; }
+    #callFab .cfab-wa .cfab-oi { background: #25D366; font-size: 1.2rem; }
+    html.dark #callFab .cfab-menu { box-shadow: 0 22px 44px -18px rgba(0,0,0,.8); }
+    html.dark #callFab .cfab-opt:hover { background: rgba(255,255,255,.06); }
     body.menu-open #callFab { opacity: 0; visibility: hidden; pointer-events: none; }
     /* PHONES: higher up the right edge, where the owner circled it (then a little higher still) - a fifth of the screen
        above the bottom, clear of the browser's own toolbar and of the copyright line - and 48px,
@@ -379,11 +415,12 @@
        svh = the screen with the browser bars SHOWN, so it does not jump as they hide; vh is the
        fallback for older browsers. */
     @media (max-width: 640px) {
-      #callFab { right: 16px; width: 48px; height: 48px; font-size: 18px;
+      #callFab { --cf-w: 56px; --cf-h: 48px;
                  bottom: calc(20vh + env(safe-area-inset-bottom, 0px));
                  bottom: calc(20svh + env(safe-area-inset-bottom, 0px)); }
+      #callFab .cfab-tab { font-size: 18px; }
     }
-    /* TABLETS: the phones' height up the edge, at the desktop's 56px size. */
+    /* TABLETS: the phones' height up the edge, at the desktop's size. */
     @media (min-width: 641px) and (max-width: 1279px) {
       #callFab { bottom: calc(20vh + env(safe-area-inset-bottom, 0px));
                  bottom: calc(20svh + env(safe-area-inset-bottom, 0px)); }
@@ -1523,9 +1560,25 @@
        owner's ask). Bottom-RIGHT because the climber owns the left edge, and it is where a thumb
        lands. The number comes from js/site-config.js (data-si="call" sets the link and the
        tooltip only — "tel" would overwrite the icon with the number). -->
-  <a id="callFab" data-si="call" href="tel:+995571253530" aria-label="Call +995 571 25 35 30" title="+995 571 25 35 30">
-    <i class="fa-solid fa-phone" aria-hidden="true"></i>
-  </a>
+  <!-- Now a tab on the right edge that opens a "Contact us" card: the number (tel:) and WhatsApp,
+       both filled from js/site-config.js. "phonetext" writes only the number into the span, so
+       the icon beside it survives. -->
+  <div id="callFab">
+    <div class="cfab-menu" id="cfabMenu">
+      <div class="cfab-title" data-ka="დაგვიკავშირდით">Contact us</div>
+      <a class="cfab-opt" data-si="call" href="tel:+995571253530" aria-label="Call +995 571 25 35 30">
+        <span class="cfab-oi"><i class="fa-solid fa-phone" aria-hidden="true"></i></span>
+        <span data-si="phonetext">+995 571 25 35 30</span>
+      </a>
+      <a class="cfab-opt cfab-wa" data-si="whatsapp" href="https://wa.me/995571253530" target="_blank" rel="noopener">
+        <span class="cfab-oi"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></span>
+        <span>WhatsApp</span>
+      </a>
+    </div>
+    <button type="button" class="cfab-tab" aria-expanded="false" aria-controls="cfabMenu" aria-label="Contact us" title="Contact us">
+      <span class="cfab-ico"><i class="fa-solid fa-phone cfab-ph" aria-hidden="true"></i><i class="fa-solid fa-xmark cfab-x" aria-hidden="true"></i></span>
+    </button>
+  </div>
 
   <!-- Swiper (gallery) -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -1754,6 +1807,8 @@
         } else if (key === "call") {             // the floating button: link + tooltip, keep the icon
           if (digits) el.href = "tel:+" + digits;
           if (siteInfo.phone) { el.title = siteInfo.phone; el.setAttribute("aria-label", "Call " + siteInfo.phone); }
+        } else if (key === "phonetext") {        // just the number as text, no link of its own
+          if (siteInfo.phone) el.textContent = siteInfo.phone;
         } else if (key === "whatsapp") {
           if (digits) el.href = "https://wa.me/" + digits;
         } else if (key === "email") {
@@ -2874,6 +2929,26 @@
         closeMenu();
       });
     }
+
+    /* ---------- Contact tab (#callFab): the tab opens / closes the card above it ----------
+       Closes on a second tap, on a tap anywhere else, on Escape and once an option is chosen.
+       The tab's tooltip / aria-label follow the card's own (translated) title. */
+    (function () {
+      var fab = document.getElementById("callFab");
+      if (!fab) return;
+      var tab = fab.querySelector(".cfab-tab"), title = fab.querySelector(".cfab-title");
+      function label() { var t = title.textContent.trim(); tab.setAttribute("aria-label", t); tab.title = t; }
+      function setOpen(open) {
+        fab.classList.toggle("open", open);
+        tab.setAttribute("aria-expanded", open ? "true" : "false");
+      }
+      label();
+      document.querySelectorAll("[data-lang]").forEach(function (b) { b.addEventListener("click", label); });
+      tab.addEventListener("click", function (e) { e.stopPropagation(); label(); setOpen(!fab.classList.contains("open")); });
+      fab.querySelectorAll(".cfab-opt").forEach(function (a) { a.addEventListener("click", function () { setOpen(false); }); });
+      document.addEventListener("click", function (e) { if (fab.classList.contains("open") && !fab.contains(e.target)) setOpen(false); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && fab.classList.contains("open")) { setOpen(false); tab.focus(); } });
+    })();
 
     // Move the language + theme controls into the drawer on mobile, back to the header
     // bar on desktop. Moving the actual nodes keeps their existing click wiring intact.
