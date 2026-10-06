@@ -158,6 +158,15 @@ tail to reach it, and `A.asapIn / asapOut / camY` moved up with the plate. Note 
 renamed since `climber-swing-gear.ps1` was written: its `perfect.png` is now `perfect 2.png`, its
 `Perfect 2.png` is now `Perfect 1.png`.
 
+**Big screens scale the owner's laptop picture (2026-10-07).** His laptop shows the page 1706 CSS
+px wide; past that a `<head>` script sets `--k = min(w/1706, h/775)` (else exactly 1) and the
+`@media (min-width: 1707px)` block at the end of `index.html`'s stylesheet multiplies the root font
+size (all Tailwind rem) and every layout px — header, man, lockup top, call tab, gallery — by it.
+JS px constants in the climber go through `K()`. **Any new px size that shapes the desktop layout
+needs its line in that block**, or it will stay laptop-sized on a 4K screen. `cssPx()` measures
+through a probe because those variables read back as unevaluated `calc(...)`. Verified at k=1: the
+settled climber/rope/lockup geometry is identical to before to 0.01 px.
+
 **The header mark is the owner's drawing, cut — never rebuilt.** `Desktop\parts\final logo.png` is
 the finished lockup: "or" over "tok" with a bolt hanger, locking carabiner and knot standing in for
 each dotted i. `tools/logo-split.ps1` cuts it into three layers that live in `#ropeClimber`:
