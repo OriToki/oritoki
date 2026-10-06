@@ -437,6 +437,9 @@
                  bottom: calc(20svh + env(safe-area-inset-bottom, 0px)); }
     }
     #header.scrolled { background-color: rgba(244,243,236,.96); border-bottom: 1px solid rgba(0,0,0,.06); box-shadow: 0 6px 22px -6px rgba(0,0,0,.12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+    /* TOUCH screens: no blur behind the bar. It re-blurs the page under it on every frame of a
+       scroll, which a phone feels, and on a bar 96-97% opaque it was all but invisible anyway. */
+    @media (hover: none) { #header.scrolled { -webkit-backdrop-filter: none; backdrop-filter: none; } }
 
     /* HERO STATE (not scrolled): the header floats transparent over the hero photo, so the
        brand, controls and nav all flip to white. Once scrolled the header gains its solid
@@ -2660,15 +2663,39 @@
       var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0, dragTouch = false;
       /* Finger drags: the page eases to where the finger puts it, 35% of the way a frame, and
          finishes the last stretch after the finger lifts. */
-      var thumbGoal = 0, thumbRaf = 0;
+      /* It must ALWAYS stop. The first version kept going until the page reached the goal, and on a
+         phone the goal can be out of reach: maxScroll() is measured against clientHeight, but the
+         browser's real end of the page moves with its toolbars. So it chased a point it could never
+         get to, writing scrollTo every frame for good - the man shook, and a normal swipe anywhere
+         else on the page fought it (the owner: "it sticks"). Now the goal is clamped to the page's
+         real end, the follow stops the moment a frame gets nowhere, and any touch elsewhere
+         cancels it outright. */
+      var thumbGoal = 0, thumbRaf = 0, thumbLastY = -1;
+      function realMaxScroll() {
+        return Math.max(0, Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0) - window.innerHeight);
+      }
+      function stopThumb() { if (thumbRaf) { cancelAnimationFrame(thumbRaf); thumbRaf = 0; } thumbLastY = -1; }
       function thumbFollow() {
-        var y = window.scrollY || window.pageYOffset || 0, d = thumbGoal - y;
+        thumbRaf = 0;
+        var goal = Math.max(0, Math.min(realMaxScroll(), thumbGoal));
+        var y = window.scrollY || window.pageYOffset || 0, d = goal - y;
+        // reached it - or the last frame's scroll did not move the page: stop either way
+        if (Math.abs(d) < 0.5 || (thumbLastY >= 0 && Math.abs(y - thumbLastY) < 0.5)) {
+          thumbLastY = -1; computeTarget(); run(); return;
+        }
+        thumbLastY = y;
         // "instant": the html's smooth scroll-behavior is back on once the finger has lifted
-        if (Math.abs(d) < 0.5) { window.scrollTo({ top: thumbGoal, behavior: "instant" }); thumbRaf = 0; computeTarget(); run(); return; }
-        window.scrollTo({ top: y + d * 0.35, behavior: "instant" });
+        var step = Math.abs(d) < 2 ? d : (d > 0 ? 1 : -1) * Math.max(1, Math.abs(d) * 0.35);   // >= 1px, so rounding cannot fake a stall
+        window.scrollTo({ top: y + step, behavior: "instant" });
         computeTarget(); currentY = targetY; draw();
         thumbRaf = requestAnimationFrame(thumbFollow);
       }
+      // a finger anywhere but on him, or a wheel, takes the page back at once
+      document.addEventListener("touchstart", function (e) { if (e.target !== climber) stopThumb(); }, { passive: true });
+      window.addEventListener("wheel", stopThumb, { passive: true });
+      /* Belt and braces for iPhone: touch-action: none alone may not keep Safari's own scroll out of
+         a drag that starts on him, and the two scrolling the page against each other is a shake. */
+      climber.addEventListener("touchmove", function (e) { if (e.cancelable) e.preventDefault(); }, { passive: false });
       function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - layoutH()); }
       /* ---- TILT THE PHONE and he swings (the owner's idea). His rope hangs plumb in the REAL
              world, so tip the phone and he hangs towards the low side, by L·sin(tilt) - a true
