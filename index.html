@@ -425,10 +425,13 @@
        a size down from 52 but still a comfortable thumb target (44-48 is the usual minimum).
        svh = the screen with the browser bars SHOWN, so it does not jump as they hide; vh is the
        fallback for older browsers. */
+    /* LOWERED again (2026-10-06, the owner's iPhone 15 Pro Max): at 20svh it sat on the footer's
+       "Are you a rope-access technician?" line. It goes where he marked: just above the copyright
+       bar, which is one line on phones now - 24 + 20 + 24px plus its border = 69px - so 78px
+       leaves it 9px clear of the bar at the end of the page. */
     @media (max-width: 640px) {
       #callFab { --cf-w: 56px; --cf-h: 48px;
-                 bottom: calc(20vh + env(safe-area-inset-bottom, 0px));
-                 bottom: calc(20svh + env(safe-area-inset-bottom, 0px)); }
+                 bottom: calc(78px + env(safe-area-inset-bottom, 0px)); }
       #callFab .cfab-tab { font-size: 18px; }
     }
     /* TABLETS: the phones' height up the edge, at the desktop's size. */
