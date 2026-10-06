@@ -502,6 +502,20 @@
          About section that overlaps the hero's bottom. */
       #heroContent { transform: translateY(3vh); }
     }
+    /* PHONES + TABLETS (2026-10-07, the owner's iPhone 16 Pro Max): the hero text no longer floats
+       in the middle - it starts just under the four technicians on the glass, where he drew the
+       line, and the same on every screen because it is measured off the PHOTO, not typed in px.
+       The photo is cover, pinned to its top edge, and on any screen narrower than its own 2000 x
+       1343 it is sized by the hero's height (100vh); the lowest technician's feet are at 280 of
+       its 1343 rows, i.e. 20.85vh down. max() with the width term covers the moment it is sized
+       by width instead. 2.5vh of air below them (~24px on a 956px-tall phone).
+       Only up to the photo's own aspect (1489/1000): in a landscape phone the hero is ~430px tall
+       and top-aligned text would run under the About band, so there it stays centred as before. */
+    @media (max-width: 1279px) and (max-aspect-ratio: 1489/1000) {
+      #home { align-items: flex-start; }
+      #home > .max-w-7xl { padding-top: calc(max(100vw * 280 / 2000, 100vh * 280 / 1343) + 2.5vh); }
+      #heroContent { transform: none; }
+    }
 
     /* Mobile only (< lg, where About is single-column): heading AND paragraphs sit on the
        beige band with dark text. The paragraphs used to be white on about.jpg under a dark
@@ -2641,7 +2655,7 @@
         // He trails the movement, the way a hanging body does — capped hard, since the whole
         // effect is meant to be felt rather than noticed. Skipped while he is being held: there
         // the cursor sets the sway, and the page scrolls under the same gesture.
-        if (!dragging) {
+        if (!dragging && !thumbRaf) {                                  // nor while a finger drag glides to a stop
           targetSway = Math.max(-3.2, Math.min(3.2, -v * 0.05));
           clearTimeout(idleTimer);
           idleTimer = setTimeout(function () { if (!dragging) { targetSway = 0; run(); } }, 140);   // then swing back and settle
@@ -2659,33 +2673,39 @@
              damped pendulum the scroll uses, just released from further out, so he swings
              through the middle a few times before he settles. ---- */
       var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0, dragTouch = false;
-      /* Finger drags: the page eases to where the finger puts it, 35% of the way a frame, and
-         finishes the last stretch after the finger lifts. */
-      /* It must ALWAYS stop. The first version kept going until the page reached the goal, and on a
-         phone the goal can be out of reach: maxScroll() is measured against clientHeight, but the
-         browser's real end of the page moves with its toolbars. So it chased a point it could never
-         get to, writing scrollTo every frame for good - the man shook, and a normal swipe anywhere
-         else on the page fought it (the owner: "it sticks"). Now the goal is clamped to the page's
-         real end, the follow stops the moment a frame gets nowhere, and any touch elsewhere
-         cancels it outright. */
-      var thumbGoal = 0, thumbRaf = 0, thumbLastY = -1;
+      /* FINGER DRAGS - smoothed at the FINGER, not at the page (2026-10-07, the owner: "jolts").
+         The page moves ~10x the finger here, so every bit of a finger's own tremble and every
+         uneven gap between touch events comes out ten times over. The version before eased the
+         page 35% a frame towards a goal that jumped with each event: chase, catch up, wait for
+         the next event - pulses. Now the FINGER's position is low-passed, frame-rate independent
+         (time constant THUMB_TAU, the same feel at 60 and at 120Hz), and the page and the man are
+         both set straight from that one smoothed point, once per frame: he stays exactly on the
+         line his finger draws, and the page glides with him. The ratio (page px per finger px) is
+         fixed when the finger goes down, so an image loading mid-drag cannot change it under him.
+         It must ALWAYS stop: after the finger lifts it runs only until the smoothed point has
+         caught up, or as soon as a frame gets the page nowhere; any touch elsewhere or a wheel
+         cancels it outright (an earlier version chased a goal it could not reach and fought every
+         normal swipe afterwards). */
+      var THUMB_TAU = 55;                                             // ms; higher = silkier but laggier
+      var thumbRaf = 0, thumbFinger = 0, thumbSmooth = 0, thumbRatio = 0, thumbT = 0, thumbLastY = -1;
       function realMaxScroll() {
         return Math.max(0, Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0) - window.innerHeight);
       }
       function stopThumb() { if (thumbRaf) { cancelAnimationFrame(thumbRaf); thumbRaf = 0; } thumbLastY = -1; }
-      function thumbFollow() {
+      function thumbFollow(now) {
         thumbRaf = 0;
-        var goal = Math.max(0, Math.min(realMaxScroll(), thumbGoal));
-        var y = window.scrollY || window.pageYOffset || 0, d = goal - y;
-        // reached it - or the last frame's scroll did not move the page: stop either way
-        if (Math.abs(d) < 0.5 || (thumbLastY >= 0 && Math.abs(y - thumbLastY) < 0.5)) {
-          thumbLastY = -1; computeTarget(); run(); return;
-        }
-        thumbLastY = y;
-        // "instant": the html's smooth scroll-behavior is back on once the finger has lifted
-        var step = Math.abs(d) < 2 ? d : (d > 0 ? 1 : -1) * Math.max(1, Math.abs(d) * 0.35);   // >= 1px, so rounding cannot fake a stall
-        window.scrollTo({ top: y + step, behavior: "instant" });
+        var dt = thumbT ? Math.min(64, Math.max(1, now - thumbT)) : 16; thumbT = now;
+        thumbSmooth += (thumbFinger - thumbSmooth) * (1 - Math.exp(-dt / THUMB_TAU));
+        var settled = Math.abs(thumbFinger - thumbSmooth) < 0.2;
+        if (settled) thumbSmooth = thumbFinger;
+        var goal = Math.max(0, Math.min(realMaxScroll(), dragStartScroll + (thumbSmooth - dragStartClientY) * thumbRatio));
+        var y = window.scrollY || window.pageYOffset || 0;
+        if (Math.abs(goal - y) >= 0.5) window.scrollTo({ top: goal, behavior: "instant" });   // instant: smooth-scroll is back on after the lift
         computeTarget(); currentY = targetY; draw();
+        var now2 = window.scrollY || window.pageYOffset || 0;
+        // done once the finger is up and the smoothing has caught up - or the page will not move
+        if (!dragging && (settled || (thumbLastY >= 0 && Math.abs(now2 - thumbLastY) < 0.5))) { thumbLastY = -1; thumbT = 0; run(); return; }
+        thumbLastY = dragging ? -1 : now2;
         thumbRaf = requestAnimationFrame(thumbFollow);
       }
       // a finger anywhere but on him, or a wheel, takes the page back at once
@@ -2805,6 +2825,12 @@
         dragStartClientX = e.clientX;
         dragStartSway = currentSway;
         dragStartScroll = window.scrollY || window.pageYOffset || 0;
+        if (dragTouch) {
+          stopThumb(); thumbT = 0;
+          thumbFinger = thumbSmooth = e.clientY;
+          var tb = trackBounds(), tr = tb.bottom - tb.top0, tm = maxScroll();
+          thumbRatio = tr > 0 ? tm / tr : 0;
+        }
         document.body.classList.add("climber-grabbing");
         document.documentElement.style.scrollBehavior = "auto";      // instant while dragging (page scrolls smooth otherwise)
         if (climber.setPointerCapture) { try { climber.setPointerCapture(e.pointerId); } catch (x) {} }
@@ -2823,13 +2849,15 @@
            the whole page. #climber has touch-action: none, so the browser never takes the gesture.
            (For a while a finger got the browser's own scroll instead, pan-y, which runs the other
            way round; the owner chose the thumb, knowing it moves the page ~10x the finger.)
-           A finger is eased in (thumbFollow) so the page glides after it instead of stepping;
-           the mouse stays instant. */
-        if (range > 0 && ms > 0) {
+           A finger only records where it is; thumbFollow smooths it and moves page and man once a
+           frame (see THUMB_TAU). The mouse stays instant. */
+        if (dragTouch) {
+          thumbFinger = e.clientY;
+          if (!thumbRaf && thumbRatio > 0) thumbRaf = requestAnimationFrame(thumbFollow);
+        } else if (range > 0 && ms > 0) {
           var dy = e.clientY - dragStartClientY;
           var y = Math.max(0, Math.min(ms, dragStartScroll + dy * (ms / range)));
-          if (dragTouch) { thumbGoal = y; if (!thumbRaf) thumbRaf = requestAnimationFrame(thumbFollow); }
-          else {
+          {
             window.scrollTo(0, y);
             computeTarget(); currentY = targetY;                     // stick to the cursor, no inertia lag while dragging
           }
