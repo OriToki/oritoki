@@ -111,6 +111,24 @@
         if (t === "dark") document.documentElement.classList.add("dark");
       } catch (e) {}
     })();
+    /* BIG SCREENS look like the owner's laptop, only larger (2026-10-07). His laptop shows the
+       page 1706 CSS px wide, and that composition is the reference: past it, the WHOLE page grows
+       by one factor, --k - text and spacing through the root font size (Tailwind sizes are rem),
+       and every px size that matters through calc(N * var(--k)): the man, his ropes, the lockup,
+       the header. So a 2560 monitor or a 4K TV shows the same picture at 1.5x / 2.25x instead of a
+       small column in the middle of empty space, and nothing can overlap that does not overlap on
+       the laptop. Capped by HEIGHT too (775 px of reference height) so a very wide, short screen
+       (21:9) is not scaled past what fits vertically. At 1706 and below --k is exactly 1, and
+       every rule reduces to the size it had before. Set here, before first paint, so nothing jumps. */
+    (function () {
+      function setK() {
+        var w = window.innerWidth, h = window.innerHeight;
+        var k = w > 1706 ? Math.max(1, Math.min(w / 1706, h / 775)) : 1;
+        document.documentElement.style.setProperty("--k", k.toFixed(4));
+      }
+      setK();
+      window.addEventListener("resize", setK);
+    })();
   </script>
 
   <style>
@@ -379,11 +397,13 @@
        already has (17px = the classic scrollbar, which 100vw counts and the column does not).
        Wide screens are untouched: there the max() picks the column's own padding. */
     @media (min-width: 1280px) {
-      :root { --gutter: calc(var(--climber-left) + var(--worker-width) * 0.995 + 8px); }
+      /* 80rem, not 1280px: it is the column's own max-width (max-w-7xl), which grows with --k on
+         big screens; the 8px of air grows with it. At --k 1 both are exactly what they were. */
+      :root { --gutter: calc(var(--climber-left) + var(--worker-width) * 0.995 + 8px * var(--k, 1)); }
       section > .max-w-7xl, footer .max-w-7xl {
-        padding-left: max(1.25rem, calc(var(--gutter) - (100vw - 17px - 1280px) / 2)); }
+        padding-left: max(1.25rem, calc(var(--gutter) - (100vw - 17px - 80rem) / 2)); }
       #home > .max-w-7xl {
-        padding-left: max(3rem, calc(var(--gutter) - (100vw - 17px - 1280px) / 2)); }
+        padding-left: max(3rem, calc(var(--gutter) - (100vw - 17px - 80rem) / 2)); }
     }
     /* ...and the hero headline keeps the size it has below 1280 (lg) up to 1499px: the padded
        column is narrower here, and the owner asked for the fonts as they are on smaller screens. */
@@ -732,7 +752,14 @@
     .gallery-card { position: relative; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: #ffffff; height: 100%; }
     .gallery-card img { width: 100%; height: 260px; object-fit: cover; display: block; }
     .slide-caption { position: absolute; left: 0; right: 0; bottom: 0; padding: .8rem 1rem; font-weight: 600; color: #f5f5f0; background: linear-gradient(transparent, rgba(20,20,42,.92)); }
-    .swiper-button-next, .swiper-button-prev { color: #f97316; }
+    .swiper-button-next, .swiper-button-prev { color: #f97316; transition: color .2s ease, filter .2s ease; }
+    /* Arrows light up under a mouse; touch screens have no hover, so they are left out. */
+    @media (hover: hover) and (pointer: fine) {
+      .swiper-button-next:hover, .swiper-button-prev:hover {
+        color: #fb923c;
+        filter: drop-shadow(0 0 6px rgba(251,146,60,.85));
+      }
+    }
     .gallery-card { cursor: zoom-in; }
 
     /* ---------- Click a gallery photo to see the whole frame ----------
@@ -1045,6 +1072,36 @@
       100% { border-color: #2a2b2c; background-color: #202123; box-shadow: 0 0 0 16px rgba(249,115,22,0), 0 20px 42px -22px rgba(249,115,22,0); }
     }
     html.dark .gallery-card { background: #202123; border-color: #2a2b2c; }
+
+    /* ---------- BIG SCREENS: the laptop's picture, scaled by --k (set in <head>) ----------
+       Only past 1706px, where --k > 1. Below that nothing here applies, so phones, tablets and
+       laptops keep exactly what they had. Root font size carries everything Tailwind sizes in rem
+       (text, spacing, the 80rem column); the rest are the px sizes that shape the layout, each
+       written as its laptop value x --k. Last in the sheet so it wins ties; the few Tailwind px
+       classes are matched with `body` in front, because the Tailwind CDN injects its own sheet
+       after this one. */
+    @media (min-width: 1707px) {
+      html { font-size: calc(16px * var(--k)); }
+      :root { --worker-width: calc(128px * var(--k));
+              --climber-left: calc(41.445px * var(--k) - var(--worker-width) * (0.0563 + (1 - var(--mark-k)) * 0.40990));
+              --climber-bottom-gap: calc(78px * var(--k)); }
+      #header { height: calc(88px * var(--k)); }
+      #brandRope, .lock-piece { top: calc(4px * var(--k)); }
+      #nav { font-size: 1rem; }
+      #nav .nav-dd-caret { font-size: .625rem; }
+      #nav a { padding: .5rem .875rem; }
+      .nav-dd-menu { padding-top: .875rem; }
+      .nav-dd-ic svg { width: 1.125rem; height: 1.125rem; }
+      body .mt-\[7px\] { margin-top: .4375rem; }
+      body .text-\[13px\] { font-size: .8125rem; }
+      body .text-\[11px\] { font-size: .6875rem; }
+      body .max-w-\[104px\] { max-width: 6.5rem; }
+      #services article > h3 { margin-bottom: .75rem; }
+      .gallery-card img { height: 16.25rem; }
+      #callFab { bottom: calc(108px * var(--k)); --cf-w: calc(64px * var(--k)); --cf-h: calc(56px * var(--k)); }
+      #callFab .cfab-tab { font-size: calc(22px * var(--k)); }
+      #callFab .cfab-menu { right: .75rem; bottom: calc(100% + .75rem); min-width: 13.75rem; }
+    }
   </style>
 </head>
 
@@ -1661,9 +1718,10 @@
 
     /* ---------- 2. Start the Swiper carousel ---------- */
     if (window.Swiper && document.querySelector(".gallery-swiper")) {
-      new Swiper(".gallery-swiper", {
+      var galK = function () { return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--k")) || 1; };
+      var gallerySwiper = new Swiper(".gallery-swiper", {
         slidesPerView: 1,
-        spaceBetween: 20,
+        spaceBetween: 20 * galK(),             // grows with the page on big screens (--k)
         loop: window.galleryImages && window.galleryImages.length > 2,
         grabCursor: true,
         /* A two-finger swipe on a laptop touchpad, with the pointer over the photos, turns them
@@ -1676,6 +1734,10 @@
         pagination: { el: ".swiper-pagination", clickable: true },
         navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
         breakpoints: { 640: { slidesPerView: 2 }, 1000: { slidesPerView: 3 } },
+      });
+      window.addEventListener("resize", function () {
+        var g = 20 * galK();
+        if (gallerySwiper.params.spaceBetween !== g) { gallerySwiper.params.spaceBetween = g; gallerySwiper.update(); }
       });
     }
 
@@ -1935,7 +1997,21 @@
       if (!climber) return;
       var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       var rootCS = getComputedStyle(document.documentElement);
-      function cssPx(name, fallback) { var v = parseFloat(rootCS.getPropertyValue(name)); return isNaN(v) ? fallback : v; }
+      /* A custom property is read back UNEVALUATED - on big screens --climber-bottom-gap is
+         "calc(78px * 1.5)", which parseFloat cannot read - so anything that is not a plain number
+         is measured instead, as the height of a probe element sized by it. */
+      var pxProbe = null;
+      function cssPx(name, fallback) {
+        var s = rootCS.getPropertyValue(name).trim();
+        if (/^-?[\d.]+(px)?$/.test(s)) return parseFloat(s);
+        if (!s) return fallback;
+        if (!pxProbe) { pxProbe = document.createElement("div"); pxProbe.style.cssText = "position:absolute;visibility:hidden;width:0;pointer-events:none"; document.body.appendChild(pxProbe); }
+        pxProbe.style.height = "var(" + name + ")";
+        var v = pxProbe.getBoundingClientRect().height;
+        return v > 0 ? v : fallback;
+      }
+      // The big-screen scale (see <head>): every fixed px distance in A below is a laptop value x K().
+      function K() { return parseFloat(rootCS.getPropertyValue("--k")) || 1; }
 
       /* ----- Rope geometry — the FULL ropes are drawn here (clean.png has no ropes of its own).
          Anchor points are fractions of the figure box (measured off clean.png):
@@ -2299,11 +2375,12 @@
         var dpr = window.devicePixelRatio || 1;
         var stripL = wrapEl ? wrapEl.getBoundingClientRect().left : 0;
         markL = Math.round((stripL + markL) * dpr) / dpr - Math.round(stripL * dpr) / dpr;
-        pivotWork = { x: markL + A.pivotWorkX * markW, y: A.brandTop + A.pivotWorkY * markH };
-        pivotBack = { x: markL + A.pivotBackX * markW, y: A.brandTop + A.pivotBackY * markH };
+        var brandTop = A.brandTop * K();                  // #brandRope's top is 4px x --k
+        pivotWork = { x: markL + A.pivotWorkX * markW, y: brandTop + A.pivotWorkY * markH };
+        pivotBack = { x: markL + A.pivotBackX * markW, y: brandTop + A.pivotBackY * markH };
         var lap = vw * A.ropeW * markK;
         function stemOff(fx, fy, piv) {
-          var dx = (markL + fx * markW) - piv.x, dy = (A.brandTop + fy * markH) - piv.y;
+          var dx = (markL + fx * markW) - piv.x, dy = (brandTop + fy * markH) - piv.y;
           var dl = Math.sqrt(dx * dx + dy * dy) || 1;
           return { x: dx - (dx / dl) * lap, y: dy - (dy / dl) * lap };
         }
@@ -2379,8 +2456,9 @@
         var docH = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
         var scrolled = window.scrollY || 0;
         var offBottom = VH + 24;                       // far enough below to be out of sight
-        var trueEndB = (docH - footLift - A.ropeEndGapBackup) - scrolled;
-        var trueEndW = (docH - footLift - A.ropeEndGapWork) - scrolled;
+        var kk = K();                                      // big screens: the gaps grow with the page
+        var trueEndB = (docH - footLift - A.ropeEndGapBackup * kk) - scrolled;
+        var trueEndW = (docH - footLift - A.ropeEndGapWork * kk) - scrolled;
         var endB = Math.min(trueEndB, offBottom);
         var endW = Math.min(trueEndW, offBottom);
         /* The tops of the ropes are pinned (they hang from above the header and never move). Of
@@ -2469,7 +2547,7 @@
           " L " + ropeIn.x.toFixed(1) + " " + ropeIn.y.toFixed(1) +
           " L " + camX.toFixed(1) + " " + camYpx.toFixed(1) +
           hangQ(backCtl, backEnd.x, backEnd.y));
-        setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise, trueEndB));
+        setSeg(rKnotBO, rKnotBI, knotOn(camX, camYpx, backCtl, backEnd.x, backEnd.y, backEnd.y - A.knotRise * kk, trueEndB));
         /* WORKING rope, IN FRONT: off-screen top → descender (grows as he descends). Front layer
            so it crosses over the absorber and rests on the descender.
            It ENDS at A.desc, a point on the descender's own outline, and that point is its pivot:
@@ -2531,7 +2609,7 @@
           "M " + (handX + (tux / tul) * (A.brakeTailUp * Wn)).toFixed(1) + " " +
                  (handY + (tuy / tul) * (A.brakeTailUp * Wn)).toFixed(1) +
           " L " + handX.toFixed(1) + " " + handY.toFixed(1) + hangQ(workCtl, workEnd.x, workEnd.y));
-        setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workEnd.x, workEnd.y, workEnd.y - A.knotRise, trueEndW));
+        setSeg(rKnotWO, rKnotWI, knotOn(handX, handY, workCtl, workEnd.x, workEnd.y, workEnd.y - A.knotRise * kk, trueEndW));
         /* THE BRAKE STRAND, painted in #ropeTop — over the descender, under the glove.
            It is not a straight line. The owner drew it: it leaves the top of the device running
            straight DOWN for a few pixels, hooks LEFT, and then runs dead straight to his brake
