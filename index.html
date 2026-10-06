@@ -2341,7 +2341,9 @@
            BELOW the pivot clockwise moves it LEFT. Without it the carabiner leans away from its
            rope instead of towards it. */
         function swingTo(el, piv, off, tx, ty) {
-          var ang = Math.atan2(-(tx - piv.x), Math.max(1, ty - piv.y)) * 57.2957795;
+          /* No floor on the drop any more: dragged right off the TOP of the screen he goes above the
+             anchors, and the carabiner then turns up after him, the way it does on a rope pulled upwards. */
+          var ang = Math.atan2(-(tx - piv.x), ty - piv.y) * 57.2957795;
           if (el) el.style.transform = "rotate(" + ang.toFixed(2) + "deg)";
           var r = ang * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
           return { x: piv.x + off.x * c - off.y * s, y: piv.y + off.x * s + off.y * c };
@@ -2559,16 +2561,35 @@
          stops sooner. LEFT: unchanged, sin(38°) of the rope - he is already at the left edge.
          (Phones used to be held to his gutter so he could not land on buttons; a drag that moved
          now never ends as a click - see swallowClickUntil - and he swings home when let go.) */
-      function pendMaxR() {
+      /* 2026-10-07, the owner: he must go RIGHT OFF the screen on every side, the way he already left
+         it on the left. So both limits are now "his whole figure past the window's edge" (plus a
+         margin for the lean), not "touching it". */
+      function restCentreX() {
         var W = climber.offsetWidth || 66;
         var stripL = wrapEl ? wrapEl.getBoundingClientRect().left : 0;
-        var restCentre = stripL + ((wrapEl ? wrapEl.offsetWidth : W)) / 2;
-        var room = window.innerWidth - W / 2 - restCentre - 4;
-        /* No rope-length cap any more (the owner: he should follow the mouse wherever it goes, the
-           rope paying out as far as it has to). Only the window's edge stops him. */
-        return Math.max(0, room);
+        return stripL + ((wrapEl ? wrapEl.offsetWidth : W)) / 2;
       }
-      function pendMax() { return Math.min(pendLen() * A.pullAngle, window.innerWidth * 0.45); }
+      function pendMaxR() {
+        var W = climber.offsetWidth || 66;
+        return Math.max(0, window.innerWidth - restCentreX() + W * 0.8 + 8);
+      }
+      function pendMax() {
+        var W = climber.offsetWidth || 66;
+        return Math.max(0, restCentreX() + W * 0.8 + 8);
+      }
+      /* The cursor cannot leave the screen, so 1:1 he could never get all the way out. Over the last
+         stretch before an edge (at most EDGE_Z px, and never more than where the drag started, so a
+         grab never jumps) he gains on the cursor, quadratically, and is fully out by the time the
+         cursor reaches that edge. lin = where 1:1 puts him, lin0 = where 1:1 would put him with the
+         cursor ON the edge, full = fully out. */
+      var EDGE_Z = 160;
+      function edgePush(lin, c, c0, edge, lin0, full) {
+        var toward = edge > c0 ? 1 : -1;                 // which way the edge is
+        var Z = Math.max(1, Math.min(EDGE_Z, Math.abs(edge - c0)));
+        var t = Math.max(0, Math.min(1, 1 - toward * (edge - c) / Z));   // past the edge counts as on it
+        var extra = toward > 0 ? Math.max(0, full - lin0) : Math.min(0, full - lin0);
+        return lin + t * t * extra;
+      }
       /* Swinging out also lifts him: on a rope of fixed length, going sideways by s raises him by
          L - sqrt(L² - s²). Without this he would slide along an invisible horizontal rail. */
       function pendRise() {
@@ -2618,7 +2639,7 @@
         if (t.th > TH) { t.th = TH; t.om = Math.min(0, t.om); } else if (t.th < -TH) { t.th = -TH; t.om = Math.max(0, t.om); }
       }
       function loop() {
-        currentY += (targetY - currentY) * 0.14;            // inertia: trail then catch up
+        currentY += (targetY + dragOffY - currentY) * 0.14; // inertia: trail then catch up
         /* A real pendulum's rhythm comes from its length (ω² = g/L), not from a fixed constant —
            so the stiffness is divided by the rope length. High on the page the rope is short and
            he swings quickly; far down it is long and he swings slow and wide. */
@@ -2673,6 +2694,11 @@
              damped pendulum the scroll uses, just released from further out, so he swings
              through the middle a few times before he settles. ---- */
       var dragging = false, dragStartClientY = 0, dragStartScroll = 0, dragStartClientX = 0, dragStartSway = 0, dragTouch = false;
+      /* Past either end of the page the scroll cannot follow the cursor any further, and he used to
+         stop there - below the header at the top. dragOffY carries him on, in screen px, on top of
+         where the scroll puts him; it is 0 everywhere in between, and back to 0 when he is let go
+         (loop() then eases him home). dragStartY is his y when grabbed. */
+      var dragOffY = 0, dragStartY = 0;
       /* Finger drags: the page eases to where the finger puts it, 35% of the way a frame, and
          finishes the last stretch after the finger lifts. */
       /* It must ALWAYS stop. The first version kept going until the page reached the goal, and on a
@@ -2699,7 +2725,7 @@
         // "instant": the html's smooth scroll-behavior is back on once the finger has lifted
         var step = Math.abs(d) < 2 ? d : (d > 0 ? 1 : -1) * Math.max(1, Math.abs(d) * 0.35);   // >= 1px, so rounding cannot fake a stall
         window.scrollTo({ top: y + step, behavior: "instant" });
-        computeTarget(); currentY = targetY; draw();
+        computeTarget(); currentY = targetY + dragOffY; draw();
         thumbRaf = requestAnimationFrame(thumbFollow);
       }
       // a finger anywhere but on him, or a wheel, takes the page back at once
@@ -2818,6 +2844,7 @@
         dragStartClientY = e.clientY;
         dragStartClientX = e.clientX;
         dragStartSway = currentSway;
+        dragStartY = currentY; dragOffY = 0;
         dragStartScroll = window.scrollY || window.pageYOffset || 0;
         document.body.classList.add("climber-grabbing");
         document.documentElement.style.scrollBehavior = "auto";      // instant while dragging (page scrolls smooth otherwise)
@@ -2827,11 +2854,20 @@
       climber.addEventListener("pointermove", function (e) {
         if (!dragging) return;
         // sideways: he hangs off the vertical, capped so he cannot be dragged across the page
-        var dxp = e.clientX - dragStartClientX;
-        currentSway = Math.max(-pendMax(), Math.min(pendMaxR(), dragStartSway + dxp * A.pullGain));
+        var dxp = e.clientX - dragStartClientX, vw = window.innerWidth, vh = window.innerHeight;
+        var Hn = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
+        var sx = dragStartSway + dxp * A.pullGain;
+        sx = edgePush(sx, e.clientX, dragStartClientX, vw, dragStartSway + (vw - dragStartClientX) * A.pullGain, pendMaxR());
+        sx = edgePush(sx, e.clientX, dragStartClientX, 0, dragStartSway - dragStartClientX * A.pullGain, -pendMax());
+        currentSway = Math.max(-pendMax(), Math.min(pendMaxR(), sx));
         targetSway = currentSway;                                    // no spring pull while held
         swayVel = 0;
+        // where he should be on screen (his top), 1:1 with the cursor, pushed out near the edges
+        var yd = dragStartY + (e.clientY - dragStartClientY);
+        yd = edgePush(yd, e.clientY, dragStartClientY, 0, dragStartY - dragStartClientY, -Hn * 1.15 - 8);
+        yd = edgePush(yd, e.clientY, dragStartClientY, vh, dragStartY + (vh - dragStartClientY), vh + Hn * 0.15 + 8);
         var b = trackBounds(), range = b.bottom - b.top0, ms = maxScroll();
+        if (!(range > 0 && ms > 0)) { dragOffY = yd - targetY; currentY = targetY + dragOffY; }
         /* He is the scrollbar THUMB for a mouse AND a finger: drag him down and he goes down (the
            page with him), drag him up and he comes up - moving him the length of his track scrolls
            the whole page. #climber has touch-action: none, so the browser never takes the gesture.
@@ -2840,12 +2876,13 @@
            A finger is eased in (thumbFollow) so the page glides after it instead of stepping;
            the mouse stays instant. */
         if (range > 0 && ms > 0) {
-          var dy = e.clientY - dragStartClientY;
-          var y = Math.max(0, Math.min(ms, dragStartScroll + dy * (ms / range)));
+          var raw = dragStartScroll + (yd - dragStartY) * (ms / range);
+          var y = Math.max(0, Math.min(ms, raw));
+          dragOffY = (raw - y) * (range / ms);                       // what the scroll could not take
           if (dragTouch) { thumbGoal = y; if (!thumbRaf) thumbRaf = requestAnimationFrame(thumbFollow); }
           else {
             window.scrollTo(0, y);
-            computeTarget(); currentY = targetY;                     // stick to the cursor, no inertia lag while dragging
+            computeTarget(); currentY = targetY + dragOffY;          // stick to the cursor, no inertia lag while dragging
           }
         }
         run();                                                       // keep the tail spring alive
@@ -2862,6 +2899,7 @@
         dragging = false;
         if (e && (Math.abs(e.clientX - dragStartClientX) > 6 || Math.abs(e.clientY - dragStartClientY) > 6)) swallowClickUntil = Date.now() + 400;
         targetSway = 0; swayVel = 0;                                 // let go: gravity swings him back
+        dragOffY = 0;                                                // and from past the page's ends, he comes back in
         run();
         document.body.classList.remove("climber-grabbing");
         document.documentElement.style.scrollBehavior = "";          // restore smooth scrolling
