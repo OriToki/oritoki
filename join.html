@@ -262,8 +262,8 @@
              class="h-[4.5rem] sm:h-24 w-auto" draggable="false" />
       </a>
       <div class="flex items-center gap-2 sm:gap-3">
-        <a href="index.html" class="inline-flex items-center gap-1.5 text-sm font-600 text-mute hover:text-accent transition"><i class="fa-solid fa-arrow-left text-xs"></i><span data-ka="მთავარი">Home</span></a>
-        <!-- Theme first, then language — same order as the main site's header. -->
+        <!-- (No "← Home" link here any more - the owner moved it under the form. The logo still
+             links home.) Theme first, then language — same order as the main site's header. -->
         <button id="themeToggle" type="button" aria-label="Toggle dark mode" title="Dark / light" class="w-7 h-9 shrink-0 inline-flex items-center justify-center text-base leading-none transition"><svg class="cb-icon" viewBox="-1.5 -4.5 27 33" width="27" height="33" fill="currentColor" aria-hidden="true" focusable="false"><g class="cb-rays" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M20.57 12h2"/><path d="M18.05 20.91l1.42 1.77"/><path d="M11.97 24.6v2.5"/><path d="M5.89 20.91l-1.42 1.77"/><path d="M3.37 12h-2"/><path d="M5.89 3.09 4.47 1.32"/><path d="M11.97-0.6v-2.5"/><path d="M18.05 3.09 19.47 1.32"/></g><path d="M17.85 7.3C17.88 6.9 17.9 6.6 17.88 6.4C17.85 5.9 17.75 5.2 17.5 4.6C17.1 3.4 15.9 2.05 14.7 2.02L12.7 2.02C11.2 2.05 9.6 2.6 8.5 3.8C6.9 5.3 6.25 6.9 6.12 8.8C6.03 10.6 6.05 12.6 6.3 14.6C6.6 16.8 7.4 19 8.5 20.3C9.7 21.5 10.9 22 11.9 22L14.1 22C14.35 22 14.6 21.9 14.9 21.7C16.4 21 17.15 19.2 17.27 17.56L15.21 17.56C15 18.75 14.35 19.9 13.35 20.4C12.65 20.7 11.85 20.25 11.15 19.4C10.2 18.25 9.45 17.15 9.1 15.8C8.85 14.6 8.8 13.2 8.85 11.8C8.9 10.2 8.85 8.2 9.35 6.7C9.85 5.3 11.1 4.3 12.6 4.32C14 4.4 15.45 5.3 15.75 6.6C15.82 6.9 15.85 7.1 15.85 7.3Z"/><g class="cb-gate"><rect x="15.285" y="7.75" width="2.05" height="1.12" rx=".5"/><rect x="15.095" y="9.32" width="2.3" height="5.17" rx=".72"/><path fill-rule="evenodd" d="M15.785 14.94h1.05c.28 0 .5.22.5.5v1.15c0 .28-.22.5-.5.5h-1.05a.5.5 0 0 1-.5-.5v-1.15c0-.28.22-.5.5-.5ZM16.86 16a.55.55 0 1 1-1.1 0 .55.55 0 0 1 1.1 0Z"/></g></svg></button>
         <div id="langToggle" class="flex items-center rounded-full border border-line overflow-hidden text-xs font-600 font-display shrink-0">
           <button type="button" data-lang="ka" class="px-3 py-1.5 transition">ქარ</button>
@@ -596,13 +596,19 @@
            tokens flip together, so the label is always the page's background colour against it. -->
       <a href="index.html" class="mt-7 inline-flex items-center gap-2 rounded-full bg-light px-6 py-3 text-sm font-600 text-surface hover:bg-light/90 transition"><i class="fa-solid fa-arrow-left text-xs"></i><span data-ka="მთავარი გვერდი">Back to home</span></a>
     </div>
+
+    <!-- Back to the home page, under the form - where the owner marked it. It used to be a bare
+         "Home page" link in the footer. Hidden with the form once the application is sent: the
+         success screen carries its own button. -->
+    <div id="backHome" class="mt-8 text-center">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm font-600 text-mute hover:text-accent transition"><i class="fa-solid fa-arrow-left text-xs"></i><span data-ka="მთავარ გვერდზე დაბრუნება">Back to the home page</span></a>
+    </div>
   </main>
 
   <!-- ============================ FOOTER ============================ -->
   <footer class="border-t border-line bg-surface">
     <div class="max-w-5xl mx-auto px-5 py-8 text-sm text-mute flex flex-col sm:flex-row items-center justify-between gap-3">
       <span>© <span id="year"></span> <span data-ka="შპს ორითოკი">Oritoki LTD</span>. <span data-ka="ყველა უფლება დაცულია.">All rights reserved.</span></span>
-      <a href="index.html" class="hover:text-accent transition" data-ka="მთავარი გვერდი">Home page</a>
     </div>
   </footer>
 
@@ -766,6 +772,8 @@
           if (ins.error) throw ins.error;
 
           form.classList.add("hidden");
+          var backHome = document.getElementById("backHome");
+          if (backHome) backHome.classList.add("hidden");
           document.getElementById("successScreen").classList.remove("hidden");
           window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (err) {
