@@ -784,6 +784,15 @@
       #services article::after { top: .45rem; right: .45rem; height: 1.15rem; width: 1.15rem; font-size: .5rem; }
       #services .svc-ico svg { width: 1.3rem; height: 1.3rem; }
     }
+    /* PHONES + TABLETS: "What we do" and "Gallery" sit higher in their sections, where the owner
+       drew the line (~40px under the section's top edge instead of 88), and are centred over the
+       cards / carousel below them - the heading's box is the same content box the cards fill, so
+       auto margins centre it on them, not on the screen, whatever the climber's gutter is. */
+    @media (max-width: 1279px) {
+      #services, #gallery { padding-top: 2rem; }
+      #services > .max-w-7xl > .reveal:first-child,
+      #gallery > .max-w-7xl > .reveal:first-child { margin-left: auto; margin-right: auto; text-align: center; }
+    }
     #services article:hover { border-color: #f97316; box-shadow: 0 14px 26px -12px rgba(249,115,22,.22); }
     /* TOUCH screens: a tap leaves :hover stuck on the card, so it stayed outlined orange without
        being open (the owner). There the orange edge, lift and lit badge mean OPEN only (.svc-lit). */
