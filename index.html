@@ -298,6 +298,10 @@
     /* No long-press "preview / save image" sheet on a phone (the owner: holding the man popped his
        picture up for download). Covers the man's three layers and the lockup's pieces. */
     #ropeClimber img { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+    /* With the phone menu open he is only masked, still the top layer for touches - so a tap on
+       the drawer's language toggle above him was caught by him instead (the owner). Not touchable
+       while the menu is open. */
+    body.menu-open #climber { pointer-events: none; }
     #climberRig   { z-index: 4; }
     #climberGlove { z-index: 6; }
     body.climber-grabbing { cursor: grabbing; -webkit-user-select: none; user-select: none; }
