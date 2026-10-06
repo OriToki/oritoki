@@ -87,7 +87,10 @@ between three layers of him. What matters when touching it:
   stems of the header mark, `0.17278 × markW` of the strip. `climber-compose.ps1` **solves** the
   ASAP's position from that (its `-Sep`), so both ropes are dead plumb and neither device was
   shoved sideways — a first.
-- **`--worker-width` is 150, and the size is what decides whether he reads.** At 116 his harness
+- **Desktop `--worker-width` is 128 since 2026-10-06** (owner asked for him smaller; measured
+  off a screenshot of an older build he liked, 0.855 of 150). `--mark-k` = 150/128 keeps the
+  lockup and both ropes on exactly the pixels they had at 150 — only the man shrank.
+- **History: it was 150, and the size is what decides whether he reads.** At 116 his harness
   straps averaged into one grey haze across his chest and hips; the owner called it tangled and
   he was right. Rendered at 116 / 134 / 150 / 170 they start separating at 134 and are distinct
   straps at 150. **The strip can grow without moving anything else:** `A.markW` comes down by the

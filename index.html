@@ -174,6 +174,17 @@
          and that sum has to stay at 41.6px however wide the strip gets. 33 + 150*0.0563 = 41.4.
          (52 at the old flat figure, 49 at 116px with this one, 33 now that the strip is 150.) */
       --climber-left: 33px;
+      /* 128, not 150 (2026-10-06): the owner asked for him smaller on desktop and supplied a
+         screenshot of an earlier build at the size he liked. Measured off it against a screenshot
+         of the 150 build: ink 165 vs 192 px wide, 207 vs 243 px tall = 0.855, so 128.
+         --mark-k = 150/128 keeps the LOCKUP exactly the size it was, and --climber-left is
+         re-solved so its left edge stays at 33 + 150 x 0.0563 = 41.445px. The working stem sits at
+         --climber-left + 0.4662 x the strip for any k, which comes out at the same 102.9px, so
+         the mark and both ropes land where they did at 150 — only the man is smaller.
+         --mark-k must stay a plain number: the script parseFloat()s it. */
+      --worker-width: 128px;
+      --mark-k: 1.171875;
+      --climber-left: calc(41.445px - var(--worker-width) * (0.0563 + (1 - var(--mark-k)) * 0.40990));
       /* How high above the window's bottom edge the technician's boots stop, at the very end of
          the page. It has to clear the HIGHER of the two rope ends and its stopper knot
          (A.ropeEndGapWork + A.knotRise in the script), so the knots hang visibly below him rather than behind his
