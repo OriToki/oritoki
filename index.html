@@ -395,7 +395,11 @@
          Turning its letters solid black on the light scrolled bar was tried and the owner turned
          it down: the phone mark has to be the same as the desktop one.) */
       #home > .max-w-7xl, section > .max-w-7xl, footer .max-w-7xl { padding-left: var(--gutter); }
-      #header { height: 68px; }          /* shorter bar on phones — the lockup's knots end at 63 */
+      /* 59px: the bar fits the LETTERING, the owner's call (2026-10-09: "too big"). "or tok" is
+         rows 84..383 of the 438px canvas (logo-rest.png), so at this size it runs from 13px to 46px
+         down - 13px of bar above it, 13px below. The carabiners and knots under the lettering hang
+         on below the bar, over the page, as the ropes do. (It was 68, to take the knots too.) */
+      #header { height: 59px; }
       #langToggle button { padding: 4px 8px; }
       #burger { width: 2rem; height: 2rem; font-size: 1.35rem; }
     }
@@ -667,10 +671,10 @@
       #nav .nav-link { justify-content: flex-start; }
       #nav .nav-label { justify-items: start; }
     }
-    /* Phones: the header is only 68px tall, so the drawer must open right below it
+    /* Phones: the header is only 59px tall, so the drawer must open right below it
        (this rule comes after the ≤1279px block so it wins over that inset). */
     @media (max-width: 640px) {
-      #nav { top: 68px; }
+      #nav { top: 59px; }
     }
 
 
