@@ -1055,6 +1055,28 @@
     @media (max-width: 1023px) {
       html.dark #about { background: #202123; box-shadow: 0 -12px 28px rgba(0,0,0,.55); }
     }
+    /* PHONES + TABLETS (single-column About, where the photo beside the text is hidden): the same
+       photo comes back as the section's BACKGROUND, washed out almost to white the way the
+       owner's reference does it (2026-10-09) - palest under the start of the lines, letting a
+       little more of the picture through towards the right. It is the same pale band in BOTH
+       themes, so the text on it is the light theme's dark ink in both too, and stays readable.
+       (An earlier mobile version had white text on the darkened photo; the owner found it
+       unreadable. This is the opposite treatment.) Same file as #aboutPhoto, so no extra
+       download - that img is display:none here but still loads. */
+    @media (max-width: 1023px) {
+      #about, html.dark #about {
+        background-color: #f5f5f2;
+        background-image:
+          linear-gradient(to right, rgba(255,255,255,.93) 0%, rgba(255,255,255,.86) 50%, rgba(255,255,255,.70) 100%),
+          linear-gradient(to bottom, rgba(245,245,242,1) 0%, rgba(245,245,242,0) 9rem),
+          url("images/about.jpg?v=4");
+        background-size: auto, auto, cover;
+        background-position: center, center, 60% center;
+        background-repeat: no-repeat;
+      }
+      #about h2, html.dark #about h2 { color: rgb(20 20 42); }
+      #about #aboutBody p, html.dark #about #aboutBody p { color: rgb(82 82 91); }
+    }
     /* Service cards — lift them slightly above the section for depth in the dark. */
     html.dark #services article { background-color: #202123; }
     html.dark #services article::after { background: #303133; color: #78787e; }
