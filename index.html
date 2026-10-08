@@ -3011,11 +3011,23 @@
           computeTarget();                                           // where the finger has put him, not where the easing has got to
           offRopes = targetY + dragOffY + A.hangY * Hn > endB;
         }
+        /* AND THE MIRROR (the owner, the same night: "the same logic from the top down"). At the top
+           of the page he can be dragged on up (dragOffY < 0); once his descender is above BOTH
+           anchor hinges in the mark - he has been pulled up past where the ropes hang from - letting
+           go flings the page all the way down and he rides it to the footer. The hinges, not the
+           knots: the carabiners turn up after him when he goes above them, so the knots move with
+           the drag and would make a wandering line. */
+        var offTop = false;
+        if (dragOffY < 0) {
+          computeTarget();
+          var HnT = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
+          offTop = targetY + dragOffY + A.hangY * HnT < Math.min(pivotWork.y, pivotBack.y);
+        }
         dragOffY = 0;                                                // and from past the page's ends, he comes back in
-        if (offRopes) {
+        if (offRopes || offTop) {
           stopThumb();
           document.documentElement.style.scrollBehavior = "";
-          window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+          window.scrollTo({ top: offRopes ? 0 : realMaxScroll(), behavior: reduce ? "auto" : "smooth" });
         }
         run();
         document.body.classList.remove("climber-grabbing");
