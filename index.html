@@ -1079,6 +1079,10 @@
     @media (max-width: 1023px) {
       html.dark #about { background: #202123; box-shadow: 0 -12px 28px rgba(0,0,0,.55); }
     }
+    /* About's paragraphs in the DARK theme: clear white, not the muted grey every other body text
+       uses there (the owner, 2026-10-09: it is the company's own statement and has to read
+       proud, not "a frightened mouse's colour"). The light theme keeps its dark ink. */
+    html.dark #aboutBody p { color: #ffffff; }
     /* (2026-10-09: a photo behind / under the single-column About was tried four ways - washed
        out behind the text, lighter, a clear band under it with "2.jpg", then "cool.jpg" - and the
        owner had it taken out again: plain band, the theme's normal text. Do not bring it back
