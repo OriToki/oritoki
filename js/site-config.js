@@ -14,7 +14,7 @@
 
    PHONE
      Write it the way you want visitors to SEE it, with spaces:
-         phone: "+995 571 25 35 30",
+         phone: "+995 598 42 80 22",
      The "call" link and the WhatsApp link are built from it
      automatically — you do NOT write the number a second time.
 
@@ -30,7 +30,7 @@
 
 var siteInfo = {
 
-  phone: "+995 571 25 35 30",
+  phone: "+995 598 42 80 22",
 
   email: "info@oritoki.ge",
 

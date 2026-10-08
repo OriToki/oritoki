@@ -58,7 +58,7 @@ Open **`js/site-config.js`** — everything lives in that one file:
 
 ```js
 var siteInfo = {
-  phone: "+995 571 25 35 30",
+  phone: "+995 598 42 80 22",
   email: "info@oritoki.ge",
   address: {
     en: "Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia",
@@ -174,7 +174,7 @@ loaded automatically from the internet (so keep the computer online when viewing
 გახსენი `js/site-config.js` — ყველაფერი იქაა:
 
 ```js
-phone: "+995 571 25 35 30",
+phone: "+995 598 42 80 22",
 email: "info@oritoki.ge",
 ```
 
