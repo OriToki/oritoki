@@ -956,6 +956,14 @@
        No pulse on opening, on purpose. The pulse (svcFlash, further up) belongs to arriving from
        the header's dropdown, where the page jumps and the card has to be pointed at; a card you
        clicked yourself needs no pointing at. */
+    /* The cards' minimum width grows with the big-screen factor --k, like the text in them. The
+       markup's minmax(260px, 1fr) is in px, so on a big screen (--k 1.5-1.9) the type grew and the
+       cards did not: 6-8 narrow columns, titles running out of their cards (the owner's
+       screenshot, 2026-10-09). At --k 1 this is exactly the markup's value. Phones set their own
+       two columns further up and are left alone. */
+    @media (min-width: 641px) {
+      #svcGrid { grid-template-columns: repeat(auto-fill, minmax(calc(260px * var(--k, 1)), 1fr)); }
+    }
     #svcGrid { row-gap: 0; }
     #svcGrid > article { margin-bottom: 1rem; }
     #services .svc-strip {
