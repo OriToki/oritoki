@@ -2998,7 +2998,25 @@
         dragging = false;
         if (e && (Math.abs(e.clientX - dragStartClientX) > 6 || Math.abs(e.clientY - dragStartClientY) > 6)) swallowClickUntil = Date.now() + 400;
         targetSway = 0; swayVel = 0;                                 // let go: gravity swings him back
+        /* PULLED OFF THE ROPES -> BACK TO THE TOP (the owner's video, 2026-10-08). At the end of the
+           page he can be dragged on down (dragOffY); once his descender is past the lower rope's
+           end - he has slid off both ropes and their knots - letting go flings the page all the way
+           up, and he rides it back to the header (loop() eases him after the scroll, and the
+           scroll's speed swings him). Let go before that point and he just drops back into place. */
+        var offRopes = false;
+        if (dragOffY > 0) {
+          var docH = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
+          var endB = docH - footLift - A.ropeEndGapBackup * K() - (window.scrollY || 0);   // the lower rope end, on screen
+          var Hn = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
+          computeTarget();                                           // where the finger has put him, not where the easing has got to
+          offRopes = targetY + dragOffY + A.hangY * Hn > endB;
+        }
         dragOffY = 0;                                                // and from past the page's ends, he comes back in
+        if (offRopes) {
+          stopThumb();
+          document.documentElement.style.scrollBehavior = "";
+          window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+        }
         run();
         document.body.classList.remove("climber-grabbing");
         document.documentElement.style.scrollBehavior = "";          // restore smooth scrolling
