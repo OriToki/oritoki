@@ -1023,6 +1023,44 @@
     #services .svc-strip-box.svc-photo h3 { color: #ffffff; }
     #services .svc-strip-box.svc-photo p, #services .svc-strip-box.svc-photo li { color: rgba(255,255,255,.92); }
 
+    /* Clicking the opened box lifts a copy of it into the middle of the screen, larger, over a
+       blurred page (the owner's idea, 2026-10-09). The copy is laid out at its FINAL size — big
+       type, real reflow — and only the way there is a transform (FLIP), so the text is sharp the
+       moment it lands instead of being a magnified bitmap. It lives on <body>, outside #services,
+       so the rules above do not reach it and the few that matter are repeated here. */
+    #services .svc-strip-box { cursor: zoom-in; }
+    .svc-zoom-layer { position: fixed; inset: 0; z-index: 190; }
+    .svc-zoom-back {
+      position: absolute; inset: 0; cursor: zoom-out;
+      background: rgba(6,8,16,.42);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      opacity: 0; transition: opacity .32s ease;
+    }
+    .svc-zoom-layer.svc-z-in .svc-zoom-back { opacity: 1; }
+    .svc-zoom {
+      position: absolute; margin: 0; cursor: zoom-out;
+      width: max-content; max-width: min(calc(100vw - 2rem), 46rem);
+      max-height: calc(100vh - 2rem); overflow: auto; overscroll-behavior: contain;
+      padding: 1.9rem 2.4rem 2.2rem; border-radius: 1.25rem;
+      border: 1px solid #f97316; background: rgb(var(--c-surface));
+      box-shadow: 0 40px 90px -30px rgba(0,0,0,.85);
+      transform-origin: 0 0;
+      transition: transform .34s cubic-bezier(.2,.85,.25,1);
+      will-change: transform;
+    }
+    .svc-zoom.svc-photo {
+      background-position: center; background-size: cover; background-repeat: no-repeat;
+      border-color: rgba(255,255,255,.4);
+    }
+    .svc-zoom > ul { display: block; margin: 0; font-size: 1.32rem; line-height: 1.5; }
+    .svc-zoom > ul > li + li { margin-top: .7rem; }
+    .svc-zoom > ul li > span:first-child { margin-top: .62rem; height: .45rem; width: .45rem; }
+    .svc-zoom.svc-photo li { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.65); }
+    @media (max-width: 640px) {
+      .svc-zoom { padding: 1.4rem 1.5rem 1.6rem; }
+      .svc-zoom > ul { font-size: 1.12rem; }
+    }
+
     /* ===================== CARABINER THEME TOGGLE ===================== */
     /* The gate pivots on its rivet (16.31, 16 in the icon's viewBox). Closed sits at 3.4deg
        because the frame's gate side leans by that much, so "shut" means flush with the
@@ -3373,6 +3411,7 @@
         var bg = card.getAttribute("data-bg");
         if (bg) {
           box.classList.add("svc-photo");
+          box.setAttribute("data-bg", bg);               // zoom() paints the same photograph
           /* Lightest where the heading sits and deepest in the far corner: the text stays
              legible over whatever the photograph turns out to be, and the far corner — which is
              where a real site photograph keeps its street, its parked cars and other people's
@@ -3428,6 +3467,7 @@
          before the new one measures where its row ends. */
       function close(instant) {
         if (!current) return;
+        unzoom(true);
         var card = current, st = strip;
         current = null; strip = null;
         card.setAttribute("aria-expanded", "false");
@@ -3445,6 +3485,85 @@
         }, GROW + 20);
       }
 
+      /* ---- Clicking the opened box: the same box, large, in the middle of the screen ----
+         FLIP: the copy is built at its final size and place, then started off with a transform
+         that sits it exactly over the box it came from, and the transform is let go. Going back
+         is the same transform re-applied against wherever the box stands NOW (the page may have
+         been scrolled under the blur). The box itself is hidden while its copy is up, so there is
+         only ever one of it on screen. */
+      var zLayer = null, zCard = null, zSrc = null;
+      var ZOOM = 340;                                    // must match .svc-zoom's transition
+
+      function flipTo(z, r) {
+        var x = parseFloat(z.style.left), y = parseFloat(z.style.top);
+        z.style.transform = "translate(" + (r.left - x) + "px," + (r.top - y) + "px) scale(" +
+          (r.width / z.offsetWidth) + "," + (r.height / z.offsetHeight) + ")";
+      }
+
+      function zoom(box) {
+        if (zLayer) return;
+        var layer = document.createElement("div");
+        layer.className = "svc-zoom-layer";
+        var back = document.createElement("div");
+        back.className = "svc-zoom-back";
+        var z = document.createElement("div");
+        z.className = "svc-zoom";
+        var bg = box.getAttribute("data-bg");
+        if (bg) {
+          z.classList.add("svc-photo");
+          /* Lighter than the box's own veil: the point of the large view is to SEE the photograph,
+             and the type is big enough now to hold its own with a shadow under it. */
+          z.style.backgroundImage =
+            "linear-gradient(155deg, rgba(6,8,16,.28) 0%, rgba(6,8,16,.5) 55%, rgba(6,8,16,.78) 100%)," +
+            " url('" + bg + "')";
+        }
+        var ul = box.querySelector("ul");
+        if (ul) {
+          ul = ul.cloneNode(true);
+          ul.className = "text-mute";                    // Tailwind's spacing/size would outrank .svc-zoom
+          z.appendChild(ul);
+        }
+        layer.appendChild(back);
+        layer.appendChild(z);
+        document.body.appendChild(layer);
+
+        var x = Math.max(0, Math.round((layer.clientWidth - z.offsetWidth) / 2));
+        var y = Math.max(0, Math.round((layer.clientHeight - z.offsetHeight) / 2));
+        z.style.left = x + "px";
+        z.style.top = y + "px";
+        z.style.transition = "none";
+        flipTo(z, box.getBoundingClientRect());
+        z.getBoundingClientRect();
+        z.style.transition = "";
+        z.style.transform = "none";
+        layer.classList.add("svc-z-in");
+        box.style.visibility = "hidden";
+
+        layer.addEventListener("click", function () { unzoom(); });
+        /* The page under the blur stays put unless the large box itself has more to scroll. */
+        layer.addEventListener("wheel", function (e) {
+          if (z.scrollHeight <= z.clientHeight || !z.contains(e.target)) e.preventDefault();
+        }, { passive: false });
+        layer.addEventListener("touchmove", function (e) {
+          if (z.scrollHeight <= z.clientHeight || !z.contains(e.target)) e.preventDefault();
+        }, { passive: false });
+        zLayer = layer; zCard = z; zSrc = box;
+      }
+
+      function unzoom(instant) {
+        if (!zLayer) return;
+        var layer = zLayer, z = zCard, src = zSrc;
+        zLayer = zCard = zSrc = null;
+        function done() {
+          src.style.visibility = "";
+          if (layer.parentNode) layer.parentNode.removeChild(layer);
+        }
+        if (instant === true) { done(); return; }
+        flipTo(z, src.getBoundingClientRect());
+        layer.classList.remove("svc-z-in");
+        window.setTimeout(done, ZOOM);
+      }
+
       cards.forEach(function (card) {
         card.setAttribute("tabindex", "0");
         card.setAttribute("role", "button");
@@ -3459,13 +3578,21 @@
           }
         });
       });
-      document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
-      /* One click anywhere shuts it — on the strip itself as much as off it. This runs after the
+      document.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape") return;
+        if (zLayer) unzoom(); else close();              // Escape steps back one level at a time
+      });
+      /* One click anywhere else shuts it (a click ON the strip enlarges it). This runs after the
          card's own handler, so opening a second card is safe: by the time this fires, `current`
          is already the new card, and a click inside it must not close what it just opened. */
       document.addEventListener("click", function (e) {
         if (!current) return;
         if (current.contains(e.target)) return;          // the card's own handler decided
+        /* A click on the opened box enlarges it, and a click on the enlarged view puts it back;
+           neither shuts the strip. */
+        var t = e.target.closest ? e.target : e.target.parentNode;
+        if (t && t.closest(".svc-zoom-layer")) return;
+        if (t && t.closest(".svc-strip-box")) { if (strip && strip.contains(t)) zoom(strip.firstChild); return; }
         close();
       });
       /* Which row the strip sits after, and how far in its box stands, are both measured at the
