@@ -3,10 +3,10 @@
   =====================================================================
    ORITOKI — შემოგვიერთდი / Join Our Network (Talent Pool application)
   ---------------------------------------------------------------------
-   This page saves applications to a Supabase table + storage bucket.
-   SETUP (once): create a free project at https://supabase.com, run the
-   SQL in  supabase-setup.sql , then paste your project URL + anon key
-   into SUPABASE_URL / SUPABASE_ANON_KEY in the script at the bottom.
+   An application is NOT stored anywhere: it is posted to /api/apply
+   (functions/api/apply.js), which e-mails it — every field plus the
+   certificate as an attachment — to the owner's mailbox and nothing else.
+   Setup is in that file and in worker/oritoki-mailer.js.
   =====================================================================
 -->
 <html lang="ka">
@@ -55,7 +55,7 @@
       darkMode: 'class',
       theme: { extend: {
         colors: { night:"rgb(var(--c-night) / <alpha-value>)", panel:"rgb(var(--c-panel) / <alpha-value>)", deep:"rgb(var(--c-deep) / <alpha-value>)", surface:"rgb(var(--c-surface) / <alpha-value>)", line:"rgb(var(--c-line) / <alpha-value>)", light:"rgb(var(--c-light) / <alpha-value>)", mute:"rgb(var(--c-mute) / <alpha-value>)", accent:"#f97316", info:"#ca8a04" },
-        fontFamily: { display:['"Helvetica Neue"','"Noto Sans Georgian"','Arial','sans-serif'], body:['"Helvetica Neue"','"Noto Sans Georgian"','Arial','sans-serif'] },
+        fontFamily: { display:['"FiraGO"','"Noto Sans Georgian"','Arial','sans-serif'], body:['"FiraGO"','"Noto Sans Georgian"','Arial','sans-serif'] },
         fontWeight: { 500:"500",600:"600",700:"700",800:"800",900:"900" },
       } },
     };
@@ -72,14 +72,12 @@
     })();
   </script>
 
-  <!-- Supabase JS client (no build step needed) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    @font-face { font-family:'Helvetica Neue'; src:url('fonts/HelveticaNeue-Roman.otf')  format('opentype'); font-weight:400;     font-style:normal; font-display:swap; }
-    @font-face { font-family:'Helvetica Neue'; src:url('fonts/HelveticaNeue-Medium.otf') format('opentype'); font-weight:500 600; font-style:normal; font-display:swap; }
-    @font-face { font-family:'Helvetica Neue'; src:url('fonts/HelveticaNeue-Bold.otf')   format('opentype'); font-weight:700;     font-style:normal; font-display:swap; }
-    @font-face { font-family:'Helvetica Neue'; src:url('fonts/HelveticaNeue-Black.otf')  format('opentype'); font-weight:800 900; font-style:normal; font-display:swap; }
+    /* FiraGO (OFL, fonts/FiraGO-OFL.txt) — same files and weight grouping as index.html */
+    @font-face { font-family:'FiraGO'; src:url('fonts/FiraGO-Regular.woff2') format('woff2'); font-weight:400;     font-style:normal; font-display:swap; }
+    @font-face { font-family:'FiraGO'; src:url('fonts/FiraGO-Medium.woff2')  format('woff2'); font-weight:500 600; font-style:normal; font-display:swap; }
+    @font-face { font-family:'FiraGO'; src:url('fonts/FiraGO-Bold.woff2')    format('woff2'); font-weight:700;     font-style:normal; font-display:swap; }
+    @font-face { font-family:'FiraGO'; src:url('fonts/FiraGO-Heavy.woff2')   format('woff2'); font-weight:800 900; font-style:normal; font-display:swap; }
 
     /* Theme tokens — light default, overridden under html.dark (channel format for /opacity). */
     :root {
@@ -93,7 +91,7 @@
       color-scheme:dark;
     }
     html { scroll-behavior:smooth; background-color:rgb(var(--c-surface)); }
-    body { font-family:'Helvetica Neue','Noto Sans Georgian',Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+    body { font-family:'FiraGO','Noto Sans Georgian',Arial,sans-serif; -webkit-font-smoothing:antialiased; }
     .lang-active { background:#f97316; color:#fff; }
 
     /* Form controls */
@@ -529,7 +527,7 @@
         <div id="certOther" class="hidden mt-3"><input class="inp" type="text" name="cert_other" placeholder="..." data-ka-placeholder="მიუთითეთ სხვა სერტიფიკატი" /></div>
         <div class="mt-6">
           <label class="lbl" data-ka="სერტიფიკატის ატვირთვა">Upload certificate</label>
-          <p class="mb-2 text-sm text-mute" data-ka="PDF / JPG / PNG — მაქსიმუმ 10 MB">PDF / JPG / PNG — max 10 MB</p>
+          <p class="mb-2 text-sm text-mute" data-ka="PDF / JPG / PNG — მაქსიმუმ 3 MB (ფოტო ავტომატურად დაპატარავდება)">PDF / JPG / PNG — max 3 MB (photos are reduced automatically)</p>
           <input class="inp text-sm text-mute file:mr-4 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-600 file:text-white file:cursor-pointer hover:file:bg-accent/90" type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" />
         </div>
       </div>
@@ -577,6 +575,12 @@
         <textarea class="inp mt-4" name="notes" rows="4" placeholder="..." data-ka-placeholder="მოკლედ დაწერეთ თქვენ შესახებ (არასავალდებულო)"></textarea>
       </div>
 
+      <!-- Honeypot: off-screen, so people never fill it; spam bots fill every field and are
+           quietly dropped by functions/api/apply.js. -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+        <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
       <!-- Submit + status -->
       <div class="sec">
         <div id="formStatus" class="hidden mb-4 rounded-xl px-4 py-3 text-sm"></div>
@@ -616,6 +620,8 @@
   </footer>
 
   <!-- =========================== SCRIPT =========================== -->
+  <!-- The phone number offered when sending fails -->
+  <script src="js/site-config.js"></script>
   <script>
   (function () {
     "use strict";
@@ -686,16 +692,9 @@
     var y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear();
     document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("in"); });
 
-    /* ---------- Supabase ---------- */
-    // 1) create a project at https://supabase.com  2) run supabase-setup.sql
-    // 3) paste your values below (Project Settings → API):
-    var SUPABASE_URL = "YOUR_SUPABASE_URL";
-    var SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
-    var sb = null;
-    if (window.supabase && /^https?:\/\//.test(SUPABASE_URL) && SUPABASE_ANON_KEY.length > 20) {
-      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-
+    /* ---------- Sending ----------
+       The application goes to /api/apply (functions/api/apply.js), which e-mails it to the owner.
+       Nothing is stored anywhere. */
     var form = document.getElementById("joinForm");
     var statusBox = document.getElementById("formStatus");
     var btn = document.getElementById("submitBtn");
@@ -707,16 +706,46 @@
       statusBox.textContent = msg;
       statusBox.classList.remove("hidden");
     }
-    function checkedValues(name) {
-      return Array.prototype.map.call(form.querySelectorAll('input[name="' + name + '"]:checked'), function (i) { return i.value; });
+    function isKa() { return document.documentElement.lang === "ka"; }
+    function resetButton() {
+      btn.disabled = false;
+      document.getElementById("submitIcon").className = "fa-solid fa-paper-plane";
     }
-    function withOther(arr, cbValue, otherName) {
-      var out = arr.filter(function (v) { return v !== "__other__"; });
-      if (arr.indexOf("__other__") !== -1) {
-        var t = form.querySelector('[name="' + otherName + '"]');
-        if (t && t.value.trim()) out.push(t.value.trim());
-      }
-      return out;
+    // When sending fails, a visitor must still have a way to reach us: the number comes from
+    // js/site-config.js like everywhere else on the site.
+    function callUs() {
+      var ph = (window.siteInfo && siteInfo.phone) || "+995 571 25 35 30";
+      return isKa() ? " გთხოვთ, დაგვირეკოთ ან მოგვწეროთ WhatsApp-ზე: " + ph : " Please call us or message us on WhatsApp: " + ph;
+    }
+
+    /* One e-mail may carry at most 5 MiB, attachment included, so the certificate has to stay
+       near 3 MB. A phone photo of one is often 4-8 MB: anything that is a photo and over 1.5 MB is
+       redrawn at most 2400 px on its long side as a JPEG, which keeps a certificate legible at a
+       fraction of the size. A PDF cannot be shrunk here and simply has to fit. */
+    var MAX_FILE = 3.4 * 1024 * 1024;
+    function shrinkPhoto(file) {
+      return new Promise(function (resolve) {
+        if (!/^image\/(jpeg|png)$/.test(file.type) || file.size <= 1.5 * 1024 * 1024) return resolve(file);
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function () {
+          var k = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight));
+          var c = document.createElement("canvas");
+          c.width = Math.round(img.naturalWidth * k);
+          c.height = Math.round(img.naturalHeight * k);
+          var g = c.getContext("2d");
+          g.fillStyle = "#fff";                      // a transparent PNG would turn black as JPEG
+          g.fillRect(0, 0, c.width, c.height);
+          g.drawImage(img, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url);
+          c.toBlob(function (blob) {
+            if (!blob || blob.size >= file.size) return resolve(file);
+            resolve(new File([blob], file.name.replace(/\.[^.]*$/, "") + ".jpg", { type: "image/jpeg" }));
+          }, "image/jpeg", 0.85);
+        };
+        img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+        img.src = url;
+      });
     }
 
     form.addEventListener("submit", function (e) {
@@ -729,50 +758,29 @@
          at the button with no asterisk anywhere to explain why. */
       if (!form.reportValidity()) return;
 
-      /* Not a required field — a limit on what the storage bucket will take, and it only
-         applies to a file that was actually chosen. */
-      var certFile = form.querySelector('input[name="certificate"]').files[0];
-      if (certFile && certFile.size > 10 * 1024 * 1024) { setStatus("error", document.documentElement.lang === "ka" ? "სერტიფიკატის ფაილი 10 MB-ს აღემატება." : "The certificate file exceeds 10 MB."); return; }
-
-      var payload = {
-        first_name: form.first_name.value.trim(),
-        last_name:  form.last_name.value.trim(),
-        phone:      (form.phone_code.value + " " + form.phone.value.trim()).trim(),
-        /* Optional now, so an unfilled box is recorded as nothing rather than as an empty
-           string — the column is nullable in supabase-setup.sql to match. */
-        email:      form.email.value.trim() || null,
-        city:       form.city.value.trim(),
-        country:    form.country.value.trim(),
-        certifications:   withOther(checkedValues("certifications"), "__other__", "cert_other"),
-        rope_level:       form.rope_level.value || null,
-        languages:        withOther(checkedValues("languages"), "__other__", "lang_other"),
-        own_ppe:          (form.querySelector('input[name="own_ppe"]:checked') || {}).value || null,
-        notes:            form.notes.value.trim() || null
-      };
-
-      if (!sb) {
-        setStatus("info", document.documentElement.lang === "ka"
-          ? "ფორმა ჯერ არ არის ბაზასთან დაკავშირებული (Supabase გასაღებები საჭიროა). იხ. supabase-setup.sql."
-          : "The form is not connected to the database yet (Supabase keys required). See supabase-setup.sql.");
-        return;
-      }
-
       btn.disabled = true;
       document.getElementById("submitIcon").className = "fa-solid fa-spinner fa-spin";
 
       (async function () {
         try {
-          var certificate_url = null;
+          /* The form as it stands — every field by its own name; functions/api/apply.js reads
+             them the same way. Only the certificate is swapped for its shrunk copy. */
+          var fd = new FormData(form);
+          fd.append("lang", isKa() ? "ka" : "en");
+          var certFile = form.querySelector('input[name="certificate"]').files[0];
           if (certFile) {
-            var safe = certFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-            var path = Date.now() + "_" + Math.random().toString(36).slice(2, 8) + "_" + safe;
-            var up = await sb.storage.from("certificates").upload(path, certFile, { cacheControl: "3600", upsert: false });
-            if (up.error) throw up.error;
-            certificate_url = sb.storage.from("certificates").getPublicUrl(path).data.publicUrl;
+            certFile = await shrinkPhoto(certFile);
+            if (certFile.size > MAX_FILE) {
+              setStatus("error", isKa() ? "სერტიფიკატის ფაილი 3 MB-ს აღემატება. ატვირთეთ უფრო პატარა ფაილი ან ფოტო." : "The certificate file is over 3 MB. Please upload a smaller file or a photo.");
+              return resetButton();
+            }
+            fd.set("certificate", certFile, certFile.name);
+          } else {
+            fd.delete("certificate");
           }
-          payload.certificate_url = certificate_url;
-          var ins = await sb.from("specialist_applications").insert([payload]);
-          if (ins.error) throw ins.error;
+          var res = await fetch("/api/apply", { method: "POST", body: fd });
+          var out = await res.json().catch(function () { return {}; });
+          if (!res.ok || !out.ok) throw new Error(out.error || ("HTTP " + res.status));
 
           form.classList.add("hidden");
           var backHome = document.getElementById("backHome");
@@ -780,9 +788,14 @@
           document.getElementById("successScreen").classList.remove("hidden");
           window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (err) {
-          setStatus("error", (document.documentElement.lang === "ka" ? "შეცდომა გაგზავნისას: " : "Error while submitting: ") + (err.message || err));
-          btn.disabled = false;
-          document.getElementById("submitIcon").className = "fa-solid fa-paper-plane";
+          var code = err && err.message;
+          var msg = code === "file_type"
+            ? (isKa() ? "სერტიფიკატი უნდა იყოს PDF, JPG ან PNG ფაილი." : "The certificate must be a PDF, JPG or PNG file.")
+            : code === "file_size"
+            ? (isKa() ? "სერტიფიკატის ფაილი 3 MB-ს აღემატება." : "The certificate file is over 3 MB.")
+            : (isKa() ? "განაცხადის გაგზავნა ვერ მოხერხდა." : "The application could not be sent.") + callUs();
+          setStatus("error", msg);
+          resetButton();
         }
       })();
     });

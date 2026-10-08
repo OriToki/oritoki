@@ -41,6 +41,27 @@ its theme tokens (`--c-night`, `--c-surface`, `--c-line`, …), its language swi
 service modals and the whole rope-climber system. `join.html` does the same for its own form.
 The only shared files they load are `js/analytics.js`, `js/images.js` and `js/site-config.js`.
 
+**The Join form e-mails; it stores nothing (2026-10-09, the owner's rule).** Every application
+must arrive in his mailbox and **nowhere else** — no database, no bucket, no third-party form
+service (Supabase was planned and removed; Web3Forms' free plan has no attachments anyway).
+`join.html` posts the form as-is to `/api/apply` = `functions/api/apply.js`, a Pages Function that
+validates it, sniffs the certificate's first bytes (PDF/JPEG/PNG only, ≤ 3.5 MB — one message is
+capped at 5 MiB and base64 adds a third), drops honeypot hits (`website` field), and builds the
+whole MIME message with Georgian labels. Pages Functions cannot hold a `send_email` binding, so it
+hands the message to a separate Worker, `worker/oritoki-mailer.js`, through the service binding
+**MAILER**; that Worker adds From/To and sends to the owner's verified address. The address lives
+only in the Worker's dashboard settings, never in this public repo. The Worker is **deployed by
+hand in the dashboard — a push does not update it.** `join.html` shrinks photos over 1.5 MB to
+2400 px JPEG before sending; a failed send shows the phone number from `js/site-config.js`.
+`apply.js` was tested in headless Chrome against a mock MAILER (all cases incl. honeypot, bad
+type, oversize); the real send is untested until the domain is on Cloudflare.
+
+**The font is FiraGO (OFL), self-hosted as woff2 in `fonts/`.** It replaced a Helvetica Neue whose
+files said "property of Linotype… All Rights Reserved" with a third-party Cyrillic added — not
+licensable for the web. Those `.otf` files were deleted but remain in the public repo's git
+history. FiraGO is wider: the hero headline wraps to three lines where Helvetica made two; the
+size was left alone — shrink it only if the owner asks.
+
 **`css/style.css` and `js/main.js` are NOT loaded by either page.** They are leftovers from an
 earlier version; `README.md` still points at them in places. Do not edit them expecting a change on
 the site — and do not delete them without checking `README.md` in the same pass.
@@ -328,12 +349,12 @@ Verified against the files, not from memory — re-check before quoting:
 
 1. **Tailwind Play CDN** (`cdn.tailwindcss.com`) is used by both pages. It is a dev-only tool that
    ships ~400 KB of JS and generates the CSS in the browser on every visit.
-2. **Supabase keys** in `join.html` are still `YOUR_SUPABASE_URL` / `YOUR_SUPABASE_ANON_KEY`, so the
-   application form saves nothing. `supabase-setup.sql` is ready in the repo.
+2. **The Join form's mailer is not wired up yet.** `/api/apply` answers 503 until the
+   `oritoki-mailer` Worker exists and is bound as MAILER (see "The Join form e-mails" above). Needs
+   oritoki.ge on Cloudflare DNS with Email Routing first.
 3. **Google Analytics** — `js/analytics.js` still holds `G-XXXXXXXXXX` and stays inert until a real
    GA4 ID is pasted in.
-4. **`emblem.png` is 504 KB** and `join.html` shows it 36 px tall — worth shrinking.
-5. `404.html` exists and works as-is on Netlify / Cloudflare Pages. On Apache (cPanel) it needs
+4. `404.html` exists and works as-is on Netlify / Cloudflare Pages. On Apache (cPanel) it needs
    `ErrorDocument 404 /404.html` in an `.htaccess`.
 
 Done and not to be redone: Open Graph / Twitter tags and `<link rel="canonical">` on both pages

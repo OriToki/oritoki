@@ -87,8 +87,8 @@
             info:    "#ca8a04",
           },
           fontFamily: {
-            display: ['"Helvetica Neue"', '"Noto Sans Georgian"', 'Arial', 'sans-serif'],
-            body:    ['"Helvetica Neue"', '"Noto Sans Georgian"', 'Arial', 'sans-serif'],
+            display: ['"FiraGO"', '"Noto Sans Georgian"', 'Arial', 'sans-serif'],
+            body:    ['"FiraGO"', '"Noto Sans Georgian"', 'Arial', 'sans-serif'],
           },
           fontWeight: {
             500: "500",
@@ -152,11 +152,14 @@
   </script>
 
   <style>
-    /* Local Helvetica Neue (has Georgian glyphs) — self-hosted from /fonts */
-    @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Roman.otf')  format('opentype'); font-weight: 400;     font-style: normal; font-display: swap; }
-    @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Medium.otf') format('opentype'); font-weight: 500 600; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Bold.otf')   format('opentype'); font-weight: 700;     font-style: normal; font-display: swap; }
-    @font-face { font-family: 'Helvetica Neue'; src: url('fonts/HelveticaNeue-Black.otf')  format('opentype'); font-weight: 800 900; font-style: normal; font-display: swap; }
+    /* FiraGO (SIL Open Font License, fonts/FiraGO-OFL.txt) — Latin and Georgian, Mtavruli
+       included, self-hosted from /fonts. It replaced a Helvetica Neue whose files carried
+       Linotype's "All Rights Reserved" and could not be licensed for the web (2026-10-09).
+       Same four-file weight grouping the Helvetica had. */
+    @font-face { font-family: 'FiraGO'; src: url('fonts/FiraGO-Regular.woff2') format('woff2'); font-weight: 400;     font-style: normal; font-display: swap; }
+    @font-face { font-family: 'FiraGO'; src: url('fonts/FiraGO-Medium.woff2')  format('woff2'); font-weight: 500 600; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'FiraGO'; src: url('fonts/FiraGO-Bold.woff2')    format('woff2'); font-weight: 700;     font-style: normal; font-display: swap; }
+    @font-face { font-family: 'FiraGO'; src: url('fonts/FiraGO-Heavy.woff2')   format('woff2'); font-weight: 800 900; font-style: normal; font-display: swap; }
 
     /* Theme tokens — light by default, overridden under html.dark. Channel format
        (R G B) so Tailwind's /opacity modifiers keep working on these colours. */
@@ -180,7 +183,7 @@
     }
 
     html { scroll-behavior: smooth; background-color: rgb(var(--c-surface)); }
-    body { font-family: 'Helvetica Neue', 'Noto Sans Georgian', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'FiraGO', 'Noto Sans Georgian', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
     section[id] { scroll-margin-top: 7.5rem; }
 
     /* Only the header background/shadow react to scroll */
