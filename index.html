@@ -2797,7 +2797,7 @@
          stop there - below the header at the top. dragOffY carries him on, in screen px, on top of
          where the scroll puts him; it is 0 everywhere in between, and back to 0 when he is let go
          (loop() then eases him home). dragStartY is his y when grabbed. */
-      var dragOffY = 0, dragStartY = 0;
+      var dragOffY = 0, dragStartY = 0, dragYd = 0;
       /* Finger drags: the page eases to where the finger puts it, 35% of the way a frame, and
          finishes the last stretch after the finger lifts. */
       /* It must ALWAYS stop. The first version kept going until the page reached the goal, and on a
@@ -2943,7 +2943,7 @@
         dragStartClientY = e.clientY;
         dragStartClientX = e.clientX;
         dragStartSway = currentSway;
-        dragStartY = currentY; dragOffY = 0;
+        dragStartY = currentY; dragOffY = 0; dragYd = currentY;
         dragStartScroll = window.scrollY || window.pageYOffset || 0;
         document.body.classList.add("climber-grabbing");
         document.documentElement.style.scrollBehavior = "auto";      // instant while dragging (page scrolls smooth otherwise)
@@ -2965,6 +2965,7 @@
         var yd = dragStartY + (e.clientY - dragStartClientY);
         yd = edgePush(yd, e.clientY, dragStartClientY, 0, dragStartY - dragStartClientY, -Hn * 1.15 - 8);
         yd = edgePush(yd, e.clientY, dragStartClientY, vh, dragStartY + (vh - dragStartClientY), vh + Hn * 0.15 + 8);
+        dragYd = yd;                                                 // endDrag judges "all the way out" by this
         var b = trackBounds(), range = b.bottom - b.top0, ms = maxScroll();
         if (!(range > 0 && ms > 0)) { dragOffY = yd - targetY; currentY = targetY + dragOffY; }
         /* He is the scrollbar THUMB for a mouse AND a finger: drag him down and he goes down (the
@@ -3003,25 +3004,22 @@
            end - he has slid off both ropes and their knots - letting go flings the page all the way
            up, and he rides it back to the header (loop() eases him after the scroll, and the
            scroll's speed swings him). Let go before that point and he just drops back into place. */
-        var offRopes = false;
-        if (dragOffY > 0) {
-          var docH = Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0);
-          var endB = docH - footLift - A.ropeEndGapBackup * K() - (window.scrollY || 0);   // the lower rope end, on screen
-          var Hn = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
+        /* AND THE MIRROR (the owner, the same night: "the same logic from the top down"): at the top
+           of the page he can be dragged on up (dragOffY < 0), and letting go there flings the page
+           all the way down; he rides it to the footer.
+           BOTH ONLY FROM ALL THE WAY OUT (2026-10-09, the owner: visitors set it off by accident).
+           The first trigger was his descender passing the rope ends / the anchor hinges, a pull of
+           some 60px that a careless swipe makes. Now the whole figure has to be OFF THE SCREEN -
+           his top below the bottom edge, or his feet above the top edge - which edgePush only
+           allows with the finger right at that edge, i.e. dragged as far as he goes. A pointercancel
+           (the system taking the touch) never flings. */
+        var offRopes = false, offTop = false;
+        if (dragOffY !== 0 && !(e && e.type === "pointercancel")) {
           computeTarget();                                           // where the finger has put him, not where the easing has got to
-          offRopes = targetY + dragOffY + A.hangY * Hn > endB;
-        }
-        /* AND THE MIRROR (the owner, the same night: "the same logic from the top down"). At the top
-           of the page he can be dragged on up (dragOffY < 0); once his descender is above BOTH
-           anchor hinges in the mark - he has been pulled up past where the ropes hang from - letting
-           go flings the page all the way down and he rides it to the footer. The hinges, not the
-           knots: the carabiners turn up after him when he goes above them, so the knots move with
-           the drag and would make a wandering line. */
-        var offTop = false;
-        if (dragOffY < 0) {
-          computeTarget();
-          var HnT = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
-          offTop = targetY + dragOffY + A.hangY * HnT < Math.min(pivotWork.y, pivotBack.y);
+          var Hn = climber.offsetHeight || (climber.offsetWidth || 97) * 1.225;
+          var yTop = dragYd;                                         // his top where the finger has put him (pointermove)
+          if (dragOffY > 0) offRopes = yTop >= window.innerHeight;   // all of him below the screen
+          else offTop = yTop + Hn <= 0;                              // all of him above it
         }
         dragOffY = 0;                                                // and from past the page's ends, he comes back in
         if (offRopes || offTop) {
