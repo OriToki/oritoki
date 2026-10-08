@@ -111,6 +111,26 @@
         if (t === "dark") document.documentElement.classList.add("dark");
       } catch (e) {}
     })();
+    /* A RELOAD STARTS AT THE TOP (2026-10-09, the owner: after a pull-to-refresh on the phone the
+       page scrolled itself down to "What we do"). Any in-page link - the hero's "What we do"
+       button, the menu - leaves its #section in the address, and a reload jumps to it, besides
+       the browser restoring the old scroll position. So on a RELOAD only: drop the #fragment from
+       the address before the page is parsed (nothing to jump to), turn the browser's scroll
+       restoration off, and pin the top once more at load. A link that arrives from elsewhere with
+       a #section (join.html -> index.html#contact) is a navigation, not a reload, and still works. */
+    (function () {
+      try {
+        var nav = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+        var isReload = nav ? nav.type === "reload" : (performance.navigation && performance.navigation.type === 1);
+        if (!isReload) return;
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+        if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+        // "instant": the page's own scroll-behavior is smooth, and this must not visibly glide
+        var top = function () { try { window.scrollTo({ top: 0, left: 0, behavior: "instant" }); } catch (x) { window.scrollTo(0, 0); } };
+        window.addEventListener("DOMContentLoaded", top);
+        window.addEventListener("load", function () { top(); setTimeout(top, 0); });
+      } catch (e) {}
+    })();
     /* BIG SCREENS look like the owner's laptop, only larger (2026-10-07). His laptop shows the
        page 1706 CSS px wide, and that composition is the reference: past it, the WHOLE page grows
        by one factor, --k - text and spacing through the root font size (Tailwind sizes are rem),
