@@ -1071,7 +1071,7 @@
       #about, html.dark #about {
         background-color: #f5f5f2;
         background-image:
-          linear-gradient(to right, rgba(255,255,255,.93) 0%, rgba(255,255,255,.86) 50%, rgba(255,255,255,.70) 100%),
+          linear-gradient(to right, rgba(255,255,255,.80) 0%, rgba(255,255,255,.66) 50%, rgba(255,255,255,.45) 100%),   /* was .93/.86/.70 - "too pale" (the owner) */
           linear-gradient(to bottom, rgba(245,245,242,1) 0%, rgba(245,245,242,0) 9rem),
           url("images/about-mobile.jpg?v=1");
         background-size: auto, auto, cover;
@@ -1080,6 +1080,9 @@
       }
       #about h2, html.dark #about h2 { color: rgb(20 20 42); }
       #about #aboutBody p, html.dark #about #aboutBody p { color: rgb(82 82 91); }
+      /* With the wash lighter (more of the photo through), a soft white halo keeps the letters
+         clear of the blue glass behind them - the ink colours themselves are unchanged. */
+      #about h2, #about #aboutBody p { text-shadow: 0 0 6px rgba(255,255,255,.95), 0 0 14px rgba(255,255,255,.8); }
     }
     /* Service cards — lift them slightly above the section for depth in the dark. */
     html.dark #services article { background-color: #202123; }
