@@ -1039,9 +1039,9 @@
     .svc-zoom-layer.svc-z-in .svc-zoom-back { opacity: 1; }
     .svc-zoom {
       position: absolute; margin: 0; cursor: zoom-out;
-      width: max-content; max-width: min(calc(100vw - 2rem), 46rem);
+      width: max-content; max-width: min(calc(100vw - 2rem), 60rem);
       max-height: calc(100vh - 2rem); overflow: auto; overscroll-behavior: contain;
-      padding: 1.9rem 2.4rem 2.2rem; border-radius: 1.25rem;
+      padding: 2.4rem 3rem 2.7rem; border-radius: 1.4rem;
       border: 1px solid #f97316; background: rgb(var(--c-surface));
       box-shadow: 0 40px 90px -30px rgba(0,0,0,.85);
       transform-origin: 0 0;
@@ -1052,13 +1052,14 @@
       background-position: center; background-size: cover; background-repeat: no-repeat;
       border-color: rgba(255,255,255,.4);
     }
-    .svc-zoom > ul { display: block; margin: 0; font-size: 1.32rem; line-height: 1.5; }
-    .svc-zoom > ul > li + li { margin-top: .7rem; }
-    .svc-zoom > ul li > span:first-child { margin-top: .62rem; height: .45rem; width: .45rem; }
+    .svc-zoom > ul { display: block; margin: 0; font-size: 1.65rem; line-height: 1.5; }
+    .svc-zoom > ul > li + li { margin-top: .85rem; }
+    .svc-zoom > ul li > span:first-child { margin-top: .78rem; height: .55rem; width: .55rem; }
     .svc-zoom.svc-photo li { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.65); }
     @media (max-width: 640px) {
-      .svc-zoom { padding: 1.4rem 1.5rem 1.6rem; }
-      .svc-zoom > ul { font-size: 1.12rem; }
+      .svc-zoom { padding: 1.5rem 1.6rem 1.7rem; }
+      .svc-zoom > ul { font-size: 1.25rem; }
+      .svc-zoom > ul li > span:first-child { margin-top: .6rem; height: .45rem; width: .45rem; }
     }
 
     /* ===================== CARABINER THEME TOGGLE ===================== */
