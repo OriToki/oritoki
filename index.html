@@ -1079,46 +1079,10 @@
     @media (max-width: 1023px) {
       html.dark #about { background: #202123; box-shadow: 0 -12px 28px rgba(0,0,0,.55); }
     }
-    /* PHONES + TABLETS (single-column About, where the photo beside the text is hidden): the TEXT
-       and the PHOTO no longer share the same pixels (2026-10-09). Text under a washed-out photo
-       was tried twice the same day - too pale to see the photo, then too busy to read the text
-       (the owner: "balance it, make it look professional"). On a phone the text fills the width,
-       so any photo behind it fights it. Now:
-         - the text sits on the section's plain light ground, in the light theme's ink;
-         - the photo is a BAND at the foot of the section, under the last line, clear and in
-           full colour, rising out of the ground through a soft fade - the four technicians on
-           the glass, in view.
-       The section stays light in BOTH themes (the owner asked for the dark ink in both).
-       The photo is the owner's "cool.jpg" (saitze asatvirti fotoebi, 2026-10-09 - it replaced a
-       crop of his "2.jpg"): four technicians in a row on the glass, sky on the left. It is
-       images/about-band.jpg, used as supplied (720 x 482, 53 KB), loaded only below 1024px (a
-       background in a media query that does not match is never fetched). The technicians sit at
-       ~55% of its height, so the band is taller than the text's clearance and the fade ends
-       earlier than it did for the crop, to keep them in the clear part. Only 720px wide, so on a
-       sharp phone screen it is somewhat soft. */
-    @media (max-width: 1023px) {
-      #about, html.dark #about { background: #f5f5f2; }
-      #about::after {
-        content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 400px; z-index: 0;
-        pointer-events: none;
-        background:
-          linear-gradient(to bottom, #f5f5f2 0%, rgba(245,245,242,.85) 15%, rgba(245,245,242,0) 42%),
-          url("images/about-band.jpg?v=2") 25% 50% / cover no-repeat;
-      }
-      #about > .max-w-7xl { position: relative; z-index: 1; }
-      #aboutBody { padding-bottom: 290px; }           /* room for the band's clear part under the text */
-      /* Tablets: wider than the photo, so cover scales it by width and it gets taller than the
-         band - pinned to its top, the technicians land in the band's clear lower half. */
-      @media (min-width: 641px) {
-        #about::after { height: 440px;
-          background:
-            linear-gradient(to bottom, #f5f5f2 0%, rgba(245,245,242,.85) 15%, rgba(245,245,242,0) 40%),
-            url("images/about-band.jpg?v=2") 50% 0% / cover no-repeat; }
-        #aboutBody { padding-bottom: 310px; }
-      }
-      #about h2, html.dark #about h2 { color: rgb(20 20 42); }
-      #about #aboutBody p, html.dark #about #aboutBody p { color: rgb(82 82 91); }
-    }
+    /* (2026-10-09: a photo behind / under the single-column About was tried four ways - washed
+       out behind the text, lighter, a clear band under it with "2.jpg", then "cool.jpg" - and the
+       owner had it taken out again: plain band, the theme's normal text. Do not bring it back
+       without asking.) */
     /* Service cards — lift them slightly above the section for depth in the dark. */
     html.dark #services article { background-color: #202123; }
     html.dark #services article::after { background: #303133; color: #78787e; }
