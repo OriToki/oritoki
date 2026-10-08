@@ -53,7 +53,8 @@ var galleryImages = [
   { file: "glass-tower-four.jpg",                                      en: "Four climbers on a glass facade",  ka: "ოთხი ალპინისტი მინის ფასადზე" },
   { file: "rock-slope.jpg",        full: "full/rock-slope.jpg",        en: "Rock & slope protection",          ka: "კლდეები, ფერდობები და გარემო" },
   { file: "chimney-flue.jpg",      full: "full/chimney-flue.jpg",      en: "Chimney & flue installation",      ka: "საკვამურის მონტაჟი" },
-  { file: "highrise-facade.jpg",   full: "full/highrise-facade.jpg",   en: "High-rise facade",                 ka: "მაღალსართულიანი ფასადი" },
+  { file: "cliff-river.jpg",       full: "full/cliff-river.jpg",       en: "Descending a cliff above the river", ka: "დაშვება კლდეზე მდინარის თავზე" },
+  { file: "highrise-facade.jpg",  full: "full/highrise-facade.jpg",   en: "High-rise facade",                 ka: "მაღალსართულიანი ფასადი" },
   { file: "ridge-rigging.jpg",     full: "full/ridge-rigging.jpg",     en: "Rope rigging on a mountain ridge", ka: "თოკის სისტემა მთის ქედზე" },
   { file: "telecom-mast.jpg",      full: "full/telecom-mast.jpg",      en: "Telecom mast works",               ka: "ელექტროობა და ტელეკომუნიკაცია" },
   { file: "glass-tower-team.jpg",  full: "full/glass-tower-team.jpg",  en: "Team cleaning a glass tower",      ka: "გუნდი მინის კოშკის ფასადზე" },
@@ -61,5 +62,6 @@ var galleryImages = [
   { file: "vardzia-monastery.jpg", full: "full/vardzia-monastery.jpg", en: "Rope access at Vardzia monastery", ka: "სამუშაო ვარძიის კლდის ეკლესიაზე" },
   { file: "window-inside-2.jpg",   full: "full/window-inside-2.jpg",   en: "High-rise window cleaning",        ka: "მაღალსართულიანი მინის წმენდა" },
   { file: "structure-work.jpg",    full: "full/structure-work.jpg",    en: "Work on structures",               ka: "კონსტრუქციებზე მუშაობა" },
-  { file: "waterproofing.jpg",     full: "full/waterproofing.jpg",     en: "Waterproofing & sealing",          ka: "ჰიდროიზოლაცია" },
+  { file: "cliff-descent.jpg",     full: "full/cliff-descent.jpg",     en: "Rope descent on a rock face",      ka: "თოკით დაშვება კლდის კედელზე" },
+  { file: "waterproofing.jpg",    full: "full/waterproofing.jpg",     en: "Waterproofing & sealing",          ka: "ჰიდროიზოლაცია" },
 ];
