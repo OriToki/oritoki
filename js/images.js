@@ -50,7 +50,7 @@ var galleryImages = [
   { file: "tower-corner.jpg",      full: "full/tower-corner.jpg",      en: "Tower facade cleaning",            ka: "კოშკის ფასადის წმენდა" },
   { file: "window-inside.jpg",     full: "full/window-inside.jpg",     en: "Window cleaning, city view",       ka: "მინის წმენდა — ქალაქის ხედი" },
   { file: "bridge-clean.jpg",      full: "full/bridge-clean.jpg",      en: "Bridge cleaning",                  ka: "ხიდის წმენდა" },
-  { file: "glass-tower-climbers.jpg", full: "full/glass-tower-climbers.jpg", en: "Climbers on a glass facade", ka: "ალპინისტები მინის ფასადზე" },
+  { file: "glass-tower-below.jpg", full: "full/glass-tower-below.jpg", en: "Four climbers on a glass facade",  ka: "ოთხი ალპინისტი მინის ფასადზე" },
   { file: "rock-slope.jpg",        full: "full/rock-slope.jpg",        en: "Rock & slope protection",          ka: "კლდეები, ფერდობები და გარემო" },
   { file: "chimney-flue.jpg",      full: "full/chimney-flue.jpg",      en: "Chimney & flue installation",      ka: "საკვამურის მონტაჟი" },
   { file: "cliff-river.jpg",       full: "full/cliff-river.jpg",       en: "Descending a cliff above the river", ka: "დაშვება კლდეზე მდინარის თავზე" },
