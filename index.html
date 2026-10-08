@@ -2880,7 +2880,10 @@
              Phones and tablets only (coarse pointer), and not with reduced motion.
              iPhone asks permission for the motion sensor, and only from a tap: we ask the first time
              someone touches HIM, not everyone on arrival. Android needs no permission. ---- */
-      var tiltSway = 0, tiltTarget = 0, tiltOn = false, tiltEnabled = true;
+      /* OFF until asked for (the owner, 2026-10-09): he hangs still when a visitor arrives, and a
+         DOUBLE TAP on him is what turns the tilt swing on (and a second one off again). It used to
+         start on its own the moment the page loaded. */
+      var tiltSway = 0, tiltTarget = 0, tiltOn = false, tiltEnabled = false;
       function onTilt(e) {
         if (e.gamma == null || !tiltEnabled) return;
         var ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
@@ -2916,16 +2919,29 @@
         clearTimeout(tiltNoteT); tiltNoteT = setTimeout(function () { tiltNote.style.opacity = "0"; }, 1400);
       }
       climber.addEventListener("touchstart", function (e) { var t = e.touches[0]; if (t) { tStartX = t.clientX; tStartY = t.clientY; } }, { passive: true });
+      var tiltCapable = window.matchMedia("(pointer: coarse)").matches && !!window.DeviceOrientationEvent && !reduce;
+      var tiltNeedsAsk = typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function";
+      /* Switch the swing on: the sensor is started only now. iPhone asks permission for it, and
+         only from a COMPLETED tap - this runs from the double tap's touchend, which is one. If the
+         visitor says no, it stays off. */
+      function enableTilt() {
+        if (tiltOn) { tiltEnabled = true; run(); noteTilt(); return; }
+        if (tiltNeedsAsk) {
+          DeviceOrientationEvent.requestPermission().then(function (r) {
+            if (r === "granted") { startTilt(); tiltEnabled = true; } else { tiltEnabled = false; }
+            run(); noteTilt();
+          }).catch(function () { tiltEnabled = false; });
+        } else { startTilt(); tiltEnabled = true; run(); noteTilt(); }
+      }
       climber.addEventListener("touchend", function (e) {
-        if (!tiltOn) return;                                   // nothing to switch until the sensor runs
+        if (!tiltCapable) return;
         var t = e.changedTouches[0]; if (!t) return;
         if (Math.abs(t.clientX - tStartX) > 10 || Math.abs(t.clientY - tStartY) > 10) { tapT = 0; return; }
         var now = Date.now();
         if (now - tapT < 320 && Math.abs(t.clientX - tapX) < 30 && Math.abs(t.clientY - tapY) < 30) {
           tapT = 0;
-          tiltEnabled = !tiltEnabled;
-          if (!tiltEnabled) tiltTarget = 0;
-          run(); noteTilt();
+          if (tiltEnabled) { tiltEnabled = false; tiltTarget = 0; run(); noteTilt(); }
+          else enableTilt();
         } else { tapT = now; tapX = t.clientX; tapY = t.clientY; }
       });
       /* A ONE-TIME HINT on phones, so people find out he can be played with: a small bubble beside
@@ -2938,7 +2954,7 @@
         if (r.bottom < 0 || r.top > window.innerHeight) return;
         var ka = document.documentElement.lang !== "en";
         var h = document.createElement("div");
-        h.textContent = ka ? "👆 შემეხე და დახარე ტელეფონი" : "👆 Tap me, then tilt your phone";
+        h.textContent = ka ? "👆 ორჯერ შემეხე და დახარე ტელეფონი" : "👆 Double-tap me, then tilt your phone";
         h.style.cssText = "position:fixed;z-index:70;pointer-events:none;left:" + Math.round(r.right - 6) + "px;top:" +
           Math.round(r.top + r.height * 0.22) + "px;background:#f97316;color:#fff;font-size:13px;font-weight:600;" +
           "padding:7px 12px;border-radius:12px 12px 12px 3px;box-shadow:0 6px 18px -6px rgba(0,0,0,.45);" +
@@ -2955,28 +2971,9 @@
       if (window.matchMedia("(pointer: coarse)").matches && window.DeviceOrientationEvent && !reduce) {
         setTimeout(showTiltHint, 2500);
       }
-      if (window.matchMedia("(pointer: coarse)").matches && window.DeviceOrientationEvent) {
-        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-        if (isIOS && typeof DeviceOrientationEvent.requestPermission === "function") {
-          /* iOS shows the prompt only from a COMPLETED tap (touchend / click) - asked on pointerdown it
-             fails silently, which is why the owner saw nothing. A failed ask keeps the listener, so the
-             next tap tries again; only a real answer (granted / denied) removes it. */
-          var asking = false;
-          var askTilt = function () {
-            if (asking || tiltOn) return;
-            asking = true;
-            DeviceOrientationEvent.requestPermission().then(function (r) {
-              asking = false;
-              climber.removeEventListener("touchend", askTilt); climber.removeEventListener("click", askTilt);
-              if (r === "granted") startTilt();
-            }).catch(function () { asking = false; });
-          };
-          climber.addEventListener("touchend", askTilt);
-          climber.addEventListener("click", askTilt);
-        } else {
-          startTilt();
-        }
-      }
+      /* (The sensor used to start at load - on Android at once, on iPhone at the first tap on him -
+         and he swung from the moment the page opened. It now starts only from the double tap:
+         see enableTilt above.) */
       climber.addEventListener("pointerdown", function (e) {
         dragging = true;
         dragTouch = e.pointerType === "touch";
