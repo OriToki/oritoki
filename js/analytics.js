@@ -14,7 +14,7 @@
    locally (file://), so your own test visits aren't counted.
    ============================================================ */
 (function () {
-  var GA_MEASUREMENT_ID = "G-XXXXXXXXXX"; // ← replace with your GA4 Measurement ID
+  var GA_MEASUREMENT_ID = "G-Z10300VCZF"; // GA4 property "oritoki.ge" (account "oritoki"), set 2026-10-09
 
   // Not configured yet, or a local file preview → do nothing.
   if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === "G-XXXXXXXXXX") return;
