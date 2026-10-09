@@ -26,6 +26,11 @@
      site, leave it empty like this:   tiktok: "",
 
    After saving this file, refresh the website. Done!
+
+   ONE MORE PLACE: the Google information block near the top of
+   index.html (<script type="application/ld+json">) repeats the phone,
+   e-mail, address and social links — search engines cannot read this
+   file. Change them there too.
    ===================================================================== */
 
 var siteInfo = {

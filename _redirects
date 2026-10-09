@@ -1,0 +1,10 @@
+# Cloudflare Pages redirects. The whole repository is the site root, so the working files below
+# would otherwise be public at oritoki.ge/<path>. None of them is part of the site; send anyone who
+# guesses one to the home page. (Pages cannot answer 404 from this file — 301 is the closest.)
+/CLAUDE.md          /  301
+/README.md          /  301
+/.gitignore         /  301
+/tools/*            /  301
+/worker/*           /  301
+/css/*              /  301
+/js/main.js         /  301
