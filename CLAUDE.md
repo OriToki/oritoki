@@ -30,9 +30,13 @@ step, no package manager, no test suite.**
 
 ## Deployment
 
-Domain `oritoki.ge` is bought; the host is not chosen yet (Cloudflare Pages connected to the GitHub
-repo is the recommendation; Netlify Drop is the no-steps fallback). Whatever the host, deploy the
-repo **contents** so that `public_html/index.html` — not a subfolder — is the site root.
+**Live at https://oritoki.ge since 2026-10-09.** The domain is registered at domenebi.ge (paid to
+2031); its nameservers were moved there to Cloudflare (`olga` / `ryan.ns.cloudflare.com`), so the
+zone lives in the owner's Cloudflare account (Free plan). The Pages project `oritoki` (GitHub
+`OriToki/oritoki`, repo root = site root) has two custom domains, `oritoki.ge` and
+`www.oritoki.ge`, each a proxied CNAME to `oritoki.pages.dev`. A Redirect Rule ("Redirect from WWW
+to root", 301, query string kept) sends www to the apex; http goes to https by itself. Do not buy
+the hosting domenebi.ge keeps offering in the cart — it is not needed.
 
 ## Architecture (the non-obvious parts)
 
