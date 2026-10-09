@@ -8,3 +8,6 @@
 /worker/*           /  301
 /css/*              /  301
 /js/main.js         /  301
+
+# The English page lives at /en (functions/en.js); keep the trailing slash off it.
+/en/                /en  301
