@@ -10,6 +10,7 @@
      [data-en] elements     → their text becomes the data-en value
      [data-en-content]      → <meta content> becomes that value
      [data-en-href]         → <link href> becomes that value (the canonical)
+     [data-en-alt]          → <img alt> becomes that value
 
    Nothing to maintain here when wording changes: edit index.html, both
    addresses follow. The page's own script then shows the language the
@@ -36,6 +37,7 @@ export async function onRequestGet({ request, env }) {
     })
     .on("[data-en-content]", { element(e) { e.setAttribute("content", decode(e.getAttribute("data-en-content"))); } })
     .on("[data-en-href]", { element(e) { e.setAttribute("href", decode(e.getAttribute("data-en-href"))); } })
+    .on("[data-en-alt]", { element(e) { e.setAttribute("alt", decode(e.getAttribute("data-en-alt"))); } })
     .transform(page);
 
   const headers = new Headers(res.headers);
