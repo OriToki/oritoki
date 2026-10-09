@@ -5,10 +5,12 @@
    One-page landing (dark industrial theme, Tailwind CDN + vanilla JS)
   ---------------------------------------------------------------------
    HOW TO EDIT TEXT (bilingual):
-   - The visible text in the tag is the ENGLISH version.
-   - The Georgian version sits in the  data-ka="..."  attribute.
-   - To change a wording, edit BOTH the English text AND its data-ka.
-   - The site loads in Georgian by default; the ENG/ქარ toggle swaps it.
+   - The visible text in the tag is the GEORGIAN version, repeated in
+     data-ka="...". The English sits in the  data-en="..."  attribute.
+     (Since 2026-10-09 - before that the visible text was English.)
+   - To change a wording, edit the Georgian text, its data-ka AND data-en.
+   - oritoki.ge/ shows Georgian, oritoki.ge/en English (functions/en.js
+     swaps in every data-en); the ENG/ქარ toggle swaps in place.
 
    HOW TO ADD GALLERY PHOTOS:
    - Drop the file into  images/gallery/  and add one line in  js/images.js
@@ -18,7 +20,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-ka="ორითოკი — სასიმაღლო სამუშაოები">Oritoki — Industrial Rope Access &amp; Works at Height</title>
+  <title data-ka="ორითოკი — სასიმაღლო სამუშაოები" data-en="Oritoki — Industrial Rope Access &amp;amp; Works at Height">ორითოკი — სასიმაღლო სამუშაოები</title>
   <!-- Georgian, like the page itself opens: this is the snippet Google is most likely to show. -->
   <!-- data-en-content / data-en-href: what functions/en.js puts in their place at oritoki.ge/en. -->
   <!-- Worded with the terms people in Georgia actually search for (the owner's list, 2026-10-09):
@@ -1362,28 +1364,28 @@
       <nav id="nav" class="font-display text-[16px] font-600 tracking-wide text-light">
         <!-- Lang + theme controls: on mobile they sit here, ABOVE the nav links (JS fills this). -->
         <div id="navActions" class="nav-actions"></div>
-        <a href="#home"     class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲛᲗᲐᲕᲐᲠᲘ">HOME</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲛᲗᲐᲕᲐᲠᲘ</span></span></span></a>
-        <a href="#about"    class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ">ABOUT</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ</span></span></span></a>
+        <a href="#home"     class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲛᲗᲐᲕᲐᲠᲘ" data-en="HOME">ᲛᲗᲐᲕᲐᲠᲘ</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲛᲗᲐᲕᲐᲠᲘ</span></span></span></a>
+        <a href="#about"    class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ" data-en="ABOUT">ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲩᲕᲔᲜ ᲨᲔᲡᲐᲮᲔᲑ</span></span></span></a>
         <div class="nav-dd">
-          <a href="#services" class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ">WHAT WE DO</span><i class="fa-solid fa-chevron-down nav-dd-caret text-[10px]"></i></span><span aria-hidden="true" class="nav-ghost"><span>ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ</span><i class="fa-solid fa-chevron-down text-[10px]"></i></span></span></a>
+          <a href="#services" class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ" data-en="WHAT WE DO">ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ</span><i class="fa-solid fa-chevron-down nav-dd-caret text-[10px]"></i></span><span aria-hidden="true" class="nav-ghost"><span>ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ</span><i class="fa-solid fa-chevron-down text-[10px]"></i></span></span></a>
           <div class="nav-dd-menu" aria-hidden="true">
             <div class="nav-dd-inner">
-              <a href="#svc-glass" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></span><span data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</span></a>
-              <a href="#svc-buildings" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span data-ka="შენობების მოვლა">Building Maintenance</span></a>
-              <a href="#svc-electrical" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span data-ka="ელექტროობა და ტელეკომუნიკაცია">Electrical &amp; Telecom</span></a>
-              <a href="#svc-signage" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><span data-ka="რეკლამები">Advertising &amp; Signage</span></a>
-              <a href="#svc-painting" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></span><span data-ka="ღებვა და დაცვა">Painting &amp; Protection</span></a>
-              <a href="#svc-construction" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></span><span data-ka="სამშენებლო სამუშაოები და იზოლაცია">Construction &amp; Insulation</span></a>
-              <a href="#svc-rock" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></span><span data-ka="კლდეები, ფერდობები და გარემო">Rock, Slope &amp; Environment</span></a>
-              <a href="#svc-industrial" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></span><span data-ka="ინდუსტრიული ობიექტები">Industrial Facilities</span></a>
-              <a href="#svc-inspection" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span data-ka="ინსპექტირება">Inspection</span></a>
-              <a href="#svc-film" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></span><span data-ka="სცენა და გადაღებები">Stage &amp; Filming</span></a>
-              <a href="#svc-emergency" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</span></a>
+              <a href="#svc-glass" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></span><span data-ka="მინის ფასადები და ფანჯრები" data-en="Glass Facades &amp;amp; Windows">მინის ფასადები და ფანჯრები</span></a>
+              <a href="#svc-buildings" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span data-ka="შენობების მოვლა" data-en="Building Maintenance">შენობების მოვლა</span></a>
+              <a href="#svc-electrical" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><span data-ka="ელექტროობა და ტელეკომუნიკაცია" data-en="Electrical &amp;amp; Telecom">ელექტროობა და ტელეკომუნიკაცია</span></a>
+              <a href="#svc-signage" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><span data-ka="რეკლამები" data-en="Advertising &amp;amp; Signage">რეკლამები</span></a>
+              <a href="#svc-painting" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></span><span data-ka="ღებვა და დაცვა" data-en="Painting &amp;amp; Protection">ღებვა და დაცვა</span></a>
+              <a href="#svc-construction" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></span><span data-ka="სამშენებლო სამუშაოები და იზოლაცია" data-en="Construction &amp;amp; Insulation">სამშენებლო სამუშაოები და იზოლაცია</span></a>
+              <a href="#svc-rock" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></span><span data-ka="კლდეები, ფერდობები და გარემო" data-en="Rock, Slope &amp;amp; Environment">კლდეები, ფერდობები და გარემო</span></a>
+              <a href="#svc-industrial" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></span><span data-ka="ინდუსტრიული ობიექტები" data-en="Industrial Facilities">ინდუსტრიული ობიექტები</span></a>
+              <a href="#svc-inspection" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span data-ka="ინსპექტირება" data-en="Inspection">ინსპექტირება</span></a>
+              <a href="#svc-film" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></span><span data-ka="სცენა და გადაღებები" data-en="Stage &amp;amp; Filming">სცენა და გადაღებები</span></a>
+              <a href="#svc-emergency" class="nav-dd-item"><span class="nav-dd-ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span data-ka="სპეციალური და საგანგებო სამუშაოები" data-en="Special &amp;amp; Emergency Works">სპეციალური და საგანგებო სამუშაოები</span></a>
             </div>
           </div>
         </div>
-        <a href="#gallery"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲒᲐᲚᲔᲠᲔᲐ</span></span></span></a>
-        <a href="#contact"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲙᲝᲜᲢᲐᲥᲢᲘ">CONTACT</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲙᲝᲜᲢᲐᲥᲢᲘ</span></span></span></a>
+        <a href="#gallery"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲒᲐᲚᲔᲠᲔᲐ" data-en="GALLERY">ᲒᲐᲚᲔᲠᲔᲐ</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲒᲐᲚᲔᲠᲔᲐ</span></span></span></a>
+        <a href="#contact"  class="nav-link inline-flex items-center hover:opacity-80 transition"><span class="nav-label"><span><span data-ka="ᲙᲝᲜᲢᲐᲥᲢᲘ" data-en="CONTACT">ᲙᲝᲜᲢᲐᲥᲢᲘ</span></span><span aria-hidden="true" class="nav-ghost"><span>ᲙᲝᲜᲢᲐᲥᲢᲘ</span></span></span></a>
         <!-- (The phone number that used to close this list is gone from the drawer too - the owner:
              the contact tab, #callFab, carries it everywhere now.) -->
       </nav>
@@ -1448,17 +1450,17 @@
       <div id="heroContent" class="max-w-2xl">
         <!-- Headline: two lines, white + orange -->
         <h1 id="heroTitle" class="reveal hero-shadow font-display font-900 leading-[1.06] text-[26px] sm:text-4xl lg:text-5xl xl:text-6xl">
-          <span class="block text-white" data-ka="ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ">ROPE ACCESS</span>
-          <span class="block text-white" data-ka="ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘ">TECHNICIANS</span>
+          <span class="block text-white" data-ka="ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ" data-en="ROPE ACCESS">ᲡᲐᲡᲘᲛᲐᲦᲚᲝ ᲡᲐᲛᲣᲨᲐᲝᲔᲑᲘᲡ</span>
+          <span class="block text-white" data-ka="ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘ" data-en="TECHNICIANS">ᲡᲞᲔᲪᲘᲐᲚᲘᲡᲢᲔᲑᲘ</span>
         </h1>
 
         <!-- Supporting description -->
-        <p class="reveal hero-shadow mt-5 max-w-xl text-sm sm:text-base text-white leading-relaxed" data-ka="გთავაზობთ თოკზე დაფუძნებული სისტემებით მომსახურებას ობიექტებზე, სადაც ტრადიციული მეთოდებით სამუშაოს შესრულება არაეფექტური ან შეუძლებელია">We provide rope access services on structures where traditional methods make the work ineffective or impossible</p>
+        <p class="reveal hero-shadow mt-5 max-w-xl text-sm sm:text-base text-white leading-relaxed" data-ka="გთავაზობთ თოკზე დაფუძნებული სისტემებით მომსახურებას ობიექტებზე, სადაც ტრადიციული მეთოდებით სამუშაოს შესრულება არაეფექტური ან შეუძლებელია" data-en="We provide rope access services on structures where traditional methods make the work ineffective or impossible">გთავაზობთ თოკზე დაფუძნებული სისტემებით მომსახურებას ობიექტებზე, სადაც ტრადიციული მეთოდებით სამუშაოს შესრულება არაეფექტური ან შეუძლებელია</p>
 
         <!-- CTA (outline, white) -->
         <div class="reveal mt-8">
           <a href="#services" class="group inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 text-sm font-600 text-white hover:bg-accent/90 transition">
-            <span data-ka="რას ვაკეთებთ">What We Do</span>
+            <span data-ka="რას ვაკეთებთ" data-en="What We Do">რას ვაკეთებთ</span>
             <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
           </a>
         </div>
@@ -1490,24 +1492,24 @@
       </div>
       <!-- Text: first on mobile (order-1); left column on desktop -->
       <div class="reveal order-1 lg:order-none lg:col-start-1 lg:row-start-1">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲡᲘᲛᲐᲦᲚᲔ ᲩᲕᲔᲜᲘ ᲡᲐᲛᲣᲨᲐᲝ ᲡᲘᲕᲠᲪᲔᲐ, ᲣᲡᲐᲤᲠᲗᲮᲝᲔᲑᲐ — ᲞᲠᲘᲝᲠᲘᲢᲔᲢᲘ">HEIGHT IS OUR WORKSPACE, SAFETY — OUR PRIORITY</h2>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲡᲘᲛᲐᲦᲚᲔ ᲩᲕᲔᲜᲘ ᲡᲐᲛᲣᲨᲐᲝ ᲡᲘᲕᲠᲪᲔᲐ, ᲣᲡᲐᲤᲠᲗᲮᲝᲔᲑᲐ — ᲞᲠᲘᲝᲠᲘᲢᲔᲢᲘ" data-en="HEIGHT IS OUR WORKSPACE, SAFETY — OUR PRIORITY">ᲡᲘᲛᲐᲦᲚᲔ ᲩᲕᲔᲜᲘ ᲡᲐᲛᲣᲨᲐᲝ ᲡᲘᲕᲠᲪᲔᲐ, ᲣᲡᲐᲤᲠᲗᲮᲝᲔᲑᲐ — ᲞᲠᲘᲝᲠᲘᲢᲔᲢᲘ</h2>
         <div id="aboutBody">
-        <p class="mt-5 text-mute leading-relaxed" data-ka="შპს „ორითოკი“ არის სასიმაღლო სამუშაოების კომპანია, რომელიც უსაფრთხოდ, სწრაფად და ეფექტურად მუშაობს იქ, სადაც ხარაჩოების, ამწეებისა და სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელი ან არაეფექტურია.">
+        <p class="mt-5 text-mute leading-relaxed" data-ka="შპს „ორითოკი“ არის სასიმაღლო სამუშაოების კომპანია, რომელიც უსაფრთხოდ, სწრაფად და ეფექტურად მუშაობს იქ, სადაც ხარაჩოების, ამწეებისა და სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელი ან არაეფექტურია." data-en="
           oritoki LLC is a rope access company providing safe, fast and efficient solutions in
           locations where scaffolding, cranes or other traditional access methods are impractical
           or ineffective.
-        </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი გუნდი აერთიანებს მრავალწლიანი გამოცდილების მქონე მთამსვლელებს, მეკლდეურებსა და სასიმაღლო სამუშაოების სპეციალისტებს.">
+        ">შპს „ორითოკი“ არის სასიმაღლო სამუშაოების კომპანია, რომელიც უსაფრთხოდ, სწრაფად და ეფექტურად მუშაობს იქ, სადაც ხარაჩოების, ამწეებისა და სხვა ტრადიციული მეთოდების გამოყენება შეუძლებელი ან არაეფექტურია.</p>
+        <p class="mt-4 text-mute leading-relaxed" data-ka="ჩვენი გუნდი აერთიანებს მრავალწლიანი გამოცდილების მქონე მთამსვლელებს, მეკლდეურებსა და სასიმაღლო სამუშაოების სპეციალისტებს." data-en="
           Our team consists of experienced mountaineers, rock climbers and rope access technicians.
-        </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="15 წელზე მეტი გამოცდილება, დაგროვილი ტექნიკური ცოდნა და საერთაშორისო პრაქტიკა გვაძლევს შესაძლებლობას, რთული და არასტანდარტული პროექტებიც მაღალი სიზუსტითა და უსაფრთხოების სტანდარტების დაცვით შევასრულოთ.">
+        ">ჩვენი გუნდი აერთიანებს მრავალწლიანი გამოცდილების მქონე მთამსვლელებს, მეკლდეურებსა და სასიმაღლო სამუშაოების სპეციალისტებს.</p>
+        <p class="mt-4 text-mute leading-relaxed" data-ka="15 წელზე მეტი გამოცდილება, დაგროვილი ტექნიკური ცოდნა და საერთაშორისო პრაქტიკა გვაძლევს შესაძლებლობას, რთული და არასტანდარტული პროექტებიც მაღალი სიზუსტითა და უსაფრთხოების სტანდარტების დაცვით შევასრულოთ." data-en="
           With over 15 years of experience, extensive technical knowledge and international
           practice, we are equipped to carry out complex and non-standard projects with a high
           level of precision and in accordance with established safety standards.
-        </p>
-        <p class="mt-4 text-mute leading-relaxed" data-ka="გუნდის წევრები ფლობენ IRATA, SPRAT და IFMGA Rope Access-ის საერთაშორისო სერტიფიკატებს.">
+        ">15 წელზე მეტი გამოცდილება, დაგროვილი ტექნიკური ცოდნა და საერთაშორისო პრაქტიკა გვაძლევს შესაძლებლობას, რთული და არასტანდარტული პროექტებიც მაღალი სიზუსტითა და უსაფრთხოების სტანდარტების დაცვით შევასრულოთ.</p>
+        <p class="mt-4 text-mute leading-relaxed" data-ka="გუნდის წევრები ფლობენ IRATA, SPRAT და IFMGA Rope Access-ის საერთაშორისო სერტიფიკატებს." data-en="
           Our team members hold internationally recognized IRATA, SPRAT and IFMGA Rope Access certifications.
-        </p>
+        ">გუნდის წევრები ფლობენ IRATA, SPRAT და IFMGA Rope Access-ის საერთაშორისო სერტიფიკატებს.</p>
         </div>
       </div>
     </div>
@@ -1517,146 +1519,146 @@
   <section id="services" class="order-3 py-20 bg-surface border-y border-line">
     <div class="max-w-7xl mx-auto px-5">
       <div class="reveal max-w-3xl">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ">WHAT WE DO</h2>      </div>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ" data-en="WHAT WE DO">ᲠᲐᲡ ᲕᲐᲙᲔᲗᲔᲑᲗ</h2>      </div>
 
       <!-- All service categories (glass first, styled like the rest) -->
       <div id="svcGrid" class="mt-10 grid gap-4 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
         <article id="svc-glass" data-bg="images/svc-modal-bg.jpg?v=2" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="მინის ფასადები და ფანჯრები">Glass Facades &amp; Windows</h3>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="მინის ფასადები და ფანჯრები" data-en="Glass Facades &amp;amp; Windows">მინის ფასადები და ფანჯრები</h3>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფანჯრების წმენდა">Window cleaning</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის ფასადების წმენდა">Glass facade cleaning</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის მონტაჟი და დემონტაჟი">Glass installation &amp; removal</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დაზიანებული მინის შეცვლა">Replacement of damaged glass</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სილიკონის შეცვლა და ჰერმეტიზაცია">Silicone replacement &amp; sealing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების მონტაჟი და დემონტაჟი">Structures — install &amp; dismantle</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფანჯრების წმენდა" data-en="Window cleaning">ფანჯრების წმენდა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის ფასადების წმენდა" data-en="Glass facade cleaning">მინის ფასადების წმენდა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მინის მონტაჟი და დემონტაჟი" data-en="Glass installation &amp;amp; removal">მინის მონტაჟი და დემონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დაზიანებული მინის შეცვლა" data-en="Replacement of damaged glass">დაზიანებული მინის შეცვლა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სილიკონის შეცვლა და ჰერმეტიზაცია" data-en="Silicone replacement &amp;amp; sealing">სილიკონის შეცვლა და ჰერმეტიზაცია</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების მონტაჟი და დემონტაჟი" data-en="Structures — install &amp;amp; dismantle">კონსტრუქციების მონტაჟი და დემონტაჟი</span></li>
           </ul>
         </article>
         <article id="svc-buildings" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="შენობების მოვლა">Building Maintenance</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ტექნიკური მომსახურება, რემონტი და პრევენციული ინსპექტირება.">Technical maintenance, repairs and preventive inspection.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="შენობების მოვლა" data-en="Building Maintenance">შენობების მოვლა</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ტექნიკური მომსახურება, რემონტი და პრევენციული ინსპექტირება." data-en="Technical maintenance, repairs and preventive inspection.">ტექნიკური მომსახურება, რემონტი და პრევენციული ინსპექტირება.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="წვიმის წყლის სისტემების (ღარები, მილები) მონტაჟი/დემონტაჟი, შეკეთება">Rainwater systems (gutters, pipes) — install/dismantle, repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ვენტილაციის სისტემების მონტაჟი და დემონტაჟი">Ventilation systems — install &amp; dismantle</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის ელემენტების შეკეთება">Facade element repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადების წმენდა და რეცხვა">Facade cleaning &amp; washing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო- და ჰიდროიზოლაცია">Thermal insulation &amp; waterproofing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="წვიმის წყლის სისტემების (ღარები, მილები) მონტაჟი/დემონტაჟი, შეკეთება" data-en="Rainwater systems (gutters, pipes) — install/dismantle, repair">წვიმის წყლის სისტემების (ღარები, მილები) მონტაჟი/დემონტაჟი, შეკეთება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ვენტილაციის სისტემების მონტაჟი და დემონტაჟი" data-en="Ventilation systems — install &amp;amp; dismantle">ვენტილაციის სისტემების მონტაჟი და დემონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის ელემენტების შეკეთება" data-en="Facade element repair">ფასადის ელემენტების შეკეთება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადების წმენდა და რეცხვა" data-en="Facade cleaning &amp;amp; washing">ფასადების წმენდა და რეცხვა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო- და ჰიდროიზოლაცია" data-en="Thermal insulation &amp;amp; waterproofing">თბო- და ჰიდროიზოლაცია</span></li>
           </ul>
         </article>
 
         <article id="svc-electrical" data-bg="images/svc-electrical.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ელექტროობა და ტელეკომუნიკაცია">Electrical &amp; Telecom</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკაბელო სისტემების, განათებისა და ანძების მონტაჟი.">Cabling systems, lighting and mast installation.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ელექტროობა და ტელეკომუნიკაცია" data-en="Electrical &amp;amp; Telecom">ელექტროობა და ტელეკომუნიკაცია</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკაბელო სისტემების, განათებისა და ანძების მონტაჟი." data-en="Cabling systems, lighting and mast installation.">საკაბელო სისტემების, განათებისა და ანძების მონტაჟი.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="განათებებისა და პროჟექტორების მონტაჟი და შეცვლა">Lighting &amp; floodlights — install &amp; replace</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონდიციონერის გარე აგრეგატის მონტაჟი და სერვისი">Air-conditioner outdoor unit installation &amp; servicing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტენებისა და სატელეკომუნიკაციო მოწყობილობების მონტაჟი">Antennas &amp; telecom equipment installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ელვისდამცავი სისტემების მონტაჟი">Lightning-protection systems</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების, კამერებისა და სენსორების მონტაჟი">Security systems, cameras &amp; sensors</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კაბელებისა და საკაბელო არხების მონტაჟი">Cables &amp; cable-tray installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მზის პანელების მონტაჟი">Solar panel installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="განათებებისა და პროჟექტორების მონტაჟი და შეცვლა" data-en="Lighting &amp;amp; floodlights — install &amp;amp; replace">განათებებისა და პროჟექტორების მონტაჟი და შეცვლა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონდიციონერის გარე აგრეგატის მონტაჟი და სერვისი" data-en="Air-conditioner outdoor unit installation &amp;amp; servicing">კონდიციონერის გარე აგრეგატის მონტაჟი და სერვისი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტენებისა და სატელეკომუნიკაციო მოწყობილობების მონტაჟი" data-en="Antennas &amp;amp; telecom equipment installation">ანტენებისა და სატელეკომუნიკაციო მოწყობილობების მონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ელვისდამცავი სისტემების მონტაჟი" data-en="Lightning-protection systems">ელვისდამცავი სისტემების მონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების, კამერებისა და სენსორების მონტაჟი" data-en="Security systems, cameras &amp;amp; sensors">უსაფრთხოების სისტემების, კამერებისა და სენსორების მონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კაბელებისა და საკაბელო არხების მონტაჟი" data-en="Cables &amp;amp; cable-tray installation">კაბელებისა და საკაბელო არხების მონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მზის პანელების მონტაჟი" data-en="Solar panel installation">მზის პანელების მონტაჟი</span></li>
           </ul>
         </article>
 
         <article id="svc-signage" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="რეკლამები">Advertising &amp; Signage</h3>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="რეკლამები" data-en="Advertising &amp;amp; Signage">რეკლამები</h3>
           <!-- No summary on this one: its first sub-service already says the same thing, so in the
                opened strip the line read twice. open() clones "p" only if the card has one. -->
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების მონტაჟი და დემონტაჟი">Banners, billboards &amp; advertising structures — install &amp; dismantle</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="აბრებისა და LED აბრების მონტაჟი">Signs &amp; LED signs installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დროშების მონტაჟი">Flag installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების მონტაჟი და დემონტაჟი" data-en="Banners, billboards &amp;amp; advertising structures — install &amp;amp; dismantle">ბანერების, ბილბორდებისა და სარეკლამო კონსტრუქციების მონტაჟი და დემონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="აბრებისა და LED აბრების მონტაჟი" data-en="Signs &amp;amp; LED signs installation">აბრებისა და LED აბრების მონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დროშების მონტაჟი" data-en="Flag installation">დროშების მონტაჟი</span></li>
           </ul>
         </article>
 
         <article id="svc-painting" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="6" x="2" y="2" rx="2"/><path d="M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2"/><rect width="4" height="6" x="8" y="16" rx="1"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ღებვა და დაცვა">Painting &amp; Protection</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა.">Treatment and painting of facades and metal structures.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ღებვა და დაცვა" data-en="Painting &amp;amp; Protection">ღებვა და დაცვა</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა." data-en="Treatment and painting of facades and metal structures.">ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა">Treatment &amp; painting of facades and metal structures</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტიკოროზიული სამუშაოები">Anti-corrosion works</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დამცავი საფარების დატანა">Protective coatings</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა" data-en="Treatment &amp;amp; painting of facades and metal structures">ფასადებისა და ლითონის კონსტრუქციების დამუშავება/შეღებვა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ანტიკოროზიული სამუშაოები" data-en="Anti-corrosion works">ანტიკოროზიული სამუშაოები</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="დამცავი საფარების დატანა" data-en="Protective coatings">დამცავი საფარების დატანა</span></li>
           </ul>
         </article>
 
         <article id="svc-construction" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M12 3v6"/><path d="M16 9v6"/><path d="M8 9v6"/><path d="M12 15v6"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სამშენებლო სამუშაოები და იზოლაცია">Construction &amp; Insulation</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამონტაჟო, საიზოლაციო და სარეკონსტრუქციო სერვისები.">Assembly, insulation and reconstruction services.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სამშენებლო სამუშაოები და იზოლაცია" data-en="Construction &amp;amp; Insulation">სამშენებლო სამუშაოები და იზოლაცია</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამონტაჟო, საიზოლაციო და სარეკონსტრუქციო სერვისები." data-en="Assembly, insulation and reconstruction services.">სამონტაჟო, საიზოლაციო და სარეკონსტრუქციო სერვისები.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბეტონისა და ბზარების შეკეთება">Concrete &amp; crack repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქვისა და აგურის წყობის აღდგენა">Stone &amp; brickwork restoration</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადისა და ისტორიული ძეგლების რესტავრაცია">Facade &amp; historical monument restoration</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო- და ჰიდროიზოლაცია">Thermal insulation &amp; waterproofing</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მეტალის კონსტრუქციების მონტაჟი და დემონტაჟი">Metal structures — install &amp; dismantle</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის დალუქვა">Facade sealing</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ბეტონისა და ბზარების შეკეთება" data-en="Concrete &amp;amp; crack repair">ბეტონისა და ბზარების შეკეთება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქვისა და აგურის წყობის აღდგენა" data-en="Stone &amp;amp; brickwork restoration">ქვისა და აგურის წყობის აღდგენა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადისა და ისტორიული ძეგლების რესტავრაცია" data-en="Facade &amp;amp; historical monument restoration">ფასადისა და ისტორიული ძეგლების რესტავრაცია</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო- და ჰიდროიზოლაცია" data-en="Thermal insulation &amp;amp; waterproofing">თბო- და ჰიდროიზოლაცია</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მეტალის კონსტრუქციების მონტაჟი და დემონტაჟი" data-en="Metal structures — install &amp;amp; dismantle">მეტალის კონსტრუქციების მონტაჟი და დემონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფასადის დალუქვა" data-en="Facade sealing">ფასადის დალუქვა</span></li>
           </ul>
         </article>
 
         <article id="svc-rock" data-bg="images/svc-rock.jpg" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="კლდეები, ფერდობები და გარემო">Rock, Slope &amp; Environment</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფერდობების გამაგრება, დამცავი ბადეების მონტაჟი და დამუშავება.">Slope reinforcement, protective-mesh installation and treatment.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="კლდეები, ფერდობები და გარემო" data-en="Rock, Slope &amp;amp; Environment">კლდეები, ფერდობები და გარემო</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ფერდობების გამაგრება, დამცავი ბადეების მონტაჟი და დამუშავება." data-en="Slope reinforcement, protective-mesh installation and treatment.">ფერდობების გამაგრება, დამცავი ბადეების მონტაჟი და დამუშავება.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდის ბადეებით გამაგრება და სტაბილიზაცია">Rock-mesh reinforcement &amp; stabilization</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდიდან ქვების ჩამოშლა">Rockfall removal</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდის ინსპექტირება და წმენდა">Rock inspection &amp; cleaning</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ხეების გასხვლა და სახიფათო ტოტების მოცილება">Tree pruning &amp; hazardous-branch removal</span></li>          </ul>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდის ბადეებით გამაგრება და სტაბილიზაცია" data-en="Rock-mesh reinforcement &amp;amp; stabilization">კლდის ბადეებით გამაგრება და სტაბილიზაცია</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდიდან ქვების ჩამოშლა" data-en="Rockfall removal">კლდიდან ქვების ჩამოშლა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კლდის ინსპექტირება და წმენდა" data-en="Rock inspection &amp;amp; cleaning">კლდის ინსპექტირება და წმენდა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ხეების გასხვლა და სახიფათო ტოტების მოცილება" data-en="Tree pruning &amp;amp; hazardous-branch removal">ხეების გასხვლა და სახიფათო ტოტების მოცილება</span></li>          </ul>
         </article>
 
         <article id="svc-industrial" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინდუსტრიული ობიექტები">Industrial Facilities</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ქარხნების, ქიმიური საწარმოებისა და სპეციალური ნაგებობების მომსახურება.">Servicing of plants, chemical facilities and special structures.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინდუსტრიული ობიექტები" data-en="Industrial Facilities">ინდუსტრიული ობიექტები</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="ქარხნების, ქიმიური საწარმოებისა და სპეციალური ნაგებობების მომსახურება." data-en="Servicing of plants, chemical facilities and special structures.">ქარხნების, ქიმიური საწარმოებისა და სპეციალური ნაგებობების მომსახურება.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რეზერვუარებისა და სილოსების ინსპექტირება და წმენდა">Tank &amp; silo inspection &amp; cleaning</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კვამლსადენებისა და საკვამურების ინსპექტირება და შეკეთება">Chimney inspection &amp; repair</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქარხნების ტექნიკური მომსახურება">Factory technical maintenance</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქარის ტურბინების ინსპექტირება და შეკეთება">Wind-turbine inspection &amp; repair</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მილსადენების მონტაჟი">Pipeline installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რეზერვუარებისა და სილოსების ინსპექტირება და წმენდა" data-en="Tank &amp;amp; silo inspection &amp;amp; cleaning">რეზერვუარებისა და სილოსების ინსპექტირება და წმენდა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კვამლსადენებისა და საკვამურების ინსპექტირება და შეკეთება" data-en="Chimney inspection &amp;amp; repair">კვამლსადენებისა და საკვამურების ინსპექტირება და შეკეთება</span></li>            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქარხნების ტექნიკური მომსახურება" data-en="Factory technical maintenance">ქარხნების ტექნიკური მომსახურება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ქარის ტურბინების ინსპექტირება და შეკეთება" data-en="Wind-turbine inspection &amp;amp; repair">ქარის ტურბინების ინსპექტირება და შეკეთება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="მილსადენების მონტაჟი" data-en="Pipeline installation">მილსადენების მონტაჟი</span></li>
           </ul>
         </article>
 
         <article id="svc-inspection" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინსპექტირება">Inspection</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება.">Structural diagnostics, ultrasonic and visual inspection.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="ინსპექტირება" data-en="Inspection">ინსპექტირება</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება." data-en="Structural diagnostics, ultrasonic and visual inspection.">კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება">Structural diagnostics, ultrasonic &amp; visual inspection</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო და ჰიდრო იზოლაციის სისტემების ინსპექტირება">Thermal &amp; waterproofing insulation system inspection</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების ინსპექტირება">Safety-system inspection</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება" data-en="Structural diagnostics, ultrasonic &amp;amp; visual inspection">კონსტრუქციების დიაგნოსტიკა, ულტრაბგერითი და ვიზუალური შემოწმება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="თბო და ჰიდრო იზოლაციის სისტემების ინსპექტირება" data-en="Thermal &amp;amp; waterproofing insulation system inspection">თბო და ჰიდრო იზოლაციის სისტემების ინსპექტირება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="უსაფრთხოების სისტემების ინსპექტირება" data-en="Safety-system inspection">უსაფრთხოების სისტემების ინსპექტირება</span></li>
           </ul>
         </article>
 
         <article id="svc-film" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სცენა და გადაღებები">Stage &amp; Filming</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკინემატოგრაფიო და შოუ-ბიზნესის კონსტრუქციების უსაფრთხოება.">Safety for cinematographic and show-business structures.</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სცენა და გადაღებები" data-en="Stage &amp;amp; Filming">სცენა და გადაღებები</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="საკინემატოგრაფიო და შოუ-ბიზნესის კონსტრუქციების უსაფრთხოება." data-en="Safety for cinematographic and show-business structures.">საკინემატოგრაფიო და შოუ-ბიზნესის კონსტრუქციების უსაფრთხოება.</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფილმების, სერიალებისა და რეკლამების გადაღების ტექნიკური მხარდაჭერა">Technical support for film, series &amp; commercial shoots</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სცენური კონსტრუქციებისა და განათებების მონტაჟი">Stage-structure &amp; lighting installation</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="Rigging მომსახურება">Rigging services</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების გადაადგილება და დეკორაციების მონტაჟი">Moving structures &amp; decoration installation</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ფილმების, სერიალებისა და რეკლამების გადაღების ტექნიკური მხარდაჭერა" data-en="Technical support for film, series &amp;amp; commercial shoots">ფილმების, სერიალებისა და რეკლამების გადაღების ტექნიკური მხარდაჭერა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="სცენური კონსტრუქციებისა და განათებების მონტაჟი" data-en="Stage-structure &amp;amp; lighting installation">სცენური კონსტრუქციებისა და განათებების მონტაჟი</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="Rigging მომსახურება" data-en="Rigging services">Rigging მომსახურება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="კონსტრუქციების გადაადგილება და დეკორაციების მონტაჟი" data-en="Moving structures &amp;amp; decoration installation">კონსტრუქციების გადაადგილება და დეკორაციების მონტაჟი</span></li>
           </ul>
         </article>
 
         <article id="svc-emergency" class="reveal group relative rounded-2xl border border-line bg-surface p-6 shadow-sm hover:border-accent hover:shadow-md hover:-translate-y-1 transition">
           <div class="svc-ico"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სპეციალური და საგანგებო სამუშაოები">Special &amp; Emergency Works</h3>
-          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამაშველო ოპერაციები">Rescue operations</p>
+          <h3 class="mt-3.5 font-display text-base font-600 text-light" data-ka="სპეციალური და საგანგებო სამუშაოები" data-en="Special &amp;amp; Emergency Works">სპეციალური და საგანგებო სამუშაოები</h3>
+          <p class="mt-1.5 text-[13px] leading-snug text-mute" data-ka="სამაშველო ოპერაციები" data-en="Rescue operations">სამაშველო ოპერაციები</p>
           <ul class="mt-3 space-y-1.5 text-sm text-mute">
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="საგნების უსაფრთხო ჩამოხსნა, აწევა და ჩამოშვება">Safe removal, lifting &amp; lowering of objects</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რთულად მისადგომ ადგილებზე წვდომა">Access to hard-to-reach locations</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ავარიული სამუშაოები">Emergency works</span></li>
-            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ინდივიდუალური სასიმაღლო გადაწყვეტილებები">Custom works-at-height solutions</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="საგნების უსაფრთხო ჩამოხსნა, აწევა და ჩამოშვება" data-en="Safe removal, lifting &amp;amp; lowering of objects">საგნების უსაფრთხო ჩამოხსნა, აწევა და ჩამოშვება</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="რთულად მისადგომ ადგილებზე წვდომა" data-en="Access to hard-to-reach locations">რთულად მისადგომ ადგილებზე წვდომა</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ავარიული სამუშაოები" data-en="Emergency works">ავარიული სამუშაოები</span></li>
+            <li class="flex items-start gap-2.5"><span class="mt-[7px] h-1.5 w-1.5 rounded-full bg-accent/70 shrink-0"></span><span data-ka="ინდივიდუალური სასიმაღლო გადაწყვეტილებები" data-en="Custom works-at-height solutions">ინდივიდუალური სასიმაღლო გადაწყვეტილებები</span></li>
           </ul>
         </article>
       </div>
-      <p class="mt-10 text-left text-sm sm:text-base text-mute"><span data-ka="თქვენი ამოცანა სიაში ვერ ნახეთ? ">Don’t see your task on the list? </span><a href="#contact" class="text-accent font-600 hover:underline" data-ka="დაგვიკავშირდით">Get in touch</a><span data-ka=" — ვასრულებთ ინდივიდუალურ და არასტანდარტულ სამუშაოებსაც."> — we also carry out custom and non-standard works.</span></p>
+      <p class="mt-10 text-left text-sm sm:text-base text-mute"><span data-ka="თქვენი ამოცანა სიაში ვერ ნახეთ? " data-en="Don’t see your task on the list? ">თქვენი ამოცანა სიაში ვერ ნახეთ? </span><a href="#contact" class="text-accent font-600 hover:underline" data-ka="დაგვიკავშირდით" data-en="Get in touch">დაგვიკავშირდით</a><span data-ka=" — ვასრულებთ ინდივიდუალურ და არასტანდარტულ სამუშაოებსაც." data-en=" — we also carry out custom and non-standard works."> — ვასრულებთ ინდივიდუალურ და არასტანდარტულ სამუშაოებსაც.</span></p>
     </div>
   </section>
 
@@ -1669,7 +1671,7 @@
          container already carries that padding. -->
     <div class="max-w-7xl mx-auto px-5">
       <div class="reveal max-w-2xl">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲒᲐᲚᲔᲠᲔᲐ">GALLERY</h2>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲒᲐᲚᲔᲠᲔᲐ" data-en="GALLERY">ᲒᲐᲚᲔᲠᲔᲐ</h2>
       </div>
 
       <!-- Slides are built automatically from js/images.js -->
@@ -1699,11 +1701,11 @@
 
       <!-- Contact info (minimal / editorial — no form) -->
       <div class="reveal">
-        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲛᲘᲘᲦᲔᲗ ᲣᲤᲐᲡᲝ ᲙᲝᲜᲡᲣᲚᲢᲐᲪᲘᲐ ᲓᲐ ᲨᲔᲤᲐᲡᲔᲑᲐ">GET A FREE CONSULTATION &amp; QUOTE</h2>
+        <h2 class="mt-2 font-display text-3xl sm:text-4xl font-700 text-heading" data-ka="ᲛᲘᲘᲦᲔᲗ ᲣᲤᲐᲡᲝ ᲙᲝᲜᲡᲣᲚᲢᲐᲪᲘᲐ ᲓᲐ ᲨᲔᲤᲐᲡᲔᲑᲐ" data-en="GET A FREE CONSULTATION &amp;amp; QUOTE">ᲛᲘᲘᲦᲔᲗ ᲣᲤᲐᲡᲝ ᲙᲝᲜᲡᲣᲚᲢᲐᲪᲘᲐ ᲓᲐ ᲨᲔᲤᲐᲡᲔᲑᲐ</h2>
 
         <div class="mt-10 space-y-5">
           <div>
-            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="ᲢᲔᲚᲔᲤᲝᲜᲘ / WhatsApp">Phone / WhatsApp</span>
+            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="ᲢᲔᲚᲔᲤᲝᲜᲘ / WhatsApp" data-en="Phone / WhatsApp">ᲢᲔᲚᲔᲤᲝᲜᲘ / WhatsApp</span>
             <div class="flex items-center gap-3">
               <i class="fa-solid fa-phone text-accent text-base leading-none"></i>
               <a data-si="tel" href="tel:+995598428022" class="text-lg text-mute hover:text-accent transition">+995 598 42 80 22</a>
@@ -1711,7 +1713,7 @@
             </div>
           </div>
           <div>
-            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="ᲔᲚ. ᲤᲝᲡᲢᲐ">Email</span>
+            <span class="block font-display text-sm font-700 uppercase tracking-[0.15em] text-light mb-2" data-ka="ᲔᲚ. ᲤᲝᲡᲢᲐ" data-en="Email">ᲔᲚ. ᲤᲝᲡᲢᲐ</span>
             <div class="flex items-center gap-3">
               <i class="fa-solid fa-envelope text-accent text-base leading-none"></i>
               <a data-si="email" href="mailto:info@oritoki.ge" class="text-lg text-mute hover:text-accent transition">info@oritoki.ge</a>
@@ -1748,43 +1750,43 @@
                class="w-[32%] max-w-[104px] h-auto" draggable="false" />
         </a>
         <div class="text-sm text-mute leading-relaxed space-y-2">
-          <p data-ka="შპს ორითოკი">oritoki LLC</p>
-          <p data-ka="საიდენტიფიკაციო კოდი: 402372918">Identification Code: 402372918</p>
-          <p data-si="address" data-ka="მისამართი: ე. ნინოშვილის ქ. 13, ბ. 23B, თბილისი, საქართველო">Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia</p>
-          <p><span data-ka="ელ. ფოსტა:">Email:</span> <a data-si="email" href="mailto:info@oritoki.ge" class="hover:text-accent transition">info@oritoki.ge</a></p>
+          <p data-ka="შპს ორითოკი" data-en="oritoki LLC">შპს ორითოკი</p>
+          <p data-ka="საიდენტიფიკაციო კოდი: 402372918" data-en="Identification Code: 402372918">საიდენტიფიკაციო კოდი: 402372918</p>
+          <p data-si="address" data-ka="მისამართი: ე. ნინოშვილის ქ. 13, ბ. 23B, თბილისი, საქართველო" data-en="Address: Apt 23B, 13 E. Ninoshvili St., Tbilisi, Georgia">მისამართი: ე. ნინოშვილის ქ. 13, ბ. 23B, თბილისი, საქართველო</p>
+          <p><span data-ka="ელ. ფოსტა:" data-en="Email:">ელ. ფოსტა:</span> <a data-si="email" href="mailto:info@oritoki.ge" class="hover:text-accent transition">info@oritoki.ge</a></p>
         </div>
         <!-- The social links live in the contact section, under the e-mail. -->
       </div>
       <div>
-        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="ნავიგაცია">Navigation</h4>
+        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="ნავიგაცია" data-en="Navigation">ნავიგაცია</h4>
         <ul class="space-y-2 text-sm">
-          <li><a href="#home" class="hover:text-accent transition" data-ka="მთავარი">Home</a></li>
-          <li><a href="#about" class="hover:text-accent transition" data-ka="ჩვენ შესახებ">About</a></li>
-          <li><a href="#services" class="hover:text-accent transition" data-ka="რას ვაკეთებთ">What We Do</a></li>
-          <li><a href="#gallery" class="hover:text-accent transition" data-ka="გალერეა">Gallery</a></li>
-          <li><a href="join.html" class="hover:text-accent transition" data-ka="შემოგვიერთდი">Join Us</a></li>
-          <li><a href="#contact" class="hover:text-accent transition" data-ka="კონტაქტი">Contact</a></li>
+          <li><a href="#home" class="hover:text-accent transition" data-ka="მთავარი" data-en="Home">მთავარი</a></li>
+          <li><a href="#about" class="hover:text-accent transition" data-ka="ჩვენ შესახებ" data-en="About">ჩვენ შესახებ</a></li>
+          <li><a href="#services" class="hover:text-accent transition" data-ka="რას ვაკეთებთ" data-en="What We Do">რას ვაკეთებთ</a></li>
+          <li><a href="#gallery" class="hover:text-accent transition" data-ka="გალერეა" data-en="Gallery">გალერეა</a></li>
+          <li><a href="join.html" class="hover:text-accent transition" data-ka="შემოგვიერთდი" data-en="Join Us">შემოგვიერთდი</a></li>
+          <li><a href="#contact" class="hover:text-accent transition" data-ka="კონტაქტი" data-en="Contact">კონტაქტი</a></li>
         </ul>
       </div>
       <div class="flex flex-col">
-        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="პროფესიული სტანდარტები">Professional Standards</h4>
+        <h4 class="text-xs font-700 uppercase tracking-wider text-accent mb-4" data-ka="პროფესიული სტანდარტები" data-en="Professional Standards">პროფესიული სტანდარტები</h4>
         <div class="flex flex-wrap gap-2">
           <a href="https://irata.org/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>IRATA</a>
           <a href="https://sprat.org/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>SPRAT</a>
           <a href="https://ifmga.net/about-ifmga/committees/rope-access" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2 text-sm font-700 tracking-wide text-light hover:border-accent hover:text-accent transition"><i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-accent"></i>IFMGA Rope Access</a>
         </div>
         <div class="mt-6 lg:mt-auto">
-          <p class="text-sm text-accent" data-ka="ხართ სასიმაღლო სამუშაოს სპეციალისტი?">Are you a rope-access technician?</p>
+          <p class="text-sm text-accent" data-ka="ხართ სასიმაღლო სამუშაოს სპეციალისტი?" data-en="Are you a rope-access technician?">ხართ სასიმაღლო სამუშაოს სპეციალისტი?</p>
           <div class="mt-2 flex items-center gap-3">
             <i class="fa-solid fa-handshake-simple text-accent text-[1.05rem] leading-none shrink-0"></i>
-            <a href="join.html" class="inline-flex items-center gap-2 font-display font-700 text-lg text-accent uppercase tracking-wide hover:gap-3 transition-all"><span data-ka="ᲨᲔᲛᲝᲒᲕᲘᲔᲠᲗᲓᲘ">Join Us</span><i class="fa-solid fa-arrow-right text-sm"></i></a>
+            <a href="join.html" class="inline-flex items-center gap-2 font-display font-700 text-lg text-accent uppercase tracking-wide hover:gap-3 transition-all"><span data-ka="ᲨᲔᲛᲝᲒᲕᲘᲔᲠᲗᲓᲘ" data-en="Join Us">ᲨᲔᲛᲝᲒᲕᲘᲔᲠᲗᲓᲘ</span><i class="fa-solid fa-arrow-right text-sm"></i></a>
           </div>
         </div>
       </div>
     </div>
     <div class="border-t border-line">
       <div class="max-w-7xl mx-auto px-5 py-6 text-sm text-mute">
-        © <span id="year"></span> <span data-ka="შპს ორითოკი">oritoki LLC</span>. <span data-ka="ყველა უფლება დაცულია.">All rights reserved.</span>
+        © <span id="year"></span> <span data-ka="შპს ორითოკი" data-en="oritoki LLC">შპს ორითოკი</span>. <span data-ka="ყველა უფლება დაცულია." data-en="All rights reserved.">ყველა უფლება დაცულია.</span>
       </div>
     </div>
   </footer>
@@ -1798,7 +1800,7 @@
        the icon beside it survives. -->
   <div id="callFab">
     <div class="cfab-menu" id="cfabMenu">
-      <div class="cfab-title" data-ka="დაგვიკავშირდით">Contact us</div>
+      <div class="cfab-title" data-ka="დაგვიკავშირდით" data-en="Contact us">დაგვიკავშირდით</div>
       <a class="cfab-opt" data-si="call" href="tel:+995598428022" aria-label="Call +995 598 42 80 22">
         <span class="cfab-oi"><i class="fa-solid fa-phone" aria-hidden="true"></i></span>
         <span data-si="phonetext">+995 598 42 80 22</span>
