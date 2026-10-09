@@ -118,6 +118,10 @@
     .chip input:checked + span { background:#f97316; border-color:#f97316; color:#fff; }
     .chip input:focus-visible + span { box-shadow:0 0 0 3px rgba(249,115,22,.25); }
 
+    /* Personal-data notice under the submit button: no browser triangle, the "?" icon is the cue */
+    .pd-note > summary { list-style:none; }
+    .pd-note > summary::-webkit-details-marker { display:none; }
+
     .reveal { opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease; }
     .reveal.in { opacity:1; transform:none; }
 
@@ -590,6 +594,13 @@
           <span id="submitLabel" data-ka="განაცხადის გაგზავნა">Submit application</span>
           <i id="submitIcon" class="fa-solid fa-paper-plane"></i>
         </button>
+        <!-- Personal-data notice (Georgian Law on Personal Data Protection): who receives the
+             application, what for, and how to have it deleted. Folded away under a small "?" so it
+             does not crowd the button, but readable before sending. Native <details>, no script. -->
+        <details class="pd-note mt-3 text-center">
+          <summary class="inline-flex items-center gap-1.5 text-xs text-mute hover:text-accent cursor-pointer select-none"><i class="fa-regular fa-circle-question"></i><span data-ka="პერსონალური მონაცემები">Personal data</span></summary>
+          <p class="mt-2 mx-auto max-w-xl rounded-xl border border-line px-4 py-3 text-left text-xs leading-relaxed text-mute"><span data-ka="განაცხადი, მიმაგრებული სერტიფიკატის ჩათვლით, იგზავნება მხოლოდ შპს ორითოკის ელ. ფოსტაზე და გამოიყენება მხოლოდ პროექტებზე თქვენთან დასაკავშირებლად. მონაცემების წაშლა ნებისმიერ დროს შეგიძლიათ მოითხოვოთ: ">The application, including the attached certificate, is sent only to the e-mail of oritoki LLC and is used only to contact you about projects. You can ask for your data to be deleted at any time: </span><a href="mailto:info@oritoki.ge" class="text-accent hover:underline">info@oritoki.ge</a>.</p>
+        </details>
       </div>
     </form>
 
