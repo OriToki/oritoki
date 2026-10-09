@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Bilingual (English/Georgian) marketing website for **Oritoki** (Oritoki LLC / შპს ორითოკი), an
+Bilingual (English/Georgian) marketing website for **Oritoki** (oritoki LLC / შპს ორითოკი), an
 industrial-climbing / works-at-height company. Two pages: `index.html` (the one-page site) and
 `join.html` (the "Join our network" application form). Plain static site — **no framework, no build
 step, no package manager, no test suite.**
@@ -336,7 +336,7 @@ are real (`hero-photo.jpg`, `about.jpg`).
 
 ## Conventions
 
-- Brand renders as `ORITOKI` (EN) / `ორითოკი` (KA); the legal form `Oritoki LLC` / `შპს ორითოკი` (the owner chose LLC over LTD on 2026-10-09 — never mix the two)
+- Brand renders as `ORITOKI` (EN) / `ორითოკი` (KA); the legal form `oritoki LLC` / `შპს ორითოკი` (2026-10-09: the owner chose LLC over LTD, and the registered name is officially lower-case "oritoki" — never mix the forms)
   appears only in the footer.
 - Phone and address in `js/site-config.js` are the company's real ones. `info@oritoki.ge` is the
   intended address but **has no mailbox yet** — static hosting provides none.
