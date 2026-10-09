@@ -85,6 +85,17 @@ own `applyLanguage(lang)`:
 
 So **changing any wording means editing BOTH the visible English and its `data-ka` value.**
 
+**Two addresses, one page (2026-10-09):** `oritoki.ge/` is Georgian and `oritoki.ge/en` English.
+`functions/en.js` (Pages Function, HTMLRewriter) serves `index.html` at /en with `lang="en"`,
+every `[data-en]` element's content swapped to English, and `<meta data-en-content>` /
+`<link data-en-href>` swapped (description, OG, canonical). hreflang links tie them together, in
+`index.html` and `sitemap.xml`. On load the page shows the address's language unless a saved
+choice says otherwise, and the toggle rewrites the address (`/` ↔ `/en`) without reloading.
+**Pending:** `tools/lang-flip.ps1` converts the markup to Georgian-visible + `data-en` so that
+crawlers without JavaScript (most AI bots) read Georgian at `/`. Its dry run passes; it has not
+been run, because rewriting all of index.html needs the owner's go-ahead. Once it runs, the
+wording convention above flips: visible text = Georgian, English in `data-en`.
+
 **Contact details live in one file.** `js/site-config.js` exports `siteInfo` (phone, e-mail,
 address, socials); elements marked `data-si="tel|whatsapp|email|address|…"` are filled from it at
 load, and the `tel:` / `wa.me` links are built from the phone number. Edit that file, not the
