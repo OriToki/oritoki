@@ -34,7 +34,11 @@
   <link rel="alternate" hreflang="en" href="https://oritoki.ge/en" />
   <link rel="alternate" hreflang="x-default" href="https://oritoki.ge/" />
 
-  <!-- Structured data for Google and AI answers (who we are, how to reach us). Crawlers read it
+  <!-- RULE: everything in here must be TRUE and written as plain sentences — real services, one
+       name each, natural descriptions. No keyword lists or lists of search variants: Google treats
+       that as spammy structured data and can penalise the whole site (owner's explicit concern,
+       2026-10-09).
+       Structured data for Google and AI answers (who we are, how to reach us). Crawlers read it
        from the raw HTML, so it cannot come from js/site-config.js at run time: if the phone,
        e-mail, address or socials change there, change them HERE too. -->
   <script type="application/ld+json">
@@ -58,28 +62,67 @@
       "addressLocality": "Tbilisi",
       "addressCountry": "GE"
     },
-    "areaServed": { "@type": "Country", "name": "Georgia" },
+    "areaServed": [
+      { "@type": "City", "name": "Tbilisi", "alternateName": "თბილისი" },
+      { "@type": "Country", "name": "Georgia", "alternateName": "საქართველო" }
+    ],
     "slogan": "სიმაღლე ჩვენი სამუშაო სივრცეა, უსაფრთხოება — პრიორიტეტი",
-    "keywords": "ალპინისტები, ალპინისტების მომსახურება, ინდუსტრიული ალპინიზმი, სამრეწველო ალპინიზმი, სასიმაღლო სამუშაოები, სიმაღლეზე მუშაობა, თოკით მუშაობა, შუშის წმენდა, შუშის ფასადების წმენდა, ფანჯრების წმენდა, rope access, rope access technician, industrial rope access, works at height, window cleaning",
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
-      "name": "სასიმაღლო სამუშაოები / Works at height",
+      "name": "სასიმაღლო სამუშაოები / Rope access services",
       "itemListElement": [
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "შუშის ფასადებისა და ფანჯრების წმენდა", "alternateName": "Glass facade and window cleaning" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "შენობების მოვლა და ფასადის რეცხვა", "alternateName": "Building maintenance and facade washing" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service",
+          "name": "სასიმაღლო სამუშაოები",
+          "alternateName": "Industrial rope access",
+          "description": [
+            { "@language": "ka", "@value": "სასიმაღლო სამუშაოები თბილისში და მთელ საქართველოში, თოკით წვდომის (Rope Access) მეთოდით, ხარაჩოებისა და ამწეების გარეშე. ამ საქმიანობას ხშირად ინდუსტრიულ ან სამრეწველო ალპინიზმს, ალპინისტურ მომსახურებას ან სიმაღლეზე მუშაობას უწოდებენ." },
+            { "@language": "en", "@value": "Industrial rope access and work at height in Tbilisi and across Georgia, without scaffolding or cranes: rope access services by certified rope access technicians (also called industrial climbing)." } ] } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service",
+          "name": "ფასადის წმენდა და რეცხვა",
+          "alternateName": "Facade cleaning",
+          "description": [
+            { "@language": "ka", "@value": "მაღალსართულიანი შენობების, ბიზნეს ცენტრებისა და მინის (შუშის) ფასადების, ვიტრაჟების წმენდა და რეცხვა თბილისში თოკით წვდომის მეთოდით." },
+            { "@language": "en", "@value": "Facade cleaning in Tbilisi: building, glass and commercial facade cleaning of high-rise buildings and business centres by rope access." } ] } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service",
+          "name": "ფანჯრების წმენდა სიმაღლეზე",
+          "alternateName": "High-rise window cleaning",
+          "description": [
+            { "@language": "ka", "@value": "მაღალ სართულებზე ფანჯრებისა და გარე მინების წმენდა გარედან — ოფისები, საცხოვრებელი კორპუსები, ბიზნეს ცენტრები." },
+            { "@language": "en", "@value": "High-rise and exterior window cleaning in Tbilisi and Georgia: offices, apartment blocks and business centres, cleaned from outside by rope access." } ] } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service",
+          "name": "სარეკლამო კონსტრუქციებისა და განათების მონტაჟი სიმაღლეზე",
+          "alternateName": "Signage, banner and lighting installation at height",
+          "description": [
+            { "@language": "ka", "@value": "ბანერების, ბილბორდების, აბრების, LED აბრებისა და ლოგოების მონტაჟი და დემონტაჟი ფასადზე; სარეკლამო და სხვა კონსტრუქციების, გარე განათებისა და პროჟექტორების მონტაჟი სიმაღლეზე." },
+            { "@language": "en", "@value": "Sign, banner and outdoor advertising installation in Tbilisi: facade signs, logos, billboards and advertising structures, facade equipment and outdoor lighting installed at height." } ] } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service",
+          "name": "წვიმის წყლის სისტემები — ღარები და საწვიმარი მილები",
+          "alternateName": "Gutters and rainwater pipes",
+          "description": [
+            { "@language": "ka", "@value": "ღარებისა და საწვიმარი მილების, წყალსაწრეტი სისტემის მონტაჟი, დემონტაჟი, შეკეთება და გაწმენდა მაღალ შენობებზე." },
+            { "@language": "en", "@value": "Gutter cleaning, gutter repair and installation, rainwater pipe installation and repair, rainwater drainage system maintenance on high buildings in Tbilisi." } ] } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service",
+          "name": "ფასადის შეკეთება, შეღებვა და ჰერმეტიზაცია",
+          "alternateName": "Facade repair, painting and sealing",
+          "description": [
+            { "@language": "ka", "@value": "ფასადის ელემენტების შეკეთება და აღდგენა, ბზარებისა და ნაკერების ჰერმეტიზაცია, ფასადებისა და ლითონის კონსტრუქციების დამუშავება და შეღებვა, ანტიკოროზიული სამუშაოები, თბო- და ჰიდროიზოლაცია." },
+            { "@language": "en", "@value": "Facade repair and maintenance in Tbilisi: local repairs and restoration, crack and joint sealing, facade and high-rise painting, anti-corrosion and protective coatings, insulation." } ] } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service",
+          "name": "კონდიციონერის გარე აგრეგატის მონტაჟი სიმაღლეზე",
+          "alternateName": "Air-conditioner outdoor unit installation at height",
+          "description": [
+            { "@language": "ka", "@value": "კონდიციონერის გარე აგრეგატის (ბლოკის) მონტაჟი, დემონტაჟი და სერვისი მაღალ სართულებზე." },
+            { "@language": "en", "@value": "Air conditioner outdoor unit installation, removal and servicing at height on high-rise buildings in Tbilisi, by rope access." } ] } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "ელექტროობა და ტელეკომუნიკაცია სიმაღლეზე", "alternateName": "Electrical and telecom works at height" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "რეკლამების, ბანერებისა და აბრების მონტაჟი", "alternateName": "Advertising and signage installation" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "ფასადებისა და ლითონის კონსტრუქციების ღებვა", "alternateName": "Painting and protective coatings" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "სამშენებლო სამუშაოები, იზოლაცია და რესტავრაცია", "alternateName": "Construction, insulation and restoration" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "კლდეებისა და ფერდობების გამაგრება", "alternateName": "Rock and slope stabilization" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "ინდუსტრიული ობიექტების მომსახურება", "alternateName": "Industrial facility services" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "კონსტრუქციების ინსპექტირება", "alternateName": "Structural inspection" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "სცენა, გადაღებები და rigging", "alternateName": "Stage, filming and rigging" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "სცენა, გადაღებები და rigging", "alternateName": ["Stage, filming and rigging"] } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "საგანგებო და სამაშველო სამუშაოები სიმაღლეზე", "alternateName": "Emergency and rescue works at height" } }
       ]
     },
-    "knowsAbout": ["Rope access", "Industrial climbing", "Works at height", "Facade cleaning", "Window cleaning", "Facade painting", "Inspection", "IRATA",
-                   "ინდუსტრიული ალპინიზმი", "სამრეწველო ალპინიზმი", "ალპინისტების მომსახურება", "სასიმაღლო სამუშაოები", "სიმაღლეზე მუშაობა", "თოკით მუშაობა", "შუშის ფასადების წმენდა", "შუშების წმენდა"],
+    "knowsAbout": ["Rope access", "Work at height", "Facade cleaning", "Window cleaning", "IRATA", "SPRAT", "სასიმაღლო სამუშაოები"],
     "sameAs": [
       "https://www.facebook.com/profile.php?id=61591512283062",
       "https://www.instagram.com/oritoki.ge/"
