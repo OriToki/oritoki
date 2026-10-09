@@ -38,6 +38,10 @@ zone lives in the owner's Cloudflare account (Free plan). The Pages project `ori
 to root", 301, query string kept) sends www to the apex; http goes to https by itself. Do not buy
 the hosting domenebi.ge keeps offering in the cart — it is not needed.
 
+**Google Search Console** owns `oritoki.ge` as a Domain property, verified 2026-10-09 through the
+Cloudflare integration, which wrote a `google-site-verification=…` TXT record into the zone —
+**never delete that record**, or the property loses verification. `sitemap.xml` is submitted there.
+
 ## Architecture (the non-obvious parts)
 
 **Both pages are self-contained.** `index.html` carries its own `<style>` and `<script>` blocks —
