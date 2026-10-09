@@ -74,16 +74,20 @@ size was left alone — shrink it only if the owner asks.
 earlier version; `README.md` still points at them in places. Do not edit them expecting a change on
 the site — and do not delete them without checking `README.md` in the same pass.
 
-**Bilingual text is attribute-driven, not template-driven.** Every translatable element holds the
-English text as its normal content plus a `data-ka="..."` attribute with the Georgian. Each page's
-own `applyLanguage(lang)`:
-- captures the original English into `el.dataset.en` on first run (English is never authored twice),
+**Bilingual text is attribute-driven, not template-driven.** In `index.html` (since 2026-10-09)
+every translatable element holds the **Georgian** as its visible content, the same Georgian in
+`data-ka="..."` and the English in `data-en="..."`. `join.html` still has the older form: English
+visible + `data-ka`. Each page's own `applyLanguage(lang)`:
+- uses `data-en` when present, else captures the visible English into `el.dataset.en` on first
+  run (that fallback is what still serves `join.html` and the JS-built gallery captions),
 - swaps `innerHTML` between `data-en` / `data-ka`,
 - handles `<input>` placeholders separately via `data-ka-placeholder`,
 - persists the choice in `localStorage["oritoki_lang"]` and labels the toggle with the *other*
   language. The theme is stored the same way in `localStorage["oritoki_theme"]`.
 
-So **changing any wording means editing BOTH the visible English and its `data-ka` value.**
+So **changing any wording in index.html means editing the visible Georgian, its `data-ka` AND its
+`data-en`** (in join.html: the visible English and its `data-ka`). Keep these elements plain text
+with no child tags — `functions/en.js` and `tools/lang-flip.ps1` both rely on it.
 
 **Two addresses, one page (2026-10-09):** `oritoki.ge/` is Georgian and `oritoki.ge/en` English.
 `functions/en.js` (Pages Function, HTMLRewriter) serves `index.html` at /en with `lang="en"`,
@@ -91,10 +95,10 @@ every `[data-en]` element's content swapped to English, and `<meta data-en-conte
 `<link data-en-href>` swapped (description, OG, canonical). hreflang links tie them together, in
 `index.html` and `sitemap.xml`. On load the page shows the address's language unless a saved
 choice says otherwise, and the toggle rewrites the address (`/` ↔ `/en`) without reloading.
-**Pending:** `tools/lang-flip.ps1` converts the markup to Georgian-visible + `data-en` so that
-crawlers without JavaScript (most AI bots) read Georgian at `/`. Its dry run passes; it has not
-been run, because rewriting all of index.html needs the owner's go-ahead. Once it runs, the
-wording convention above flips: visible text = Georgian, English in `data-en`.
+`tools/lang-flip.ps1` made that conversion once, with the owner's go-ahead (commit 9e06857): 121
+elements, round-trip checked, rest of the file byte-identical, rendered page compared before and
+after. It refuses to run twice. Result: a crawler without JavaScript reads ~3,700 Georgian letters
+at `/` (47 before) and plain English at `/en`.
 
 **Contact details live in one file.** `js/site-config.js` exports `siteInfo` (phone, e-mail,
 address, socials); elements marked `data-si="tel|whatsapp|email|address|…"` are filled from it at
