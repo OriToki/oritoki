@@ -118,13 +118,21 @@
        the address before the page is parsed (nothing to jump to), turn the browser's scroll
        restoration off, and pin the top once more at load. A link that arrives from elsewhere with
        a #section (join.html -> index.html#contact) is a navigation, not a reload, and still works. */
+    /* TOUCH SCREENS ONLY for the "back to the top" part (2026-10-09, the owner: he had asked for it
+       on the phone, not everywhere). On a desktop a reload keeps its place - the browser's own
+       behaviour and what people expect there - and only loses the #fragment, so it can no longer
+       jump to a section by itself. Phones and tablets (coarse pointer, no mouse) go to the top:
+       their reload is a pull-down from the top of the screen. */
     (function () {
       try {
         var nav = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
         var isReload = nav ? nav.type === "reload" : (performance.navigation && performance.navigation.type === 1);
         if (!isReload) return;
-        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
         if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+        var touch = window.matchMedia && window.matchMedia("(pointer: coarse)").matches &&
+                    !window.matchMedia("(any-pointer: fine)").matches;
+        if (!touch) return;
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
         // "instant": the page's own scroll-behavior is smooth, and this must not visibly glide
         var top = function () { try { window.scrollTo({ top: 0, left: 0, behavior: "instant" }); } catch (x) { window.scrollTo(0, 0); } };
         window.addEventListener("DOMContentLoaded", top);
