@@ -561,9 +561,9 @@
        number (tel:) and WhatsApp. #callFab is the fixed box that places it; .cfab-tab is the tab,
        .cfab-menu the card. The tab's width and height are --cf-w / --cf-h. */
     #callFab { position: fixed; right: 0; bottom: calc(108px + env(safe-area-inset-bottom, 0px)); z-index: 100;   /* desktop: raised to the owner's mark */
-               --cf-w: 64px; --cf-h: 56px;
+               --cf-w: 46px; --cf-h: 56px;   /* 46 wide (was 64): the owner had its right side cut back, 2026-10-10 - same height, same round left end */
                transition: opacity .25s ease, visibility .25s; }
-    #callFab .cfab-tab { display: flex; align-items: center; justify-content: center; padding-right: 4px;
+    #callFab .cfab-tab { display: flex; align-items: center; justify-content: center; padding-left: 2px;
                width: var(--cf-w); height: var(--cf-h); border: 0; cursor: pointer;
                border-radius: calc(var(--cf-h) / 2) 0 0 calc(var(--cf-h) / 2);
                background: #f97316; color: #ffffff; font-size: 22px;
@@ -610,7 +610,7 @@
        bar, which is one line on phones now - 24 + 20 + 24px plus its border = 69px - so 78px
        leaves it 9px clear of the bar at the end of the page. */
     @media (max-width: 640px) {
-      #callFab { --cf-w: 56px; --cf-h: 48px;
+      #callFab { --cf-w: 40px; --cf-h: 48px;   /* 40 wide (was 56) */
                  bottom: calc(78px + env(safe-area-inset-bottom, 0px)); }
       #callFab .cfab-tab { font-size: 18px; }
     }
@@ -1293,7 +1293,7 @@
       body .max-w-\[104px\] { max-width: 6.5rem; }
       #services article > h3 { margin-bottom: .75rem; }
       .gallery-card img { height: 16.25rem; }
-      #callFab { bottom: calc(108px * var(--k)); --cf-w: calc(64px * var(--k)); --cf-h: calc(56px * var(--k)); }
+      #callFab { bottom: calc(108px * var(--k)); --cf-w: calc(46px * var(--k)); --cf-h: calc(56px * var(--k)); }
       #callFab .cfab-tab { font-size: calc(22px * var(--k)); }
       #callFab .cfab-menu { right: .75rem; bottom: calc(100% + .75rem); min-width: 13.75rem; }
       .gallery-swiper { --swiper-pagination-bullet-size: .5rem; --swiper-pagination-bullet-horizontal-gap: .25rem; }
