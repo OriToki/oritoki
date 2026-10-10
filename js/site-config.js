@@ -45,7 +45,7 @@ var siteInfo = {
   },
 
   social: {
-    facebook:  "https://www.facebook.com/profile.php?id=61591512283062",
+    facebook:  "https://www.facebook.com/oritoki.ge",
     instagram: "https://www.instagram.com/oritoki.ge/",
     tiktok:    ""
   }
