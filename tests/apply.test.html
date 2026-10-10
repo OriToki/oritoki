@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>apply.js tests</title>
+<style>
+  body { font: 14px/1.5 system-ui, sans-serif; margin: 24px; background: #fff; color: #111; }
+  li.pass::marker { content: "✔ "; color: #16a34a; }
+  li.fail::marker { content: "✘ "; color: #dc2626; }
+  li.fail { color: #dc2626; }
+  #sum { font-weight: bold; }
+</style>
+</head>
+<body>
+<!--
+  Tests for functions/api/apply.js (the Join form's Pages Function).
+  Run with tests/run-tests.ps1 — it serves the repo on localhost and opens this page in headless
+  Chrome; a module import does not work from file://. Nothing here touches the real mailer: every
+  case hands the function a mock MAILER that records what it was sent.
+-->
+<p id="sum">running…</p>
+<ul id="out"></ul>
+<script type="module">
+import { onRequestPost } from "../functions/api/apply.js";
+
+const URL0 = "https://oritoki.ge/api/apply";
+const MAX = 3.5 * 1024 * 1024;
+const enc = new TextEncoder();
+const PDF = enc.encode("%PDF-1.4\n% test certificate\n");
+const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
+const JPG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0x4a, 0x46]);
+
+// The form join.html sends, minus anything a case overrides (null leaves a field out).
+function form(fields = {}, file) {
+  const fd = new FormData();
+  const base = { first_name: "გიორგი", last_name: "ბერიძე", phone_code: "+995", phone: "555 12 34 56" };
+  for (const [k, v] of Object.entries({ ...base, ...fields })) {
+    if (v == null) continue;
+    if (Array.isArray(v)) v.forEach((x) => fd.append(k, x)); else fd.append(k, v);
+  }
+  if (file) fd.append("certificate", file);
+  return fd;
+}
+
+// A browser's Request drops the Origin header, so the function gets a stand-in with real Headers.
+function req(body, origin) {
+  const r = new Request(URL0, { method: "POST", body });
+  const headers = new Headers();
+  if (origin) headers.set("origin", origin);
+  return { url: URL0, headers, formData: () => r.formData() };
+}
+
+function mailer(status = 200) {
+  const m = {
+    calls: [],
+    async fetch(url, init) {
+      m.calls.push({ url, init });
+      if (status === "throw") throw new Error("mailer down");
+      return new Response("", { status });
+    },
+  };
+  return m;
+}
+
+async function call(body, { origin = "https://oritoki.ge", env = { MAILER: mailer() } } = {}) {
+  const res = await onRequestPost({ request: req(body, origin), env });
+  return { status: res.status, body: await res.json(), mime: env.MAILER && env.MAILER.calls[0] && env.MAILER.calls[0].init.body, env };
+}
+
+// --- reading the MIME message back ---
+const unb64 = (s) => Uint8Array.from(atob(s.replace(/\s+/g, "")), (c) => c.charCodeAt(0));
+const utf8 = (bytes) => new TextDecoder().decode(bytes);
+function section(mime, headerLine) {
+  const i = mime.indexOf(headerLine);
+  if (i < 0) return null;
+  const start = mime.indexOf("\r\n\r\n", i) + 4;
+  return mime.slice(start, mime.indexOf("\r\n--", start));
+}
+const textPart = (m) => utf8(unb64(section(m, "Content-Type: text/plain; charset=UTF-8")));
+const htmlPart = (m) => utf8(unb64(section(m, "Content-Type: text/html; charset=UTF-8")));
+const headers = (m) => m.slice(0, m.indexOf("\r\n\r\n"));
+const decodeWord = (w) => utf8(unb64(w.match(/=\?UTF-8\?B\?(.*?)\?=/)[1]));
+function attachment(m) {
+  const at = m.match(/^Content-Disposition: attachment; filename="(.*)"$/m);
+  if (!at) return null;
+  const type = m.match(/^Content-Type: ([^;]+); name=/m)[1];
+  return { name: decodeWord(at[1]), type, bytes: unb64(section(m, at[0])) };
+}
+
+// --- runner ---
+const results = [];
+const tests = [];
+const test = (name, fn) => tests.push({ name, fn });
+function assert(cond, msg) { if (!cond) throw new Error(msg); }
+const eq = (a, b, what) => assert(a === b, what + ": expected " + JSON.stringify(b) + ", got " + JSON.stringify(a));
+
+// ===================== cases =====================
+
+test("valid application without a file is mailed (200)", async () => {
+  const r = await call(form({ email: "giorgi@example.com", city: "Tbilisi" }));
+  eq(r.status, 200, "status"); eq(r.body.ok, true, "ok");
+  eq(r.env.MAILER.calls.length, 1, "mailer calls");
+  eq(r.env.MAILER.calls[0].init.headers["content-type"], "message/rfc822", "content-type to mailer");
+  const t = textPart(r.mime);
+  assert(t.includes("სახელი, გვარი: გიორგი ბერიძე"), "name in text part");
+  assert(t.includes("ტელეფონი: +995 555 12 34 56"), "phone in text part");
+  assert(t.includes("ქალაქი: Tbilisi"), "city in text part");
+  assert(t.includes("ქვეყანა: —"), "empty field shown as —");
+  eq(attachment(r.mime), null, "attachment");
+});
+
+test("subject is RFC 2047 Georgian with the applicant's name", async () => {
+  const r = await call(form());
+  const subj = headers(r.mime).match(/^Subject: (.*)$/m)[1];
+  eq(decodeWord(subj), "ახალი განაცხადი — გიორგი ბერიძე", "subject");
+});
+
+test("message carries no From/To (the mailer Worker adds them)", async () => {
+  const h = headers((await call(form())).mime);
+  assert(!/^(From|To):/mi.test(h), "From/To must not be set here");
+  assert(/^MIME-Version: 1\.0$/m.test(h), "MIME-Version");
+  assert(/^Message-ID: <[^>]+@oritoki\.ge>$/m.test(h), "Message-ID");
+});
+
+test("MIME uses CRLF only and no line is over 998 chars", async () => {
+  const long = "ა".repeat(80);
+  const m = (await call(form({ first_name: long, last_name: long }, new File([PDF], "ს".repeat(80) + ".pdf")))).mime;
+  assert(!/[^\r]\n/.test(m), "bare LF found");
+  const over = m.split("\r\n").filter((l) => l.length > 998);
+  eq(over.length, 0, "lines over 998");
+});
+
+test("valid Reply-To is set; a bad e-mail is left out", async () => {
+  assert(/^Reply-To: <a@b\.ge>$/m.test(headers((await call(form({ email: "a@b.ge" }))).mime)), "Reply-To expected");
+  const bad = await call(form({ email: "a@b.ge>\r\nBcc: x@y.z" }));
+  eq(bad.status, 200, "status");
+  assert(!/^Reply-To:/m.test(headers(bad.mime)), "bad Reply-To must be dropped");
+  assert(!/^Bcc:/m.test(headers(bad.mime)), "header injection");
+});
+
+test("HTML part escapes what the visitor typed", async () => {
+  const r = await call(form({ notes: '<script>alert("x")<\/script> & co' }));
+  const h = htmlPart(r.mime);
+  assert(!h.includes("<script>"), "raw <script> in html");
+  assert(h.includes("&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt; &amp; co"), "escaped notes");
+});
+
+test("checkbox lists, with __other__ replaced by the typed value", async () => {
+  const r = await call(form({
+    certifications: ["IRATA", "__other__"], cert_other: "GWO",
+    languages: ["Georgian", "English"], rope_level: "Level 2", own_ppe: "yes", lang: "en",
+  }));
+  const t = textPart(r.mime);
+  assert(t.includes("სერტიფიკატები: IRATA, GWO"), "certs");
+  assert(!t.includes("__other__"), "__other__ leaked");
+  assert(t.includes("ენები: Georgian, English"), "languages");
+  assert(t.includes("Rope Access დონე: Level 2"), "level");
+  assert(t.includes("ენა საიტზე: English"), "site language en");
+});
+
+test("__other__ ticked but left empty adds nothing", async () => {
+  const t = textPart((await call(form({ certifications: ["__other__"] }))).mime);
+  assert(t.includes("სერტიფიკატები: —"), "certs should be empty");
+});
+
+test("site language defaults to Georgian", async () => {
+  assert(textPart((await call(form())).mime).includes("ენა საიტზე: ქართული"), "lang ka");
+});
+
+test("PDF certificate is attached byte-for-byte", async () => {
+  const r = await call(form({}, new File([PDF], "my cert.pdf", { type: "application/pdf" })));
+  eq(r.status, 200, "status");
+  const a = attachment(r.mime);
+  eq(a.name, "my cert.pdf", "filename"); eq(a.type, "application/pdf", "type");
+  eq(a.bytes.join(","), PDF.join(","), "bytes");
+  assert(textPart(r.mime).includes("ატვირთული ფაილი: my cert.pdf (დანართად)"), "file row");
+});
+
+test("type comes from the bytes, not the name: PNG named .jpg goes out as .png", async () => {
+  const a = attachment((await call(form({}, new File([PNG], "photo.jpg", { type: "image/jpeg" })))).mime);
+  eq(a.type, "image/png", "type"); eq(a.name, "photo.png", "filename");
+});
+
+test("JPEG is accepted", async () => {
+  const a = attachment((await call(form({}, new File([JPG], "სერტიფიკატი.jpeg")))).mime);
+  eq(a.type, "image/jpeg", "type"); eq(a.name, "სერტიფიკატი.jpg", "filename");
+});
+
+test("unsafe file names are cleaned", async () => {
+  const a = attachment((await call(form({}, new File([PDF], '../../evil<>"x.exe')))).mime);
+  assert(!/[\/\\<>"]/.test(a.name), "unsafe chars kept: " + a.name);
+  assert(a.name.endsWith(".pdf"), "extension: " + a.name);
+});
+
+test("empty file field is ignored", async () => {
+  const r = await call(form({}, new File([], "")));
+  eq(r.status, 200, "status"); eq(attachment(r.mime), null, "attachment");
+});
+
+test("file of a wrong type is refused (415), mailer not called", async () => {
+  const r = await call(form({}, new File([enc.encode("MZ fake exe")], "cert.pdf", { type: "application/pdf" })));
+  eq(r.status, 415, "status"); eq(r.body.error, "file_type", "error");
+  eq(r.env.MAILER.calls.length, 0, "mailer calls");
+});
+
+test("file exactly at the 3.5 MB limit passes", async () => {
+  const b = new Uint8Array(MAX); b.set(PDF);
+  eq((await call(form({}, new File([b], "big.pdf")))).status, 200, "status");
+});
+
+test("file one byte over the limit is refused (413)", async () => {
+  const b = new Uint8Array(MAX + 1); b.set(PDF);
+  const r = await call(form({}, new File([b], "big.pdf")));
+  eq(r.status, 413, "status"); eq(r.body.error, "file_size", "error");
+  eq(r.env.MAILER.calls.length, 0, "mailer calls");
+});
+
+for (const field of ["first_name", "last_name", "phone"]) {
+  test("missing " + field + " is refused (400)", async () => {
+    const r = await call(form({ [field]: null }));
+    eq(r.status, 400, "status"); eq(r.body.error, "required", "error");
+    eq(r.env.MAILER.calls.length, 0, "mailer calls");
+  });
+}
+
+test("whitespace-only name counts as missing", async () => {
+  eq((await call(form({ first_name: "   " }))).status, 400, "status");
+});
+
+test("honeypot hit answers 200 but sends nothing", async () => {
+  const r = await call(form({ website: "http://spam.example" }));
+  eq(r.status, 200, "status"); eq(r.body.ok, true, "ok");
+  eq(r.env.MAILER.calls.length, 0, "mailer calls");
+});
+
+test("post from another site is refused (403)", async () => {
+  const r = await call(form(), { origin: "https://evil.example" });
+  eq(r.status, 403, "status"); eq(r.env.MAILER.calls.length, 0, "mailer calls");
+});
+
+test("request without Origin is allowed", async () => {
+  eq((await call(form(), { origin: null })).status, 200, "status");
+});
+
+test("body that is not a form is refused (400)", async () => {
+  const r = await call("just text");
+  eq(r.status, 400, "status"); eq(r.body.error, "bad_form", "error");
+});
+
+test("no MAILER binding answers 503", async () => {
+  const r = await call(form(), { env: {} });
+  eq(r.status, 503, "status"); eq(r.body.error, "not_configured", "error");
+});
+
+test("mailer error answers 502", async () => {
+  const r = await call(form(), { env: { MAILER: mailer(500) } });
+  eq(r.status, 502, "status"); eq(r.body.error, "send_failed", "error");
+});
+
+test("mailer that throws answers 502", async () => {
+  eq((await call(form(), { env: { MAILER: mailer("throw") } })).status, 502, "status");
+});
+
+test("over-long fields are cut, not refused", async () => {
+  const r = await call(form({ notes: "x".repeat(5000), city: "y".repeat(500) }));
+  eq(r.status, 200, "status");
+  const t = textPart(r.mime);
+  assert(t.includes("x".repeat(4000)) && !t.includes("x".repeat(4001)), "notes cut to 4000");
+  assert(t.includes("y".repeat(80)) && !t.includes("y".repeat(81)), "city cut to 80");
+});
+
+// ===================== run =====================
+for (const t of tests) {
+  try { await t.fn(); results.push({ name: t.name, ok: true }); }
+  catch (e) { results.push({ name: t.name, ok: false, error: String(e && e.message || e) }); }
+}
+const failed = results.filter((r) => !r.ok).length;
+document.getElementById("out").innerHTML = results.map((r) =>
+  '<li class="' + (r.ok ? "pass" : "fail") + '">' + r.name.replace(/</g, "&lt;") +
+  (r.ok ? "" : " — " + r.error.replace(/</g, "&lt;")) + "</li>").join("");
+document.getElementById("sum").textContent = (results.length - failed) + " / " + results.length + " passed";
+if (new URLSearchParams(location.search).has("report")) {
+  fetch("/__result", { method: "POST", body: JSON.stringify(results) });
+}
+</script>
+<script>
+  // A module that fails to load (wrong path, syntax error in apply.js) never reaches the runner.
+  window.addEventListener("error", (e) => {
+    if (new URLSearchParams(location.search).has("report"))
+      fetch("/__result", { method: "POST", body: JSON.stringify([{ name: "page load", ok: false, error: e.message ? e.message + " (" + e.filename + ":" + e.lineno + ")" : "apply.js failed to load" }]) });
+  }, true);
+</script>
+</body>
+</html>

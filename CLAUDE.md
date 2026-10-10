@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Bilingual (English/Georgian) marketing website for **Oritoki** (oritoki LLC / შპს ორითოკი), an
 industrial-climbing / works-at-height company. Two pages: `index.html` (the one-page site) and
 `join.html` (the "Join our network" application form). Plain static site — **no framework, no build
-step, no package manager, no test suite.**
+step, no package manager.** The only tests are for the Join form's mailer (see below).
 
 ## Running & checking
 
@@ -17,6 +17,12 @@ step, no package manager, no test suite.**
 - **JS syntax check:** most of the JavaScript now lives *inline* in the two HTML files, so
   `node --check` does not reach it. If Node is unavailable (it usually is on this machine), a brace
   and paren balance count over the file catches gross errors; otherwise verify by loading the page.
+- **Tests:** `powershell -ExecutionPolicy Bypass -File tests\run-tests.ps1` runs
+  `tests/apply.test.html` (29 cases for `functions/api/apply.js`, against a mock MAILER) in
+  headless Chrome. No Node needed: the script serves the repo on localhost itself, because a module
+  import does not work from `file://`. Exit 0 = all pass; `-Show` opens the page in a visible
+  window. Run it after any change to `apply.js`. The page is `noindex` but, like everything in the
+  repo, it is deployed.
 - **git is installed but not on PATH** — GitHub Desktop ships it:
   `C:\Users\<user>\AppData\Local\GitHubDesktop\app-<version>\resources\app\git\cmd\git.exe`.
   Committing from there works. Pushing works too since 2026-10-06, once the owner signed in to Git
@@ -61,8 +67,8 @@ hands the message to a separate Worker, `worker/oritoki-mailer.js`, through the 
 only in the Worker's dashboard settings, never in this public repo. The Worker is **deployed by
 hand in the dashboard — a push does not update it.** `join.html` shrinks photos over 1.5 MB to
 2400 px JPEG before sending; a failed send shows the phone number from `js/site-config.js`.
-`apply.js` was tested in headless Chrome against a mock MAILER (all cases incl. honeypot, bad
-type, oversize); the real send is untested until the domain is on Cloudflare.
+`apply.js` is covered by `tests/run-tests.ps1` against a mock MAILER (all cases incl. honeypot,
+bad type, oversize, MIME shape); the real send is untested until the mailer Worker is bound.
 
 **The font is FiraGO (OFL), self-hosted as woff2 in `fonts/`.** It replaced a Helvetica Neue whose
 files said "property of Linotype… All Rights Reserved" with a third-party Cyrillic added — not
